@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Celestial Dental Content Portal</title>
+    <style>
+      :root {
+        color: #142323;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f3faf8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 32px 18px 72px;
+      }
+      header {
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      h1 {
+        font-size: clamp(32px, 5vw, 56px);
+        line-height: 1;
+        margin: 0;
+      }
+      .muted {
+        color: #5c7474;
+      }
+      .panel {
+        background: white;
+        border: 1px solid rgba(15, 118, 110, 0.16);
+        border-radius: 18px;
+        box-shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+        padding: 22px;
+      }
+      .grid {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      }
+      label {
+        display: grid;
+        gap: 7px;
+        color: #315353;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid #cce5e1;
+        border-radius: 12px;
+        color: #142323;
+        font: inherit;
+        padding: 13px 14px;
+      }
+      textarea {
+        min-height: 150px;
+        resize: vertical;
+      }
+      button {
+        border: 0;
+        border-radius: 999px;
+        background: #0f766e;
+        color: white;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 800;
+        padding: 13px 20px;
+      }
+      button.secondary {
+        background: #dbece9;
+        color: #0f514d;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .list {
+        display: grid;
+        gap: 12px;
+      }
+      article {
+        border: 1px solid #d6ebe7;
+        border-radius: 14px;
+        padding: 16px;
+      }
+      article h3 {
+        margin: 0 0 8px;
+      }
+      article p {
+        color: #4b6363;
+        line-height: 1.55;
+        margin: 0 0 12px;
+      }
+      .badge {
+        display: inline-flex;
+        border-radius: 999px;
+        background: #e5f5f3;
+        color: #0f766e;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 5px 10px;
+        text-transform: uppercase;
+      }
+      #login {
+        max-width: 520px;
+        margin: 8vh auto;
+      }
+      #message {
+        color: #0f766e;
+        font-weight: 800;
+        min-height: 24px;
+      }
+      @media (max-width: 820px) {
+        header,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        header {
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section id="login" class="panel">
+        <h1>Content Portal</h1>
+        <p class="muted">Enter the admin password to edit website updates.</p>
+        <label>
+          Password
+          <input id="password" type="password" autocomplete="current-password" />
+        </label>
+        <div class="actions">
+          <button id="loginButton">Open Portal</button>
+        </div>
+      </section>
+
+      <section id="portal" hidden>
+        <header>
+          <div>
+            <h1>Website Content</h1>
+            <p class="muted">Add announcements, offers, service notes, and clinic updates to the website.</p>
+          </div>
+          <button class="secondary" id="refreshButton">Refresh</button>
+        </header>
+
+        <div class="grid">
+          <form id="contentForm" class="panel">
+            <input type="hidden" id="id" />
+            <label>
+              Status
+              <select id="status">
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+              </select>
+            </label>
+            <label>
+              Title
+              <input id="title" required placeholder="Example: Free braces consultation week" />
+            </label>
+            <label>
+              Body
+              <textarea id="body" required placeholder="Write the content that should appear on the website."></textarea>
+            </label>
+            <label>
+              Image URL
+              <input id="imageUrl" placeholder="https://..." />
+            </label>
+            <label>
+              Button Text
+              <input id="ctaLabel" placeholder="Book appointment" />
+            </label>
+            <label>
+              Button Link
+              <input id="ctaUrl" placeholder="/#appointment" />
+            </label>
+            <div class="actions">
+              <button type="submit">Save Content</button>
+              <button type="button" class="secondary" id="clearButton">New Item</button>
+            </div>
+            <p id="message"></p>
+          </form>
+
+          <section class="panel">
+            <h2>Current Content</h2>
+            <div id="items" class="list"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const state = { password: localStorage.getItem('celestialAdminPassword') || '', items: [] };
+      const fields = ['id', 'status', 'title', 'body', 'imageUrl', 'ctaLabel', 'ctaUrl'];
+      const el = (id) => document.getElementById(id);
+
+      function payload() {
+        return Object.fromEntries(fields.map((field) => [field, el(field).value.trim()]));
+      }
+
+      function fill(item = {}) {
+        fields.forEach((field) => {
+          el(field).value = item[field] || (field === 'status' ? 'published' : '');
+        });
+      }
+
+      function showPortal() {
+        el('login').hidden = true;
+        el('portal').hidden = false;
+      }
+
+      async function api(path = '', options = {}) {
+        const response = await fetch(`/api/content${path}`, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-password': state.password,
+            ...(options.headers || {}),
+          },
+        });
+        if (!response.ok) throw new Error(await response.text());
+        return response.json();
+      }
+
+      function render() {
+        el('items').innerHTML = state.items.length
+          ? state.items
+              .map(
+                (item) => `
+                  <article>
+                    <span class="badge">${item.status}</span>
+                    <h3>${item.title}</h3>
+                    <p>${item.body}</p>
+                    <div class="actions">
+                      <button type="button" class="secondary" data-edit="${item.id}">Edit</button>
+                      <button type="button" class="secondary" data-archive="${item.id}">Archive</button>
+                    </div>
+                  </article>
+                `,
+              )
+              .join('')
+          : '<p class="muted">No content yet.</p>';
+      }
+
+      async function load() {
+        const data = await api();
+        state.items = data.items || [];
+        render();
+      }
+
+      el('loginButton').addEventListener('click', async () => {
+        state.password = el('password').value.trim();
+        localStorage.setItem('celestialAdminPassword', state.password);
+        showPortal();
+        await load();
+      });
+
+      el('contentForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        el('message').textContent = 'Saving...';
+        await api('', { method: 'POST', body: JSON.stringify(payload()) });
+        fill();
+        await load();
+        el('message').textContent = 'Saved.';
+      });
+
+      el('items').addEventListener('click', async (event) => {
+        const editId = event.target.dataset.edit;
+        const archiveId = event.target.dataset.archive;
+        if (editId) fill(state.items.find((item) => item.id === editId));
+        if (archiveId) {
+          await api('', { method: 'POST', body: JSON.stringify({ id: archiveId, status: 'archived' }) });
+          await load();
+        }
+      });
+
+      el('refreshButton').addEventListener('click', load);
+      el('clearButton').addEventListener('click', () => fill());
+
+      if (state.password) {
+        el('password').value = state.password;
+        showPortal();
+        load().catch(() => {
+          el('portal').hidden = true;
+          el('login').hidden = false;
+        });
+      }
+    </script>
+  </body>
+</html>
