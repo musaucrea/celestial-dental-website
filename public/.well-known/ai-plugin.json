@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Celestial Dental Centre",
+  "name_for_model": "celestial_dental",
+  "description_for_human": "Celestial Dental Centre — dental clinic in Kasarani, Kamakis & Eldoret, Kenya. Book appointments, find branch info, and explore services.",
+  "description_for_model": "Celestial Dental Centre is a dental clinic in Kenya with branches in Kasarani, Kamakis, and Eldoret. Services include teeth cleaning, braces, implants, root canal, cosmetic dentistry, and emergency care. Open Mon–Sun 07:00–20:00. Accepts major insurance including Jubilee, AAR, Madison, CIC, Britam, SHA. Contact: +254 707 535 000.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://celestialdental.org/.well-known/openapi.yaml"
+  },
+  "logo_url": "https://celestialdental.org/brand/celestial-logo.png",
+  "contact_email": "info@celestialdental.org",
+  "legal_info_url": "https://celestialdental.org/"
+}

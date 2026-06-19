@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
+import { isAdminOrAbove } from './_utils';
 
 type AppointmentPayload = {
   name?: string;
@@ -9,6 +10,7 @@ type AppointmentPayload = {
   date?: string;
   time?: string;
   message?: string;
+  referral?: string;
 };
 
 const requiredFields: Array<keyof AppointmentPayload> = ['name', 'phone', 'service', 'date', 'time'];
@@ -25,7 +27,7 @@ async function appendToSheet(payload: AppointmentPayload) {
   const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const privateKey = getPrivateKey();
   const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-  const range = process.env.GOOGLE_SHEET_RANGE || 'Appointments!A:I';
+  const range = process.env.GOOGLE_SHEET_RANGE || 'Appointments!A:J';
 
   if (!clientEmail || !privateKey || !spreadsheetId) {
     throw new Error('Missing Google Sheets environment variables');
@@ -53,6 +55,7 @@ async function appendToSheet(payload: AppointmentPayload) {
           clean(payload.date),
           clean(payload.time),
           clean(payload.message),
+          clean(payload.referral),
           'Website',
         ],
       ],
@@ -80,6 +83,7 @@ async function sendEmailNotification(payload: AppointmentPayload) {
     `Service: ${clean(payload.service)}`,
     `Preferred date: ${clean(payload.date)}`,
     `Preferred time: ${clean(payload.time)}`,
+    `Referral source: ${clean(payload.referral) || 'Not provided'}`,
     `Message: ${clean(payload.message) || 'No message provided'}`,
   ].join('\n');
 
@@ -106,12 +110,51 @@ async function sendEmailNotification(payload: AppointmentPayload) {
   );
 }
 
+async function isAuthed(req: VercelRequest) {
+  return isAdminOrAbove(req);
+}
+
+async function readAppointments() {
+  const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const privateKey = getPrivateKey();
+  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+  const range = process.env.GOOGLE_SHEET_RANGE || 'Appointments!A:J';
+
+  if (!clientEmail || !privateKey || !spreadsheetId) throw new Error('Missing env vars');
+
+  const auth = new google.auth.JWT({
+    email: clientEmail,
+    key: privateKey,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+
+  const sheets = google.sheets({ version: 'v4', auth });
+  const result = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+  const rows = (result.data.values || []) as string[][];
+  const header = ['timestamp', 'name', 'phone', 'email', 'service', 'date', 'time', 'message', 'referral', 'source'];
+  return rows
+    .slice(1)
+    .filter(row => row.some(Boolean))
+    .map(row => Object.fromEntries(header.map((key, i) => [key, row[i] || ''])))
+    .reverse(); // newest first
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-password, x-admin-email');
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
+  }
+
+  if (req.method === 'GET') {
+    if (!await isAuthed(req)) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const appointments = await readAppointments();
+      return res.status(200).json({ appointments });
+    } catch (error) {
+      return res.status(500).json({ error: 'Could not read appointments' });
+    }
   }
 
   if (req.method !== 'POST') {

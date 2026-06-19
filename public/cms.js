@@ -121,7 +121,10 @@
       const data = await response.json();
       const items = (data.items || []).filter((item) => item.status === 'published');
       if (!items.length || document.getElementById(mountId)) return;
-      document.body.appendChild(createSection(items));
+      const footer = document.querySelector('footer') || document.body.lastElementChild;
+      footer
+        ? footer.parentNode.insertBefore(createSection(items), footer)
+        : document.body.appendChild(createSection(items));
     } catch (error) {
       console.warn('Could not load website content', error);
     }

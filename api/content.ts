@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
+import { getRole, isAuthenticated } from './_utils';
 
 type ContentItem = {
   id: string;
@@ -19,9 +20,8 @@ function clean(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function isAuthed(req: VercelRequest) {
-  const password = process.env.ADMIN_PASSWORD;
-  return Boolean(password && req.headers['x-admin-password'] === password);
+async function isAuthed(req: VercelRequest) {
+  return isAuthenticated(req);
 }
 
 function getPrivateKey() {
@@ -138,7 +138,7 @@ async function saveItem(input: Partial<ContentItem>) {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-password');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-password, x-admin-email');
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -148,18 +148,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'GET') {
       const items = await readItems();
       return res.status(200).json({
-        items: isAuthed(req) ? items : items.filter((item) => item.status === 'published'),
+        items: await isAuthed(req) ? items : items.filter((item) => item.status === 'published'),
       });
     }
 
     if (req.method === 'POST') {
-      if (!isAuthed(req)) {
+      if (!await isAuthed(req)) {
         return res.status(401).json({ error: 'Unauthorized' });
       }
 
       const payload = req.body || {};
       if (!clean(payload.title) && clean(payload.status) !== 'archived') {
         return res.status(400).json({ error: 'Title is required' });
+      }
+
+      // Content creators can only save as draft
+      const role = await getRole(req);
+      if (role === 'content_creator') {
+        payload.status = 'draft';
       }
 
       await saveItem(payload);
