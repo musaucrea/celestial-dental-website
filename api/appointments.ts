@@ -228,21 +228,18 @@ function branchWhatsAppNumber(branch: string): string {
 }
 
 // Best-effort push of the booking straight into the preferred branch's WhatsApp
-// via a bot gateway (UltraMsg-style: POST {token, to, body}). Like the email and
-// CRM notifiers, a failure here must never fail the booking response.
+// via a bot gateway. Like the email and CRM notifiers, a failure here must never
+// fail the booking response.
 //
-// Config (set in Vercel): WHATSAPP_API_TOKEN (required to enable) plus either
-// WHATSAPP_INSTANCE_ID (builds the default UltraMsg endpoint) or WHATSAPP_API_URL
-// (full send endpoint for any gateway using the same {token,to,body} shape).
+// Two providers are supported (Green API is checked first):
+//   Green API (free Developer tier) — set GREEN_API_ID_INSTANCE +
+//     GREEN_API_TOKEN_INSTANCE (optional GREEN_API_URL to override the host).
+//   UltraMsg / compatible — set WHATSAPP_API_TOKEN + WHATSAPP_INSTANCE_ID
+//     (or WHATSAPP_API_URL for the full {token,to,body} endpoint).
+// If neither is configured the function skips silently.
 async function sendWhatsAppNotification(payload: AppointmentPayload) {
-  const token = process.env.WHATSAPP_API_TOKEN;
-  const instanceId = process.env.WHATSAPP_INSTANCE_ID;
-  const url = process.env.WHATSAPP_API_URL
-    || (instanceId ? `https://api.ultramsg.com/${instanceId}/messages/chat` : '');
-  if (!token || !url) return; // not configured → skip silently
-
-  const to = branchWhatsAppNumber(clean(payload.branch));
-  const body = [
+  const to = branchWhatsAppNumber(clean(payload.branch)); // digits, e.g. 254754400500
+  const text = [
     'New appointment request',
     `Patient: ${clean(payload.name)}`,
     `Phone: ${clean(payload.phone)}`,
@@ -255,14 +252,36 @@ async function sendWhatsAppNotification(payload: AppointmentPayload) {
     clean(payload.referral) ? `Heard via: ${clean(payload.referral)}` : '',
   ].filter(Boolean).join('\n');
 
+  // Green API: POST /waInstance{id}/sendMessage/{token} with {chatId, message}.
+  const greenId = process.env.GREEN_API_ID_INSTANCE;
+  const greenToken = process.env.GREEN_API_TOKEN_INSTANCE;
+  if (greenId && greenToken) {
+    const base = (process.env.GREEN_API_URL || 'https://api.green-api.com').replace(/\/$/, '');
+    const response = await fetch(`${base}/waInstance${greenId}/sendMessage/${greenToken}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chatId: `${to}@c.us`, message: text }),
+    });
+    if (!response.ok) {
+      console.error('WhatsApp (Green API) notification failed', response.status, await response.text());
+    }
+    return;
+  }
+
+  // UltraMsg (or any gateway sharing its {token, to, body} shape).
+  const token = process.env.WHATSAPP_API_TOKEN;
+  const instanceId = process.env.WHATSAPP_INSTANCE_ID;
+  const url = process.env.WHATSAPP_API_URL
+    || (instanceId ? `https://api.ultramsg.com/${instanceId}/messages/chat` : '');
+  if (!token || !url) return; // not configured → skip silently
+
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, to, body }),
+    body: JSON.stringify({ token, to, body: text }),
   });
-
   if (!response.ok) {
-    console.error('WhatsApp notification failed', response.status, await response.text());
+    console.error('WhatsApp (UltraMsg) notification failed', response.status, await response.text());
   }
 }
 
