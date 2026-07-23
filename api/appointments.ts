@@ -205,6 +205,130 @@ async function sendEmailNotification(payload: AppointmentPayload) {
   );
 }
 
+// Explicit branch → WhatsApp number map. Mirrors BookingModal's rationale: an
+// explicit map keeps a booking from going to a stale admin-managed number, and
+// a per-branch env override (WHATSAPP_TO_<SLUG>, digits only) still wins so new
+// branches can be wired without a code change. Numbers are international, no '+'.
+const BRANCH_WHATSAPP: Record<string, string> = {
+  kasarani: '254707535000',
+  kamakis: '254754400500',
+  eldoret: '254794585217',
+};
+
+function branchWhatsAppNumber(branch: string): string {
+  const b = branch.toLowerCase();
+  for (const slug of Object.keys(BRANCH_WHATSAPP)) {
+    if (b.includes(slug)) {
+      return process.env[`WHATSAPP_TO_${slug.toUpperCase()}`]?.replace(/\D/g, '')
+        || BRANCH_WHATSAPP[slug];
+    }
+  }
+  // Unknown/unspecified branch → flagship, so the request is never lost.
+  return process.env.WHATSAPP_TO_KASARANI?.replace(/\D/g, '') || BRANCH_WHATSAPP.kasarani;
+}
+
+// Best-effort push of the booking straight into the preferred branch's WhatsApp
+// via a bot gateway (UltraMsg-style: POST {token, to, body}). Like the email and
+// CRM notifiers, a failure here must never fail the booking response.
+//
+// Config (set in Vercel): WHATSAPP_API_TOKEN (required to enable) plus either
+// WHATSAPP_INSTANCE_ID (builds the default UltraMsg endpoint) or WHATSAPP_API_URL
+// (full send endpoint for any gateway using the same {token,to,body} shape).
+async function sendWhatsAppNotification(payload: AppointmentPayload) {
+  const token = process.env.WHATSAPP_API_TOKEN;
+  const instanceId = process.env.WHATSAPP_INSTANCE_ID;
+  const url = process.env.WHATSAPP_API_URL
+    || (instanceId ? `https://api.ultramsg.com/${instanceId}/messages/chat` : '');
+  if (!token || !url) return; // not configured → skip silently
+
+  const to = branchWhatsAppNumber(clean(payload.branch));
+  const body = [
+    'New appointment request',
+    `Patient: ${clean(payload.name)}`,
+    `Phone: ${clean(payload.phone)}`,
+    clean(payload.email) ? `Email: ${clean(payload.email)}` : '',
+    `Branch: ${clean(payload.branch) || 'Not specified'}`,
+    `Service: ${clean(payload.service) || 'General'}`,
+    `Preferred date: ${clean(payload.date)}`,
+    `Preferred time: ${clean(payload.time)}`,
+    clean(payload.message) ? `Notes: ${clean(payload.message)}` : '',
+    clean(payload.referral) ? `Heard via: ${clean(payload.referral)}` : '',
+  ].filter(Boolean).join('\n');
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, to, body }),
+  });
+
+  if (!response.ok) {
+    console.error('WhatsApp notification failed', response.status, await response.text());
+  }
+}
+
+// Maps the website's free-text service titles (src/data/site.ts) to the CRM's
+// DentalService enum. Unmatched/renamed titles fall back to OTHER — the raw
+// title is always preserved in the CRM lead's notes, so nothing is lost.
+function mapServiceTitleToEnum(service: string): string {
+  const s = service.toLowerCase();
+  if (s.includes('brace') || s.includes('orthodont')) return 'BRACES';
+  if (s.includes('whiten')) return 'WHITENING';
+  if (s.includes('implant')) return 'IMPLANTS';
+  if (s.includes('root canal')) return 'ROOT_CANAL';
+  if (s.includes('filling')) return 'FILLING';
+  if (s.includes('extraction')) return 'EXTRACTION';
+  if (s.includes('clean') || s.includes('checkup')) return 'CLEANING';
+  return 'OTHER';
+}
+
+// Matches against the CRM's known branches by loose name; returns null (not
+// mapped) for branches the CRM doesn't have yet (e.g. Eldoret). The raw
+// branch name is always preserved in notes regardless.
+function mapBranchNameToId(branch: string): string | null {
+  const b = branch.toLowerCase();
+  if (b.includes('kasarani')) return 'branch-kasarani';
+  if (b.includes('kamakis')) return 'branch-kamakis';
+  return null;
+}
+
+// Best-effort push into the CRM as a real lead. Mirrors sendEmailNotification's
+// contract: a failure here must never fail the booking response.
+async function sendToCrm(payload: AppointmentPayload) {
+  const url = process.env.CRM_LEAD_WEBHOOK_URL;
+  const secret = process.env.CRM_LEAD_WEBHOOK_SECRET;
+  if (!url || !secret) return;
+
+  const branch = clean(payload.branch);
+  const service = clean(payload.service);
+  const notesParts = [
+    'Booking request via website.',
+    branch ? `Branch: ${branch}.` : '',
+    `Requested: ${clean(payload.date)} ${clean(payload.time)}.`,
+    clean(payload.message) ? `Message: ${clean(payload.message)}` : '',
+  ].filter(Boolean);
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-website-lead-secret': secret,
+    },
+    body: JSON.stringify({
+      name: clean(payload.name),
+      phone: clean(payload.phone),
+      email: clean(payload.email) || undefined,
+      source: 'WEBSITE',
+      services: service ? [mapServiceTitleToEnum(service)] : [],
+      branchId: branch ? mapBranchNameToId(branch) : null,
+      notes: notesParts.join(' '),
+    }),
+  });
+
+  if (!response.ok) {
+    console.error('CRM lead push failed', response.status, await response.text());
+  }
+}
+
 // Deleting stays restricted to admins.
 async function isAuthed(req: VercelRequest) {
   return isAdminOrAbove(req);
@@ -326,11 +450,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'Could not save appointment request' });
   }
 
-  // Email is best-effort — a notification failure must never fail the booking.
+  // Email and CRM push are best-effort — neither failure may fail the booking.
   try {
     await sendEmailNotification(payload);
   } catch (error) {
     console.error('Appointment saved but email notification failed', error);
+  }
+
+  try {
+    await sendToCrm(payload);
+  } catch (error) {
+    console.error('Appointment saved but CRM lead push failed', error);
+  }
+
+  try {
+    await sendWhatsAppNotification(payload);
+  } catch (error) {
+    console.error('Appointment saved but WhatsApp notification failed', error);
   }
 
   return res.status(200).json({ ok: true });
