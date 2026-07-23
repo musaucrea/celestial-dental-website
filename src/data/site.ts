@@ -340,3 +340,27 @@ export const serviceOptions = [
   'Emergency / tooth pain',
   'Other',
 ];
+
+// Official Google Business Profiles per branch — used for the "leave a Google
+// review" call-to-action and map links on each branch page.
+export const googleBusinessProfiles: Record<string, {
+  name: string;
+  profileUrl: string;
+  mapsUrl: string;
+}> = {
+  kasarani: {
+    name: 'Celestial Dental Centre -Kasarani Branch',
+    profileUrl: 'https://share.google/g8vcwFAtSxwSbhEUW',
+    mapsUrl: 'https://www.google.com/maps?cid=6616178097052496250',
+  },
+  eldoret: {
+    name: 'Celestial Dental Centre -Eldoret Branch',
+    profileUrl: 'https://share.google/1DW9GobEX1VWO4dUB',
+    mapsUrl: 'https://share.google/1DW9GobEX1VWO4dUB',
+  },
+  kamakis: {
+    name: 'Celestial Dental Centre -Kamakis Branch',
+    profileUrl: 'https://share.google/DxCzsY8twDIjZrzoE',
+    mapsUrl: 'https://share.google/DxCzsY8twDIjZrzoE',
+  },
+};

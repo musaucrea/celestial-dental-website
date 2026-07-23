@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex,nofollow" />
   <title>Celestial Dental — Admin</title>
-  <link rel="icon" href="/brand/celestial-logo.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/brand/celestial-icon-32.png?v=20260720" />
+  <link rel="shortcut icon" href="/favicon.ico?v=20260720" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -93,6 +94,8 @@
     .role-super-admin  { background: var(--gold-light); color: #92400e; border: 1px solid var(--gold-border); }
     .role-admin        { background: var(--brand-light); color: var(--brand-dark); border: 1px solid var(--brand-mid); }
     .role-content-creator { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    /* Appointments Manager may confirm but not delete: hide the delete button. */
+    body.role-appointments-manager .appt-delete-btn { display: none; }
 
     /* ═══════════════════════════════════════════
        LAYOUT
@@ -184,6 +187,12 @@
       outline: none; border-color: var(--brand);
     }
     .field textarea { min-height: 110px; resize: vertical; }
+
+    /* Image upload row */
+    .upload-row { display: flex; gap: 8px; align-items: center; }
+    .upload-row > input:not([type=file]) { flex: 1; }
+    .upload-thumb { margin-top: 8px; display: none; }
+    .upload-thumb img { max-height: 84px; border-radius: 8px; border: 1px solid var(--border); }
 
     /* Draft notice */
     .draft-notice {
@@ -327,77 +336,71 @@
         </button>
       </div>
 
+      <div style="text-align:center;margin-top:14px;">
+        <button class="link-btn" id="forgotPasswordBtn">Forgot password?</button>
+      </div>
+
       <p id="loginError" style="color:var(--red);font-size:13px;margin-top:12px;display:none;"></p>
 
-      <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
-        <span style="font-size:13px;color:var(--ink-3);">Don't have access?</span>
-        <button class="link-btn" id="showRegisterBtn" style="margin-left:6px;">Request Access →</button>
-      </div>
     </div>
 
-    <!-- ── View 2: Request Access (Onboarding) ── -->
-    <div class="auth-view" id="registerView">
-      <h1>Request Access</h1>
-      <p class="sub">Tell us about yourself and choose the role that fits your responsibilities. A Super Admin will review your request.</p>
-
-      <div class="form-grid" style="gap:12px;">
-        <div class="field">
-          <label>Full Name *</label>
-          <input id="regName" type="text" placeholder="Your full name" />
-        </div>
-        <div class="field">
-          <label>Email *</label>
-          <input id="regEmail" type="email" placeholder="you@example.com" />
-        </div>
-        <div class="field" style="grid-column:1/-1;">
-          <label>Choose your role *</label>
-          <div class="role-cards">
-            <button type="button" class="role-card selected" data-role="admin" id="roleCardAdmin">
-              <span class="role-card-icon">🔑</span>
-              <div class="role-card-title">Admin</div>
-              <div class="role-card-desc">Manage appointments, publish blog posts, and update site content.</div>
-            </button>
-            <button type="button" class="role-card" data-role="content_creator" id="roleCardContentCreator">
-              <span class="role-card-icon">✏️</span>
-              <div class="role-card-title">Content Creator</div>
-              <div class="role-card-desc">Write blog posts and site updates as drafts for review and publishing.</div>
-            </button>
-          </div>
-          <input type="hidden" id="regRole" value="admin" />
-        </div>
-        <div class="field">
-          <label>Password *</label>
-          <input id="regPassword" type="password" placeholder="Min. 6 characters" />
-        </div>
-        <div class="field">
-          <label>Confirm Password *</label>
-          <input id="regConfirm" type="password" placeholder="Repeat password" />
-        </div>
+    <!-- ── View 2: Email OTP ─────────────────── -->
+    <div class="auth-view" id="otpView">
+      <h1>Check your email</h1>
+      <p class="sub" id="otpMessage">Enter the six-digit verification code sent to your email address.</p>
+      <div class="field">
+        <label>Verification code</label>
+        <input id="otpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
       </div>
-
-      <div class="actions" style="margin-top:16px;">
-        <button class="btn btn-primary" id="registerBtn" style="flex:1;justify-content:center;">
-          Submit Request
-        </button>
+      <div class="actions" style="margin-top:14px;">
+        <button class="btn btn-primary" id="verifyOtpBtn" style="width:100%;justify-content:center;">Verify Code</button>
       </div>
-
-      <p id="registerError" style="color:var(--red);font-size:13px;margin-top:12px;display:none;"></p>
-
+      <p id="otpError" style="color:var(--red);font-size:13px;margin-top:12px;display:none;"></p>
       <div style="text-align:center;margin-top:16px;">
-        <button class="link-btn" id="showLoginBtn">← Back to Sign In</button>
+        <button class="link-btn" id="resendOtpBtn">Resend code</button>
+      </div>
+      <div style="text-align:center;margin-top:8px;">
+        <button class="link-btn" id="otpBackBtn">← Start again</button>
       </div>
     </div>
 
-    <!-- ── View 3: Pending / Status ─────────── -->
+    <!-- ── View 3: Account Status ───────────── -->
     <div class="auth-view" id="statusView">
-      <span class="status-icon" id="statusIcon">⏳</span>
-      <h1 id="statusTitle">Request Submitted</h1>
-      <p class="sub" id="statusMessage">Your access request has been submitted. A Super Admin will review it shortly. You'll be able to sign in once approved.</p>
+      <span class="status-icon" id="statusIcon">🔒</span>
+      <h1 id="statusTitle">Account not active</h1>
+      <p class="sub" id="statusMessage">This account isn't active yet. Admin accounts are created by the Super Admin — please contact them to be added or re-enabled.</p>
       <div class="actions" style="margin-top:20px;">
         <button class="btn btn-ghost" id="backToLoginBtn" style="width:100%;justify-content:center;">
           Back to Sign In
         </button>
       </div>
+    </div>
+
+    <div class="auth-view" id="inviteView">
+      <h1>Create your admin login</h1>
+      <p class="sub">Choose a strong password to activate your Celestial Dental admin account.</p>
+      <div class="field" style="margin-bottom:12px;"><label>New password</label><input id="invitePassword" type="password" autocomplete="new-password" placeholder="At least 15 characters" /></div>
+      <div class="field"><label>Confirm password</label><input id="invitePasswordConfirm" type="password" autocomplete="new-password" placeholder="Repeat your password" /></div>
+      <div class="actions"><button class="btn btn-primary" id="acceptInviteBtn" style="width:100%;justify-content:center;">Activate Account</button></div>
+      <p id="inviteError" style="color:var(--red);font-size:13px;margin-top:12px;display:none;"></p>
+    </div>
+
+    <div class="auth-view" id="forgotPasswordView">
+      <h1>Reset your password</h1>
+      <p class="sub">Enter your admin email and we’ll send you a private password-reset link.</p>
+      <div class="field"><label>Email</label><input id="forgotEmail" type="email" autocomplete="email" placeholder="you@example.com" /></div>
+      <div class="actions"><button class="btn btn-primary" id="sendResetBtn" style="width:100%;justify-content:center;">Send Reset Link</button></div>
+      <p id="forgotMessage" style="font-size:13px;margin-top:12px;display:none;"></p>
+      <div style="text-align:center;margin-top:16px;"><button class="link-btn" id="forgotBackBtn">← Back to Sign In</button></div>
+    </div>
+
+    <div class="auth-view" id="resetPasswordView">
+      <h1>Create a new password</h1>
+      <p class="sub">Enter and confirm the password you will use for future admin access.</p>
+      <div class="field" style="margin-bottom:12px;"><label>New password</label><input id="resetPassword" type="password" autocomplete="new-password" placeholder="At least 15 characters" /></div>
+      <div class="field"><label>Confirm password</label><input id="resetPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repeat your password" /></div>
+      <div class="actions"><button class="btn btn-primary" id="completeResetBtn" style="width:100%;justify-content:center;">Save New Password</button></div>
+      <p id="resetError" style="color:var(--red);font-size:13px;margin-top:12px;display:none;"></p>
     </div>
 
   </div>
@@ -435,7 +438,7 @@
         <div class="sidebar-user-role" id="sidebarRole"></div>
       </div>
 
-      <button class="nav-item active" data-page="dashboard">
+      <button class="nav-item active" data-page="dashboard" id="dashboardNavItem">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </button>
@@ -445,16 +448,46 @@
         Appointments
       </button>
 
+      <button class="nav-item" data-page="analytics" id="analyticsNavItem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Visitors
+      </button>
+
       <hr class="nav-divider" />
 
-      <button class="nav-item" data-page="blog">
+      <button class="nav-item" data-page="blog" id="blogNavItem">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         Blog Posts
       </button>
 
-      <button class="nav-item" data-page="updates">
+      <button class="nav-item" data-page="updates" id="updatesNavItem">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-        Site Updates
+        News &amp; Updates
+      </button>
+
+      <button class="nav-item" data-page="careers" id="careersNavItem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+        Careers
+      </button>
+
+      <button class="nav-item" data-page="branches" id="branchesNavItem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Branches
+      </button>
+
+      <button class="nav-item" data-page="website" id="websiteNavItem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        Website Pages
+      </button>
+
+      <button class="nav-item" data-page="staff" id="staffNavItem" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Staff
+      </button>
+
+      <button class="nav-item" data-page="faqs" id="faqsNavItem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        FAQs
       </button>
 
       <hr class="nav-divider" />
@@ -465,6 +498,11 @@
         Users
         <span class="nav-badge" id="pendingBadge" style="display:none;">0</span>
       </button>
+
+      <button class="nav-item" data-page="trash" id="trashNavItem" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M9 11l.5 6M14.5 11l-.5 6"/></svg>
+        Recently Deleted
+      </button>
     </nav>
 
     <!-- Pages -->
@@ -472,13 +510,19 @@
 
       <!-- ── DASHBOARD ─────────────────────── -->
       <div class="page active" id="page-dashboard">
-        <div class="page-title">Dashboard</div>
-        <div class="page-sub" id="dashDate">Welcome back.</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div>
+            <div class="page-title">Dashboard</div>
+            <div class="page-sub" id="dashDate">Welcome back.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="reportBtn">📄 Generate PDF Report</button>
+        </div>
         <div class="stats" id="statsGrid">
           <div class="stat appt-only"><div class="stat-icon">📅</div><div class="stat-value" id="statAppts">—</div><div class="stat-label">Total Appointments</div></div>
           <div class="stat appt-only"><div class="stat-icon">🗓️</div><div class="stat-value" id="statToday">—</div><div class="stat-label">Appointments Today</div></div>
           <div class="stat"><div class="stat-icon">✍️</div><div class="stat-value" id="statPosts">—</div><div class="stat-label">Published Blog Posts</div></div>
-          <div class="stat"><div class="stat-icon">📢</div><div class="stat-value" id="statUpdates">—</div><div class="stat-label">Site Updates Live</div></div>
+          <div class="stat"><div class="stat-icon">📢</div><div class="stat-value" id="statUpdates">—</div><div class="stat-label">News Updates Live</div></div>
+          <div class="stat"><div class="stat-icon">💼</div><div class="stat-value" id="statOpenings">—</div><div class="stat-label">Open Positions</div></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="dashGrid">
           <div class="card appt-only" id="dashApptsCard">
@@ -489,6 +533,56 @@
             <div class="card-title">Recent Blog Posts</div>
             <div id="dashPosts"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
           </div>
+        </div>
+      </div>
+
+      <!-- ── ANALYTICS ─────────────────────── -->
+      <div class="page" id="page-analytics">
+        <div class="page-title">Website Visitors</div>
+        <div class="page-sub">How many people visit the website, and where they come from. Counting started when this feature went live, so numbers build up from today.</div>
+        <div class="stats">
+          <div class="stat"><div class="stat-icon">👤</div><div class="stat-value" id="anPeopleToday">—</div><div class="stat-label">People Today</div></div>
+          <div class="stat"><div class="stat-icon">📈</div><div class="stat-value" id="anToday">—</div><div class="stat-label">Page Views Today</div></div>
+          <div class="stat"><div class="stat-icon">🗓️</div><div class="stat-value" id="an7">—</div><div class="stat-label">Views · Last 7 Days</div></div>
+          <div class="stat"><div class="stat-icon">👥</div><div class="stat-value" id="anV7">—</div><div class="stat-label">Visitors · Last 7 Days</div></div>
+          <div class="stat"><div class="stat-icon">🌍</div><div class="stat-value" id="an30">—</div><div class="stat-label">Views · Last 30 Days</div></div>
+          <div class="stat"><div class="stat-icon">🧮</div><div class="stat-value" id="anAll">—</div><div class="stat-label">All-Time Views</div></div>
+          <div class="stat"><div class="stat-icon">✨</div><div class="stat-value" id="anNew">—</div><div class="stat-label">New Visitors · 30 Days</div></div>
+          <div class="stat"><div class="stat-icon">🔁</div><div class="stat-value" id="anReturning">—</div><div class="stat-label">Returning · 30 Days</div></div>
+          <div class="stat"><div class="stat-icon">🤖</div><div class="stat-value" id="anAi">—</div><div class="stat-label">AI Search Visits · 30 Days</div></div>
+        </div>
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-title">Last 14 days</div>
+          <div id="anChart" style="display:flex;align-items:flex-end;gap:6px;height:120px;"></div>
+          <div id="anChartLabels" style="display:flex;gap:6px;margin-top:6px;font-size:10px;color:var(--ink-4);"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
+          <div class="card">
+            <div class="card-title">Where today's visitors came from</div>
+            <div id="anReferrers"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Today's locations</div>
+            <div id="anLocations"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Today's most visited pages</div>
+            <div id="anPages"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Today's devices</div>
+            <div id="anDevices"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:20px;">
+          <div class="card-title">Blog post performance</div>
+          <div class="page-sub" style="margin-top:-4px;margin-bottom:12px;">Views for each blog article over the last 30 days.</div>
+          <div id="anBlogPerf"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+        </div>
+        <div class="card" style="margin-top:20px;">
+          <div class="card-title">Recent visitors — page by page</div>
+          <div class="page-sub" style="margin-top:-4px;margin-bottom:12px;">Each row is one visitor session, showing the exact pages they opened in order.</div>
+          <div id="anSessions"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
         </div>
       </div>
 
@@ -507,10 +601,10 @@
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Date & Time</th><th>Name</th><th>Phone</th><th>Service</th><th>Pref. Date</th><th>Pref. Time</th><th>Referral</th><th>Email</th></tr>
+                <tr><th>Date & Time</th><th>Name</th><th>Phone</th><th>Branch</th><th>Service</th><th>Pref. Date</th><th>Pref. Time</th><th>Referral</th><th>Email</th><th>Status</th><th class="appt-action-col">Action</th></tr>
               </thead>
               <tbody id="apptTable">
-                <tr><td colspan="8" style="text-align:center;color:var(--ink-4);padding:32px;">Loading…</td></tr>
+                <tr><td colspan="11" style="text-align:center;color:var(--ink-4);padding:32px;">Loading…</td></tr>
               </tbody>
             </table>
           </div>
@@ -537,16 +631,54 @@
               <div class="field full"><label>Title *</label><input id="blogTitle" required placeholder="e.g. 5 tips for a healthier smile" /></div>
               <div class="field"><label>Category tag</label><input id="blogTag" placeholder="e.g. Preventive Care" /></div>
               <div class="field"><label>Read time</label><input id="blogReadTime" placeholder="e.g. 4 min read" /></div>
+              <div class="field full"><label>URL slug</label><input id="blogSlug" placeholder="auto from title — e.g. braces-after-root-canal" />
+                <small style="color:var(--ink-4);font-size:11px;">The article's web address: celestialdental.org/<b>your-slug</b>. Leave empty to generate it from the title.</small>
+              </div>
               <div class="field full"><label>Short excerpt</label><textarea id="blogExcerpt" style="min-height:80px;" placeholder="One or two sentences shown in the blog card."></textarea></div>
-              <div class="field full"><label>Full body</label><textarea id="blogBody" placeholder="Write the full article here."></textarea></div>
-              <div class="field full"><label>Cover image URL</label><input id="blogImage" placeholder="https://… or /facility/reception-lounge.jpg" /></div>
+              <div class="field full"><label>Full body</label><textarea id="blogBody" placeholder="Write the full article here.
+
+Formatting you can use:
+## Big heading
+### Sub-heading
+1. Numbered point
+- Bullet point
+**bold text** and *italic text*"></textarea>
+                <div class="upload-row" style="margin-top:8px;">
+                  <input type="file" id="blogBodyPhotoFile" accept="image/*" hidden />
+                  <button type="button" class="btn btn-ghost btn-sm" id="blogBodyPhotoBtn">🖼 Insert photo into article</button>
+                  <span style="font-size:11px;color:var(--ink-4);align-self:center;">Uploads and places the photo where your cursor is</span>
+                </div>
+                <small style="color:var(--ink-4);font-size:11px;">Formatting: <b>## Heading</b> · <b>### Sub-heading</b> · <b>1. numbered point</b> · <b>- bullet</b> · <b>**bold**</b> · <b>*italic*</b> · photo: <b>![caption](image-url)</b></small>
+              </div>
+              <div class="field full"><label>Cover image</label>
+                <div class="upload-row">
+                  <input id="blogImage" placeholder="Paste a URL or upload an image →" />
+                  <input type="file" id="blogImageFile" accept="image/*" hidden />
+                  <button type="button" class="btn btn-ghost btn-sm" id="blogImageUploadBtn">⬆ Upload</button>
+                </div>
+                <div class="upload-thumb" id="blogImageThumb"><img alt="preview" /></div>
+              </div>
+              <div class="field full"><label>Video URL (optional)</label><input id="blogVideo" placeholder="YouTube, Vimeo, or .mp4 link — embedded in the article" /></div>
+              <div class="field full"><label>Photo gallery (up to 5)</label>
+                <div class="upload-row">
+                  <input type="file" id="blogGalleryFile" accept="image/*" hidden />
+                  <button type="button" class="btn btn-ghost btn-sm" id="blogGalleryUploadBtn">⬆ Add photo</button>
+                  <span id="blogGalleryCount" style="font-size:12px;color:var(--ink-4);align-self:center;"></span>
+                </div>
+                <div id="blogGalleryThumbs" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+                <input type="hidden" id="blogGallery" />
+              </div>
               <div class="field"><label>Date</label><input id="blogDate" placeholder="e.g. Jun 4, 2026" /></div>
+              <div class="field" id="blogBranchField"><label>Branch</label>
+                <select id="blogBranch"><option value="">All branches</option></select>
+              </div>
               <div class="field" id="blogStatusField"><label>Status</label>
                 <select id="blogStatus"><option value="published">Published</option><option value="draft">Draft</option><option value="archived">Archive</option></select>
               </div>
               <div class="actions full">
                 <button type="submit" class="btn btn-primary" id="blogSaveBtn">Save Post</button>
                 <button type="button" class="btn btn-ghost" id="blogClearBtn">Clear</button>
+                <button type="button" class="btn btn-danger" id="blogDeleteBtn" style="display:none;margin-left:auto;">Delete</button>
               </div>
               <p id="blogMsg" class="full" style="font-size:13px;color:var(--green);min-height:18px;"></p>
             </form>
@@ -556,15 +688,20 @@
             <div id="blogList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
           </div>
         </div>
+        <div class="card" style="margin-top:20px;" id="blogCommentsCard">
+          <div class="card-title">Reader comments</div>
+          <div class="page-sub" style="margin-top:-4px;margin-bottom:12px;">Comments left on your blog posts. Delete any spam or unwanted ones.</div>
+          <div id="blogCommentsList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+        </div>
       </div>
 
       <!-- ── SITE UPDATES ──────────────────── -->
       <div class="page" id="page-updates">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-          <div class="page-title">Site Updates</div>
+          <div class="page-title">News &amp; Updates</div>
           <button class="btn btn-ghost btn-sm" id="newUpdateBtn">+ New Update</button>
         </div>
-        <div class="page-sub">Announcements, offers, and clinic news shown on the website.</div>
+        <div class="page-sub">News, announcements, and offers shown in the "Latest from Celestial Dental Centre" section on the homepage. Publish here and it appears on the site immediately.</div>
         <div class="draft-notice" id="updateDraftNotice" style="margin-bottom:16px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           Your updates are saved as <strong style="margin:0 3px;">Drafts</strong> for an admin to review and publish.
@@ -576,7 +713,14 @@
               <input type="hidden" id="updateId" />
               <div class="field full"><label>Title *</label><input id="updateTitle" required placeholder="e.g. Free braces consultation week" /></div>
               <div class="field full"><label>Body</label><textarea id="updateBody" placeholder="Write the announcement or update text."></textarea></div>
-              <div class="field full"><label>Image URL (optional)</label><input id="updateImage" placeholder="https://…" /></div>
+              <div class="field full"><label>Image (optional)</label>
+                <div class="upload-row">
+                  <input id="updateImage" placeholder="Paste a URL or upload an image →" />
+                  <input type="file" id="updateImageFile" accept="image/*" hidden />
+                  <button type="button" class="btn btn-ghost btn-sm" id="updateImageUploadBtn">⬆ Upload</button>
+                </div>
+                <div class="upload-thumb" id="updateImageThumb"><img alt="preview" /></div>
+              </div>
               <div class="field"><label>Button text (optional)</label><input id="updateCtaLabel" placeholder="Book now" /></div>
               <div class="field"><label>Button link (optional)</label><input id="updateCtaUrl" placeholder="/#booking" /></div>
               <div class="field" id="updateStatusField"><label>Status</label>
@@ -585,6 +729,7 @@
               <div class="actions full">
                 <button type="submit" class="btn btn-primary" id="updateSaveBtn">Save Update</button>
                 <button type="button" class="btn btn-ghost" id="updateClearBtn">Clear</button>
+                <button type="button" class="btn btn-danger" id="updateDeleteBtn" style="display:none;margin-left:auto;">Delete</button>
               </div>
               <p id="updateMsg" class="full" style="font-size:13px;color:var(--green);min-height:18px;"></p>
             </form>
@@ -596,7 +741,192 @@
         </div>
       </div>
 
+      <!-- ── CAREERS ───────────────────────── -->
+      <div class="page" id="page-careers">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="page-title">Careers</div>
+          <button class="btn btn-ghost btn-sm" id="newJobBtn">+ New Opening</button>
+        </div>
+        <div class="page-sub">Job openings shown on the website's Careers page.</div>
+        <div class="draft-notice" id="careersDraftNotice" style="margin-bottom:16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Your openings are saved as <strong style="margin:0 3px;">Drafts</strong> for an admin to review and publish.
+        </div>
+        <div class="split">
+          <div class="card">
+            <div class="card-title" id="jobFormTitle">New Opening</div>
+            <form id="jobForm" class="form-grid">
+              <input type="hidden" id="jobId" />
+              <div class="field full"><label>Role title *</label><input id="jobTitle" required placeholder="e.g. Dental Officer / Dentist" /></div>
+              <div class="field"><label>Type</label><input id="jobType" placeholder="e.g. Full-time" /></div>
+              <div class="field"><label>Location</label><input id="jobLocation" placeholder="e.g. Kasarani · Kamakis" /></div>
+              <div class="field full"><label>Description</label><textarea id="jobDescription" placeholder="What the role involves and any requirements."></textarea></div>
+              <div class="field full"><label>Image (optional)</label>
+                <div class="upload-row">
+                  <input id="jobImage" placeholder="Paste a URL or upload an image →" />
+                  <input type="file" id="jobImageFile" accept="image/*" hidden />
+                  <button type="button" class="btn btn-ghost btn-sm" id="jobImageUploadBtn">⬆ Upload</button>
+                </div>
+                <div class="upload-thumb" id="jobImageThumb"><img alt="preview" /></div>
+              </div>
+              <div class="field" id="jobStatusField"><label>Status</label>
+                <select id="jobStatus"><option value="published">Published</option><option value="draft">Draft</option><option value="archived">Archive</option></select>
+              </div>
+              <div class="actions full">
+                <button type="submit" class="btn btn-primary" id="jobSaveBtn">Save Opening</button>
+                <button type="button" class="btn btn-ghost" id="jobClearBtn">Clear</button>
+                <button type="button" class="btn btn-danger" id="jobDeleteBtn" style="display:none;margin-left:auto;">Delete</button>
+              </div>
+              <p id="jobMsg" class="full" style="font-size:13px;color:var(--green);min-height:18px;"></p>
+            </form>
+          </div>
+          <div>
+            <div class="card-title">All Openings</div>
+            <div id="jobList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BRANCHES ──────────────────────── -->
+      <div class="page" id="page-branches">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="page-title">Branches</div>
+          <button class="btn btn-ghost btn-sm" id="newBranchBtn">+ New Branch</button>
+        </div>
+        <div class="page-sub">Clinic locations shown across the website — homepage, branch pages, nav menu, and the booking form's branch picker.</div>
+        <div class="split">
+          <div class="card">
+            <div class="card-title" id="branchFormTitle">New Branch</div>
+            <form id="branchForm" class="form-grid">
+              <input type="hidden" id="branchId" />
+              <div class="field"><label>Branch name *</label><input id="branchName" required placeholder="e.g. Westlands" /></div>
+              <div class="field"><label>URL slug</label><input id="branchSlug" placeholder="auto from name — e.g. westlands" /></div>
+              <div class="field"><label>Phone</label><input id="branchPhone" placeholder="+254 7XX XXX XXX" /></div>
+              <div class="field"><label>Region (for SEO)</label><input id="branchRegion" placeholder="e.g. Nairobi" /></div>
+              <div class="field full"><label>Badge / label</label><input id="branchBadge" placeholder="auto — e.g. Westlands Branch" /></div>
+              <div class="field full"><label>Tagline</label><input id="branchTagline" placeholder="Short one-liner shown on the branch page" /></div>
+              <div class="field full"><label>Address (one line each)</label><textarea id="branchAddress" style="min-height:80px;" placeholder="Building / floor&#10;Street / road&#10;Area, County"></textarea></div>
+              <div class="field full"><label>Description</label><textarea id="branchDescription" placeholder="Paragraph describing the branch."></textarea></div>
+              <div class="field"><label>Landmark</label><input id="branchLandmark" placeholder="e.g. Next to the Sarit Centre" /></div>
+              <div class="field"><label>Parking</label><input id="branchParking" placeholder="e.g. Ample on-site parking" /></div>
+              <div class="field"><label>Opening hours</label><input id="branchHours" placeholder="Monday – Sunday · 07:00 – 20:00" /></div>
+              <div class="field full"><label>Branch image (main card photo)</label>
+                <div class="upload-row">
+                  <input id="branchImage" placeholder="Paste a URL or upload an image →" />
+                  <input type="file" id="branchImageFile" accept="image/*" hidden />
+                  <button type="button" class="btn btn-ghost btn-sm" id="branchImageUploadBtn">⬆ Upload</button>
+                </div>
+                <div class="upload-thumb" id="branchImageThumb"><img alt="preview" /></div>
+              </div>
+              <div class="field full"><label>Branch page photos — up to 5 photos</label>
+                <textarea id="branchPhotos" style="min-height:70px;" placeholder="One photo URL per line — or click Upload photos to add several at once"></textarea>
+                <div style="display:flex;gap:10px;align-items:center;margin-top:8px;">
+                  <input type="file" id="branchPhotosFile" accept="image/*" multiple hidden />
+                  <button type="button" class="btn btn-ghost btn-sm" id="branchPhotosUploadBtn">⬆ Upload photos</button>
+                  <span style="font-size:12px;color:var(--ink-3);" id="branchPhotosCount"></span>
+                </div>
+                <div id="branchPhotosThumbs" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;"></div>
+              </div>
+              <div class="field"><label>WhatsApp link</label><input id="branchWhatsapp" placeholder="auto from phone" /></div>
+              <div class="field"><label>Google Maps URL</label><input id="branchMap" type="url" placeholder="Paste the branch's Google Maps share link" /></div>
+              <div class="field"><label>Latitude</label><input id="branchLat" placeholder="e.g. -1.2197" /></div>
+              <div class="field"><label>Longitude</label><input id="branchLng" placeholder="e.g. 36.8979" /></div>
+              <div class="field full"><label>Status</label>
+                <select id="branchStatus"><option value="published">Published</option><option value="draft">Draft (hidden)</option><option value="archived">Archive (remove)</option></select>
+              </div>
+              <div class="actions full">
+                <button type="submit" class="btn btn-primary" id="branchSaveBtn">Save Branch</button>
+                <button type="button" class="btn btn-ghost" id="branchClearBtn">Clear</button>
+              </div>
+              <p id="branchMsg" class="full" style="font-size:13px;color:var(--green);min-height:18px;"></p>
+            </form>
+          </div>
+          <div>
+            <div class="card-title">All Branches</div>
+            <div id="branchList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FAQS ──────────────────────────── -->
+      <div class="page" id="page-faqs">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="page-title">FAQs</div>
+          <button class="btn btn-ghost btn-sm" id="newFaqBtn">+ New FAQ</button>
+        </div>
+        <div class="page-sub">Questions and answers shown in the website's FAQ section (and used for SEO rich results).</div>
+        <div class="split">
+          <div class="card">
+            <div class="card-title" id="faqFormTitle">New FAQ</div>
+            <form id="faqForm" class="form-grid">
+              <input type="hidden" id="faqId" />
+              <div class="field full"><label>Question *</label><input id="faqQuestion" required placeholder="e.g. Do you accept M-Pesa?" /></div>
+              <div class="field full"><label>Answer</label><textarea id="faqAnswer" placeholder="Write the answer shown when the question is expanded."></textarea></div>
+              <div class="field full"><label>Status</label>
+                <select id="faqStatus"><option value="published">Published</option><option value="draft">Draft (hidden)</option><option value="archived">Archive (remove)</option></select>
+              </div>
+              <div class="actions full">
+                <button type="submit" class="btn btn-primary" id="faqSaveBtn">Save FAQ</button>
+                <button type="button" class="btn btn-ghost" id="faqClearBtn">Clear</button>
+              </div>
+              <p id="faqMsg" class="full" style="font-size:13px;color:var(--green);min-height:18px;"></p>
+            </form>
+          </div>
+          <div>
+            <div class="card-title">All FAQs</div>
+            <div id="faqList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── WEBSITE PAGES ─────────────────── -->
+      <div class="page" id="page-website">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:10px;">
+          <div class="page-title">Website Pages</div>
+          <button class="btn btn-ghost btn-sm" id="newWebItemBtn">+ New Item</button>
+        </div>
+        <div class="page-sub">Edit every section of the public website — hero, services, gallery, testimonials, insurance partners, and more. Changes go live immediately.</div>
+
+        <div class="field" style="max-width:340px;margin-bottom:20px;">
+          <label>Website section</label>
+          <select id="webSection"></select>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <div class="card-title" id="webFormTitle">Edit Item</div>
+            <form id="webForm" class="form-grid">
+              <input type="hidden" id="webItemId" />
+              <div class="full" id="webFields"><!-- dynamic fields --></div>
+              <div class="field full"><label>Status</label>
+                <select id="webStatus"><option value="published">Published</option><option value="draft">Hidden (draft)</option><option value="archived">Delete (archive)</option></select>
+              </div>
+              <div class="actions full">
+                <button type="submit" class="btn btn-primary" id="webSaveBtn">Save</button>
+                <button type="button" class="btn btn-ghost" id="webClearBtn">Clear</button>
+                <button type="button" class="btn btn-danger" id="webDeleteBtn" style="display:none;margin-left:auto;">Delete item</button>
+              </div>
+              <p id="webMsg" class="full" style="font-size:13px;color:var(--green);min-height:18px;"></p>
+            </form>
+          </div>
+          <div>
+            <div class="card-title" id="webListTitle">Items</div>
+            <div id="webList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── USERS (Super Admin only) ──────── -->
+      <!-- ── RECENTLY DELETED ──────────────── -->
+      <div class="page" id="page-trash">
+        <div class="page-title">Recently Deleted</div>
+        <div class="page-sub">Blog posts, news, careers, branches, FAQs, staff and website items you've deleted. Click <strong>Restore</strong> to bring any of them back — nothing is permanently lost.</div>
+        <div class="card" style="margin-top:16px;">
+          <div class="card-title">Deleted items</div>
+          <div id="trashList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+        </div>
+      </div>
+
       <div class="page" id="page-users">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
           <div class="page-title">Users &amp; Access</div>
@@ -606,17 +936,21 @@
 
         <!-- Create user form (hidden by default) -->
         <div id="createUserPanel" class="card" style="margin-bottom:24px;">
-          <div class="card-title">Create New User</div>
+          <div class="card-title">Invite New User</div>
           <div class="form-grid">
             <div class="field"><label>Full Name *</label><input id="cuName" placeholder="Jane Doe" /></div>
             <div class="field"><label>Email *</label><input id="cuEmail" type="email" placeholder="jane@example.com" /></div>
-            <div class="field"><label>Password *</label><input id="cuPassword" type="password" placeholder="Min. 6 characters" /></div>
             <div class="field"><label>Role *</label>
-              <select id="cuRole"><option value="admin">Admin</option><option value="content_creator">Content Creator</option></select>
+              <select id="cuRole"><option value="branch_blog_editor">Branch Blog Editor</option><option value="website_content_editor">Website Content Editor</option><option value="appointments_manager">Appointments Manager</option><option value="super_admin">Super Admin (full access)</option></select>
+            </div>
+            <div class="field full" id="cuBranchesField">
+              <label>Assigned branches</label>
+              <div id="cuBranches" style="display:flex;flex-wrap:wrap;gap:14px;padding-top:4px;"></div>
+              <p style="font-size:12px;color:var(--ink-4);margin:6px 0 0;">The branches this editor can publish blog posts for. Leave all unticked to allow every branch.</p>
             </div>
           </div>
           <div class="actions">
-            <button class="btn btn-primary btn-sm" id="cuSaveBtn">Create User</button>
+            <button class="btn btn-primary btn-sm" id="cuSaveBtn">Create Invitation</button>
             <button class="btn btn-ghost btn-sm" id="cuCancelBtn">Cancel</button>
           </div>
           <p id="cuMsg" style="font-size:13px;margin-top:10px;min-height:18px;"></p>
@@ -658,17 +992,28 @@
 // ════════════════════════════════════════════════════
 const S = {
   email:    localStorage.getItem('cda_email') || '',
-  password: sessionStorage.getItem('cda_pw')  || '',
   name:     localStorage.getItem('cda_name')  || '',
   role:     localStorage.getItem('cda_role')  || null,
-  appointments: [], posts: [], updates: [], users: [],
+  myBranches: [],   // branch slugs this user (Branch Blog Editor) may publish to
+  otpChallenge: '',
+  otpMode: '',
+  appointments: [], posts: [], updates: [], openings: [], branches: [], faqs: [], users: [],
 };
+
+const ALL_BRANCHES = [
+  { slug: 'kasarani', label: 'Kasarani' },
+  { slug: 'kamakis', label: 'Kamakis' },
+  { slug: 'eldoret', label: 'Eldoret' },
+];
 localStorage.removeItem('cda_pw');
 
 const ROLE_META = {
   super_admin:     { label: 'Super Admin',    badgeClass: 'role-super-admin',     desc: 'Full access including user management' },
-  admin:           { label: 'Admin',          badgeClass: 'role-admin',           desc: 'Full access to content & appointments' },
-  content_creator: { label: 'Content Creator', badgeClass: 'role-content-creator', desc: 'Create drafts for review & publishing' },
+  branch_blog_editor: { label: 'Branch Blog Editor', badgeClass: 'role-content-creator', desc: 'Create and publish blog posts only' },
+  website_content_editor: { label: 'Website Content Editor', badgeClass: 'role-admin', desc: 'Update website content, excluding staff' },
+  appointments_manager: { label: 'Appointments Manager', badgeClass: 'role-admin', desc: 'View and confirm appointments' },
+  admin:           { label: 'Admin (Legacy)', badgeClass: 'role-admin', desc: 'Legacy administrator account' },
+  content_creator: { label: 'Content Creator (Legacy)', badgeClass: 'role-content-creator', desc: 'Legacy draft content account' },
 };
 
 // ════════════════════════════════════════════════════
@@ -702,8 +1047,6 @@ async function api(path, options = {}) {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      'x-admin-password': S.password,
-      'x-admin-email':    S.email,
       ...(options.headers || {}),
     },
   });
@@ -714,6 +1057,159 @@ async function api(path, options = {}) {
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+// ── Image upload (Vercel Blob via /api/upload) ──────────────────
+// Vercel rejects request bodies over ~4.5 MB, so big photos must be
+// shrunk in the browser before they are sent.
+const UPLOAD_LIMIT = 4 * 1024 * 1024;   // stay safely under Vercel's 4.5 MB cap
+const TARGET_SIZE = 3.5 * 1024 * 1024;  // aim below the limit after compression
+
+// createImageBitmap rejects some formats (e.g. HEIC on Safari, very large
+// photos) that an <img> element can still decode — try both.
+function decodeImage(file) {
+  return createImageBitmap(file).catch(() => new Promise(resolve => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  }));
+}
+
+async function compressImage(file) {
+  if (!/^image\/(jpeg|png|webp|avif|heic|heif)$/i.test(file.type)) return file; // keep svg/gif as-is
+  if (file.size < 900 * 1024) return file;
+  const source = await decodeImage(file);
+  if (!source) return file;
+  const w = source.naturalWidth || source.width;
+  const h = source.naturalHeight || source.height;
+  if (!w || !h) return file;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  // Try progressively harder until the result fits comfortably.
+  let best = null;
+  for (const [max, quality] of [[1600, 0.85], [1600, 0.7], [1200, 0.65], [1000, 0.55]]) {
+    const scale = Math.min(1, max / Math.max(w, h));
+    canvas.width = Math.round(w * scale);
+    canvas.height = Math.round(h * scale);
+    ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+    best = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+    if (best && best.size <= TARGET_SIZE) break;
+  }
+  if (!best) return file;
+  if (best.size >= file.size && file.size <= TARGET_SIZE) return file;
+  return new File([best], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
+}
+
+async function uploadImage(file) {
+  file = await compressImage(file);
+  if (/^image\/(heic|heif)$/i.test(file.type)) {
+    throw new Error('This browser cannot read HEIC photos — set your phone camera to "Most compatible", or upload a JPG/PNG copy');
+  }
+  if (file.size > UPLOAD_LIMIT) {
+    throw new Error('Image is still over 4 MB after compression — please use a smaller photo');
+  }
+  const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': file.type,
+      'x-filename': file.name,
+    },
+    body: file,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 413) throw new Error('Image is too large — please use one under 4 MB');
+    throw new Error(data.error || 'Upload failed');
+  }
+  return data.url;
+}
+
+function wireUpload(btnId, fileId, urlInputId, thumbId) {
+  const btn = el(btnId), fileInput = el(fileId), urlInput = el(urlInputId), thumb = el(thumbId);
+  if (!btn || !fileInput) return;
+  const showThumb = url => {
+    if (!thumb) return;
+    if (url) { thumb.querySelector('img').src = url; thumb.style.display = 'block'; }
+    else { thumb.style.display = 'none'; }
+  };
+  btn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>'; btn.disabled = true;
+    try {
+      const url = await uploadImage(file);
+      urlInput.value = url;
+      showThumb(url);
+      toast('Image uploaded');
+    } catch (e) {
+      toast(e.message || 'Upload failed', 'error');
+    } finally {
+      btn.innerHTML = original; btn.disabled = false; fileInput.value = '';
+    }
+  });
+}
+
+wireUpload('blogImageUploadBtn', 'blogImageFile', 'blogImage', 'blogImageThumb');
+wireUpload('branchImageUploadBtn', 'branchImageFile', 'branchImage', 'branchImageThumb');
+wireUpload('updateImageUploadBtn', 'updateImageFile', 'updateImage', 'updateImageThumb');
+wireUpload('jobImageUploadBtn', 'jobImageFile', 'jobImage', 'jobImageThumb');
+
+// Blog body: upload a photo and insert it into the article at the cursor
+(function () {
+  const btn = el('blogBodyPhotoBtn'), fileInput = el('blogBodyPhotoFile');
+  if (!btn || !fileInput) return;
+  btn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>'; btn.disabled = true;
+    try {
+      const url = await uploadImage(file);
+      const body = el('blogBody');
+      const pos = body.selectionStart ?? body.value.length;
+      const before = body.value.slice(0, pos);
+      const after = body.value.slice(pos);
+      const snippet = `${before && !before.endsWith('\n') ? '\n' : ''}![](${url})\n`;
+      body.value = before + snippet + after;
+      const cursor = (before + snippet).length;
+      body.focus();
+      body.setSelectionRange(cursor, cursor);
+      toast('Photo inserted — add a caption between the [ ] if you like');
+    } catch (e) {
+      toast(e.message || 'Upload failed', 'error');
+    } finally {
+      btn.innerHTML = original; btn.disabled = false; fileInput.value = '';
+    }
+  });
+})();
+
+// Blog gallery: upload appends to the array (up to 5) instead of replacing one field
+(function () {
+  const btn = el('blogGalleryUploadBtn'), fileInput = el('blogGalleryFile');
+  if (!btn || !fileInput) return;
+  btn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    if (blogGalleryUrls.length >= 5) { toast('Maximum 5 photos', 'error'); return; }
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>'; btn.disabled = true;
+    try {
+      const url = await uploadImage(file);
+      blogGalleryUrls.push(url);
+      renderBlogGallery();
+      toast('Photo added');
+    } catch (e) {
+      toast(e.message || 'Upload failed', 'error');
+    } finally {
+      btn.innerHTML = original; btn.disabled = false; fileInput.value = '';
+    }
+  });
+})();
 
 function statusBadge(status) {
   const map = { published: 'badge-green', draft: 'badge-yellow', archived: 'badge-gray' };
@@ -739,6 +1235,7 @@ function initials(name) {
 // ════════════════════════════════════════════════════
 function applyRoleRestrictions(role) {
   const meta = ROLE_META[role] || {};
+  populateWebSections(role);
 
   // Topbar
   const badge = el('roleBadge');
@@ -754,22 +1251,53 @@ function applyRoleRestrictions(role) {
   // Super admin extras
   if (role === 'super_admin') {
     el('usersNavItem').style.display = '';
+    el('staffNavItem').style.display = '';
+    el('trashNavItem').style.display = '';
+  }
+
+  if (role === 'branch_blog_editor') {
+    ['dashboardNavItem','apptNavItem','analyticsNavItem','updatesNavItem','careersNavItem','branchesNavItem','websiteNavItem','faqsNavItem','usersNavItem']
+      .forEach(id => el(id).style.display = 'none');
+    document.querySelectorAll('.appt-only').forEach(n => n.style.display = 'none');
+    el('dashGrid').style.gridTemplateColumns = '1fr';
+  }
+
+  if (role === 'website_content_editor') {
+    ['dashboardNavItem','apptNavItem','analyticsNavItem','blogNavItem','updatesNavItem','careersNavItem','branchesNavItem','usersNavItem']
+      .forEach(id => el(id).style.display = 'none');
+    document.querySelectorAll('.appt-only').forEach(n => n.style.display = 'none');
+    el('dashGrid').style.gridTemplateColumns = '1fr';
+  }
+
+  // Appointments manager: the Appointments page only, where they can view and
+  // confirm bookings. Deleting is hidden (admin-only, also enforced server-side).
+  if (role === 'appointments_manager') {
+    ['dashboardNavItem','analyticsNavItem','blogNavItem','updatesNavItem','careersNavItem','branchesNavItem','websiteNavItem','faqsNavItem','usersNavItem','staffNavItem','trashNavItem']
+      .forEach(id => { const n = el(id); if (n) n.style.display = 'none'; });
+    el('apptNavItem').style.display = '';
+    document.body.classList.add('role-appointments-manager');
+    navigate('appointments');
   }
 
   // Content creator restrictions
   if (role === 'content_creator') {
     el('apptNavItem').style.display = 'none';
+    el('analyticsNavItem').style.display = 'none';
+    el('branchesNavItem').style.display = 'none';
+    el('websiteNavItem').style.display = 'none';
+    el('faqsNavItem').style.display = 'none';
     document.querySelectorAll('.appt-only').forEach(n => n.style.display = 'none');
     el('dashGrid').style.gridTemplateColumns = '1fr';
 
     // Lock status dropdowns to draft only
-    ['blogStatus', 'updateStatus'].forEach(id => {
+    ['blogStatus', 'updateStatus', 'jobStatus'].forEach(id => {
       el(id).innerHTML = '<option value="draft">Draft (awaiting review)</option>';
     });
 
     // Show draft notices
     el('blogDraftNotice').style.display = 'flex';
     el('updateDraftNotice').style.display = 'flex';
+    el('careersDraftNotice').style.display = 'flex';
   }
 }
 
@@ -777,13 +1305,28 @@ function applyRoleRestrictions(role) {
 //  Navigation
 // ════════════════════════════════════════════════════
 function navigate(page) {
+  // "Staff" is a shortcut into the Website Pages editor, pre-set to the team section
+  if (page === 'staff') {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.page === 'staff'));
+    document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-website'));
+    el('webSection').value = 'team';
+    el('webSection').dispatchEvent(new Event('change'));
+    loadWebsite();
+    return;
+  }
   document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.page === page));
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
   if (page === 'dashboard')    loadDashboard();
+  if (page === 'analytics')    loadAnalytics();
   if (page === 'appointments') loadAppointments();
   if (page === 'blog')         loadBlog();
   if (page === 'updates')      loadUpdates();
+  if (page === 'careers')      loadCareers();
+  if (page === 'branches')     loadBranches();
+  if (page === 'faqs')         loadFaqs();
+  if (page === 'website')      loadWebsite();
   if (page === 'users')        loadUsers();
+  if (page === 'trash')        loadTrash();
 }
 
 document.querySelectorAll('.nav-item').forEach(b => {
@@ -797,17 +1340,12 @@ function showView(id) {
   document.querySelectorAll('.auth-view').forEach(v => v.classList.toggle('active', v.id === id));
 }
 
-el('showRegisterBtn').addEventListener('click', () => showView('registerView'));
-el('showLoginBtn').addEventListener('click',    () => showView('loginView'));
 el('backToLoginBtn').addEventListener('click',  () => showView('loginView'));
-
-// Role card selection
-document.querySelectorAll('.role-card').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
-    el('regRole').value = card.dataset.role;
-  });
+el('otpBackBtn').addEventListener('click', () => {
+  S.otpChallenge = '';
+  S.otpMode = '';
+  el('otpCode').value = '';
+  showView('loginView');
 });
 
 // ── Sign In ───────────────────────────────────────
@@ -849,15 +1387,23 @@ async function login() {
       return;
     }
 
+    if (data.otpRequired) {
+      S.otpChallenge = data.challengeId;
+      S.otpMode = 'login';
+      el('otpMessage').textContent = `Enter the six-digit code sent to ${data.email}.`;
+      el('otpCode').value = '';
+      showView('otpView');
+      return;
+    }
+
     // Success
     S.email    = email;
-    S.password = pw;
     S.role     = data.role;
     S.name     = data.name || '';
     localStorage.setItem('cda_email', email);
-    sessionStorage.setItem('cda_pw',  pw);
     localStorage.setItem('cda_role',  data.role);
     localStorage.setItem('cda_name',  data.name || '');
+    el('loginPassword').value = '';
 
     bootApp(data.role);
   } catch {
@@ -871,98 +1417,163 @@ async function login() {
 
 el('loginBtn').addEventListener('click', login);
 el('loginPassword').addEventListener('keydown', e => e.key === 'Enter' && login());
-
-// ── Register / Request Access ────────────────────
-async function register() {
-  const name     = el('regName').value.trim();
-  const email    = el('regEmail').value.trim();
-  const role     = el('regRole').value;
-  const password = el('regPassword').value.trim();
-  const confirm  = el('regConfirm').value.trim();
-
-  const errEl = el('registerError');
-  errEl.style.display = 'none';
-
-  if (!name || !email || !password || !confirm) {
-    errEl.textContent = 'Please fill in all fields.';
-    errEl.style.display = 'block'; return;
-  }
-  if (password.length < 6) {
-    errEl.textContent = 'Password must be at least 6 characters.';
-    errEl.style.display = 'block'; return;
-  }
-  if (password !== confirm) {
-    errEl.textContent = 'Passwords do not match.';
-    errEl.style.display = 'block'; return;
-  }
-
-  const btn = el('registerBtn');
-  btn.innerHTML = '<span class="spinner"></span> Submitting…';
-  btn.disabled = true;
-
+el('forgotPasswordBtn').addEventListener('click', () => {
+  el('forgotEmail').value = el('loginEmail').value.trim();
+  el('forgotMessage').style.display = 'none';
+  showView('forgotPasswordView');
+});
+el('forgotBackBtn').addEventListener('click', () => showView('loginView'));
+el('sendResetBtn').addEventListener('click', async () => {
+  const email = el('forgotEmail').value.trim();
+  const message = el('forgotMessage');
+  if (!email) return;
+  const btn = el('sendResetBtn'); btn.disabled = true; btn.textContent = 'Sending…';
   try {
-    const res = await fetch('/api/users', {
+    const response = await fetch('/api/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'forgot-password', email }) });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Could not send reset email');
+    message.style.color = 'var(--green)';
+    message.textContent = 'If an active account exists for this email, a reset link has been sent. Please also check your spam folder.';
+  } catch (e) {
+    message.style.color = 'var(--red)'; message.textContent = e.message || 'Could not send reset email.';
+  } finally { message.style.display = 'block'; btn.disabled = false; btn.textContent = 'Send Reset Link'; }
+});
+
+async function verifyOtp() {
+  const otp = el('otpCode').value.trim();
+  if (!/^\d{6}$/.test(otp) || !S.otpChallenge) return;
+  const btn = el('verifyOtpBtn');
+  btn.innerHTML = '<span class="spinner"></span> Verifying…';
+  btn.disabled = true;
+  el('otpError').style.display = 'none';
+  try {
+    const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'register', name, email, password, requestedRole: role }),
+      body: JSON.stringify({ action: 'verify-login', challengeId: S.otpChallenge, otp }),
     });
     const data = await res.json();
     if (!res.ok) {
-      errEl.textContent = data.error || 'Something went wrong.';
-      errEl.style.display = 'block'; return;
+      el('otpError').textContent = data.message || data.error || 'The code is invalid or expired.';
+      el('otpError').style.display = 'block';
+      return;
     }
-    el('statusIcon').textContent = '✅';
-    el('statusTitle').textContent = 'Request Submitted!';
-    el('statusMessage').textContent = 'Your access request has been submitted. A Super Admin will review it and activate your account. You\'ll be able to sign in once approved.';
-    showView('statusView');
+    S.role = data.role;
+    S.name = data.name || '';
+    localStorage.setItem('cda_role', data.role);
+    localStorage.setItem('cda_name', data.name || '');
+    bootApp(data.role);
   } catch {
-    errEl.textContent = 'Could not connect. Please try again.';
-    errEl.style.display = 'block';
+    el('otpError').textContent = 'Could not verify the code. Please try again.';
+    el('otpError').style.display = 'block';
   } finally {
-    btn.innerHTML = 'Submit Request';
+    btn.innerHTML = 'Verify Code';
     btn.disabled = false;
   }
 }
 
-el('registerBtn').addEventListener('click', register);
+el('verifyOtpBtn').addEventListener('click', verifyOtp);
+el('otpCode').addEventListener('keydown', e => e.key === 'Enter' && verifyOtp());
+
+// ── Resend OTP ───────────────────────────────────
+async function resendOtp() {
+  const email = el('loginEmail').value.trim();
+  const pw    = el('loginPassword').value.trim();
+  const btn   = el('resendOtpBtn');
+  if (!email || !pw) {
+    el('otpError').textContent = 'Your session expired. Please start again and re-enter your password.';
+    el('otpError').style.display = 'block';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  el('otpError').style.display = 'none';
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw }),
+    });
+    const data = await res.json();
+    if (res.ok && data.otpRequired) {
+      S.otpChallenge = data.challengeId;
+      el('otpMessage').textContent = `A new code was sent to ${data.email}.`;
+      el('otpCode').value = '';
+      let left = 30;
+      btn.textContent = `Code sent (${left})`;
+      const timer = setInterval(() => {
+        left -= 1;
+        if (left <= 0) {
+          clearInterval(timer);
+          btn.textContent = 'Resend code';
+          btn.disabled = false;
+        } else {
+          btn.textContent = `Code sent (${left})`;
+        }
+      }, 1000);
+      return;
+    }
+    el('otpError').textContent = data.message || data.error || 'Could not resend the code. Please try again later.';
+    el('otpError').style.display = 'block';
+    btn.textContent = 'Resend code';
+    btn.disabled = false;
+  } catch {
+    el('otpError').textContent = 'Could not resend the code. Please try again.';
+    el('otpError').style.display = 'block';
+    btn.textContent = 'Resend code';
+    btn.disabled = false;
+  }
+}
+el('resendOtpBtn').addEventListener('click', resendOtp);
 
 // ── Sign Out ─────────────────────────────────────
-el('logoutBtn').addEventListener('click', () => {
+el('logoutBtn').addEventListener('click', async () => {
+  await fetch('/api/auth', { method: 'DELETE' }).catch(() => {});
   ['cda_email','cda_pw','cda_role','cda_name'].forEach(k => localStorage.removeItem(k));
   sessionStorage.removeItem('cda_pw');
   location.reload();
 });
 
 // ── Boot the app (shared by login + auto-login) ──
-function bootApp(role) {
+async function bootApp(role) {
   el('loginScreen').style.display = 'none';
   el('app').classList.add('visible');
   applyRoleRestrictions(role);
+  if (role === 'branch_blog_editor') {
+    if (!S.myBranches.length) {
+      try { const d = await (await fetch('/api/auth')).json(); S.myBranches = d.branches || []; } catch {}
+    }
+    navigate('blog');
+    return;
+  }
+  if (role === 'website_content_editor') {
+    navigate('website');
+    return;
+  }
+  if (role === 'appointments_manager') {
+    navigate('appointments');
+    return;
+  }
   loadDashboard();
 }
 
-// ── Auto-login from localStorage ─────────────────
-if (S.email && S.password) {
-  (async () => {
-    try {
-      const res = await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: S.email, password: S.password }),
-      });
-      if (!res.ok) throw new Error('stale');
-      const data = await res.json();
-      S.role = data.role;
-      S.name = data.name || '';
-      localStorage.setItem('cda_role', data.role);
-      localStorage.setItem('cda_name', data.name || '');
-      bootApp(data.role);
-    } catch {
-      ['cda_email','cda_pw','cda_role','cda_name'].forEach(k => localStorage.removeItem(k));
-      sessionStorage.removeItem('cda_pw');
-    }
-  })();
-}
+// ── Restore the secure server session ─────────────
+(async () => {
+  try {
+    const res = await fetch('/api/auth');
+    if (!res.ok) throw new Error('stale');
+    const data = await res.json();
+    S.role = data.role;
+    S.name = data.name || '';
+    S.myBranches = data.branches || [];
+    localStorage.setItem('cda_role', data.role);
+    localStorage.setItem('cda_name', data.name || '');
+    bootApp(data.role);
+  } catch {
+    ['cda_email','cda_pw','cda_role','cda_name'].forEach(k => localStorage.removeItem(k));
+    sessionStorage.removeItem('cda_pw');
+  }
+})();
 
 // ════════════════════════════════════════════════════
 //  Dashboard
@@ -974,22 +1585,25 @@ async function loadDashboard() {
   const isCC = S.role === 'content_creator';
 
   try {
-    const [apptData, blogData, updData] = await Promise.all([
+    const [apptData, blogData, updData, careersData] = await Promise.all([
       isCC ? Promise.resolve({ appointments: [] }) : api('/api/appointments'),
       api('/api/blog'),
       api('/api/content'),
+      api('/api/careers'),
     ]);
     S.appointments = apptData.appointments || [];
     S.posts        = blogData.posts || [];
     S.updates      = updData.items || [];
+    S.openings     = careersData.openings || [];
 
     if (!isCC) {
       const today = now.toISOString().split('T')[0];
       el('statAppts').textContent = S.appointments.length;
       el('statToday').textContent = S.appointments.filter(a => a.timestamp?.startsWith(today)).length;
     }
-    el('statPosts').textContent   = S.posts.filter(p => p.status === 'published').length;
-    el('statUpdates').textContent = S.updates.filter(u => u.status === 'published').length;
+    el('statPosts').textContent    = S.posts.filter(p => p.status === 'published').length;
+    el('statUpdates').textContent  = S.updates.filter(u => u.status === 'published').length;
+    el('statOpenings').textContent = S.openings.filter(o => o.status === 'published').length;
 
     // Recent appointments
     if (!isCC) {
@@ -1037,25 +1651,101 @@ function renderAppointments(list) {
           <td style="white-space:nowrap;color:var(--ink-3);font-size:12px;">${fmt(a.timestamp)}</td>
           <td style="font-weight:600;">${esc(a.name)}</td>
           <td>${esc(a.phone)}</td>
+          <td>${esc(a.branch)}</td>
           <td>${esc(a.service)}</td>
           <td>${esc(a.date)}</td>
           <td>${esc(a.time)}</td>
           <td>${esc(a.referral)}</td>
           <td style="color:var(--ink-3);">${esc(a.email)}</td>
+          <td>${a.status === 'confirmed'
+              ? '<span class="badge badge-green">confirmed</span>'
+              : a.status === 'cancelled'
+                ? '<span class="badge badge-red">cancelled</span>'
+                : '<span class="badge badge-yellow">pending</span>'}</td>
+          <td class="appt-action-col" style="white-space:nowrap;"><button class="btn ${a.status === 'confirmed' ? 'btn-ghost' : 'btn-primary'} btn-xs"
+                title="${a.status === 'confirmed' ? 'Send the WhatsApp confirmation again' : 'Confirm and send a WhatsApp message to the patient'}"
+                data-ts="${esc(a.timestamp)}" data-phone="${esc(a.phone)}" data-name="${esc(a.name)}" data-branch="${esc(a.branch)}"
+                data-service="${esc(a.service)}" data-date="${esc(a.date)}" data-time="${esc(a.time)}" data-status="${esc(a.status)}"
+                onclick="confirmAppt(this)">${a.status === 'confirmed' ? '💬 WhatsApp' : '✓ Confirm'}</button>
+              <button class="btn btn-ghost btn-xs appt-delete-btn" title="Delete this appointment permanently"
+                data-ts="${esc(a.timestamp)}" data-name="${esc(a.name)}"
+                onclick="deleteAppt(this)">🗑</button></td>
         </tr>`).join('')
-    : '<tr><td colspan="8" style="text-align:center;color:var(--ink-4);padding:40px;">No appointments found.</td></tr>';
+    : '<tr><td colspan="11" style="text-align:center;color:var(--ink-4);padding:40px;">No appointments found.</td></tr>';
+}
+
+// Normalise a Kenyan phone number to international format for wa.me
+function waNumber(raw) {
+  let p = String(raw || '').replace(/[^0-9+]/g, '');
+  if (p.startsWith('+')) p = p.slice(1);
+  if (p.startsWith('254')) return p;
+  if (p.startsWith('0')) return '254' + p.slice(1);
+  if (p && (p[0] === '7' || p[0] === '1')) return '254' + p;
+  return p;
+}
+
+// Confirm an appointment → persist status, then open WhatsApp to the patient
+async function confirmAppt(btn) {
+  const d = btn.dataset;
+  const phone = waNumber(d.phone);
+  if (!phone) { toast('This booking has no phone number', 'error'); return; }
+
+  // Persist confirmation to the sheet (skip if already confirmed — just resend)
+  if (d.status !== 'confirmed') {
+    btn.disabled = true;
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>';
+    try {
+      await api('/api/appointments', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'updateStatus', timestamp: d.ts, status: 'confirmed' }),
+      });
+      const appt = S.appointments.find(a => a.timestamp === d.ts);
+      if (appt) appt.status = 'confirmed';
+    } catch {
+      btn.disabled = false;
+      btn.innerHTML = original;
+      toast('Could not save confirmation — try again', 'error');
+      return;
+    }
+  }
+
+  const branch = d.branch ? ` (${d.branch} branch)` : '';
+  const msg = `Hello ${d.name || ''}, this is Celestial Dental Centre. Your appointment${branch} for ${d.service || 'your visit'} on ${d.date || ''} at ${d.time || ''} is confirmed ✅. Kindly arrive 5 minutes early. Reply here if you need to reschedule. See you soon!`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  renderAppointments(S.appointments);
+  toast('Confirmed — WhatsApp opened, tap send to notify the patient');
+}
+
+// Permanently remove an appointment row (used to clear test bookings)
+async function deleteAppt(btn) {
+  const d = btn.dataset;
+  if (!confirm(`Delete the booking from ${d.name || 'this visitor'} permanently? This cannot be undone.`)) return;
+  btn.disabled = true;
+  try {
+    await api('/api/appointments', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'delete', timestamp: d.ts }),
+    });
+    S.appointments = S.appointments.filter(a => a.timestamp !== d.ts);
+    renderAppointments(S.appointments);
+    toast('Appointment deleted');
+  } catch {
+    btn.disabled = false;
+    toast('Could not delete — try again', 'error');
+  }
 }
 
 el('apptSearch').addEventListener('input', e => {
   const q = e.target.value.toLowerCase();
   renderAppointments(q
-    ? S.appointments.filter(a => [a.name,a.phone,a.service,a.email,a.referral].some(v => String(v).toLowerCase().includes(q)))
+    ? S.appointments.filter(a => [a.name,a.phone,a.service,a.email,a.referral,a.branch].some(v => String(v).toLowerCase().includes(q)))
     : S.appointments);
 });
 
 el('exportBtn').addEventListener('click', () => {
-  const header = ['Timestamp','Name','Phone','Email','Service','Date','Time','Message','Referral','Source'];
-  const rows = S.appointments.map(a => [a.timestamp,a.name,a.phone,a.email,a.service,a.date,a.time,a.message,a.referral,a.source]);
+  const header = ['Timestamp','Name','Phone','Email','Branch','Service','Date','Time','Message','Referral','Source','Status'];
+  const rows = S.appointments.map(a => [a.timestamp,a.name,a.phone,a.email,a.branch,a.service,a.date,a.time,a.message,a.referral,a.source,a.status]);
   const csv = [header,...rows].map(r => r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const url = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
   Object.assign(document.createElement('a'), { href:url, download:'appointments.csv' }).click();
@@ -1063,30 +1753,295 @@ el('exportBtn').addEventListener('click', () => {
   toast('CSV exported');
 });
 
+// ── PDF report (print-to-PDF, no external libraries) ────────────
+function reportRows(items, nameFn) {
+  if (!items || !items.length) return '<tr><td colspan="2" style="color:#889;">No data yet.</td></tr>';
+  return items.map(it => `<tr><td>${escapeHtml(nameFn ? nameFn(it.name) : it.name)}</td><td style="text-align:right;font-weight:700;">${it.count}</td></tr>`).join('');
+}
+function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+
+async function generateReport() {
+  const btn = el('reportBtn');
+  const original = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> Preparing…'; btn.disabled = true;
+  try {
+    // Gather fresh data; tolerate any endpoint the current role can't read
+    const [an, appts, posts, updates, openings, branches] = await Promise.all([
+      api('/api/track').catch(() => null),
+      api('/api/appointments').then(d => d.appointments || []).catch(() => S.appointments || []),
+      api('/api/blog').then(d => d.posts || []).catch(() => S.posts || []),
+      api('/api/content').then(d => d.items || []).catch(() => S.updates || []),
+      api('/api/careers').then(d => d.openings || []).catch(() => S.openings || []),
+      api('/api/branches').then(d => d.branches || []).catch(() => []),
+    ]);
+
+    const now = new Date();
+    const pub = arr => (arr || []).filter(x => x.status === 'published').length;
+    const todayKey = now.toISOString().slice(0, 10);
+    const apptsToday = (appts || []).filter(a => String(a.date || a.timestamp || '').slice(0, 10) === todayKey).length;
+
+    let visitorHtml = '<p style="color:#889;">Visitor analytics are not available for your account.</p>';
+    if (an && an.totals) {
+      const blogPerf = (an.blogViews || []).map(b => {
+        const p = (posts || []).find(x => x.slug === b.name);
+        return { name: p ? p.title : b.name.replace(/-/g, ' '), count: b.count };
+      });
+      visitorHtml = `
+        <div class="grid">
+          <div class="kpi"><b>${an.totals.today}</b><span>Views today</span></div>
+          <div class="kpi"><b>${an.totals.last7}</b><span>Views · 7 days</span></div>
+          <div class="kpi"><b>${an.totals.last30}</b><span>Views · 30 days</span></div>
+          <div class="kpi"><b>${an.totals.visitors30 ?? '—'}</b><span>Visitors · 30 days</span></div>
+          <div class="kpi"><b>${an.totals.aiVisits ?? 0}</b><span>AI search visits</span></div>
+          <div class="kpi"><b>${an.totals.allTime}</b><span>All-time views</span></div>
+        </div>
+        <div class="cols">
+          <div><h3>Where visitors come from</h3><table>${reportRows(an.referrers, n => SOURCE_NAMES[n] || n)}</table></div>
+          <div><h3>Top locations</h3><table>${reportRows((an.countries||[]).map(c => ({ name: COUNTRY_NAMES[c.name]||c.name, count:c.count })))}</table></div>
+          <div><h3>Most visited pages</h3><table>${reportRows(an.pages)}</table></div>
+          <div><h3>Devices</h3><table>${reportRows(an.devices, n => n==='mobile'?'Mobile':'Desktop')}</table></div>
+        </div>
+        <h3>Blog post performance</h3><table>${reportRows(blogPerf)}</table>`;
+    }
+
+    const recentAppts = (appts || []).slice(0, 25);
+    const apptHtml = recentAppts.length
+      ? `<table class="wide"><tr><th>Name</th><th>Phone</th><th>Service</th><th>Branch</th><th>Date</th><th>Status</th></tr>
+          ${recentAppts.map(a => `<tr><td>${escapeHtml(a.name)}</td><td>${escapeHtml(a.phone)}</td><td>${escapeHtml(a.service)}</td><td>${escapeHtml(a.branch)}</td><td>${escapeHtml(a.date)}</td><td>${escapeHtml(a.status)}</td></tr>`).join('')}
+        </table>`
+      : '<p style="color:#889;">No appointments available for your account.</p>';
+
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Celestial Dental — Report ${todayKey}</title>
+      <style>
+        *{box-sizing:border-box}
+        body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#1a2b32;margin:0;padding:32px 40px;}
+        .head{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #0d9488;padding-bottom:14px;margin-bottom:22px;}
+        .head h1{font-size:20px;margin:0;color:#0f3d36;}
+        .head .meta{text-align:right;font-size:12px;color:#667;}
+        h2{font-size:15px;color:#0d9488;margin:26px 0 10px;border-bottom:1px solid #dde;padding-bottom:6px;}
+        h3{font-size:12px;margin:14px 0 6px;color:#334;text-transform:uppercase;letter-spacing:.04em;}
+        .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:8px 0;}
+        .kpi{border:1px solid #dde;border-radius:10px;padding:12px 14px;}
+        .kpi b{display:block;font-size:22px;color:#0f3d36;}
+        .kpi span{font-size:11px;color:#667;}
+        .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+        table{width:100%;border-collapse:collapse;font-size:12px;}
+        td,th{padding:5px 8px;border-bottom:1px solid #eef;text-align:left;}
+        th{color:#667;font-size:10px;text-transform:uppercase;letter-spacing:.04em;}
+        table.wide td{font-size:11px;}
+        .foot{margin-top:30px;padding-top:12px;border-top:1px solid #dde;font-size:10px;color:#889;text-align:center;}
+        @media print{body{padding:0;} .noprint{display:none;} h2{break-after:avoid;}}
+        .noprint{position:fixed;top:14px;right:16px;}
+        .noprint button{font:inherit;font-weight:700;padding:8px 16px;border-radius:8px;border:none;background:#0d9488;color:#fff;cursor:pointer;}
+      </style></head><body>
+      <div class="noprint"><button onclick="window.print()">Save as PDF</button></div>
+      <div class="head">
+        <h1>Celestial Dental Centre — Admin Report</h1>
+        <div class="meta">Generated ${now.toLocaleString('en-GB',{dateStyle:'long',timeStyle:'short'})}<br>by ${escapeHtml(S.name || 'Admin')}</div>
+      </div>
+
+      <h2>At a glance</h2>
+      <div class="grid">
+        <div class="kpi"><b>${(appts||[]).length}</b><span>Total appointments</span></div>
+        <div class="kpi"><b>${apptsToday}</b><span>Appointments today</span></div>
+        <div class="kpi"><b>${pub(posts)}</b><span>Published blog posts</span></div>
+        <div class="kpi"><b>${pub(updates)}</b><span>News updates live</span></div>
+        <div class="kpi"><b>${pub(openings)}</b><span>Open job positions</span></div>
+        <div class="kpi"><b>${(branches||[]).length || '—'}</b><span>Branches</span></div>
+      </div>
+
+      <h2>Website visitors</h2>
+      ${visitorHtml}
+
+      <h2>Appointments (most recent 25)</h2>
+      ${apptHtml}
+
+      <div class="foot">Celestial Dental Centre · Confidential admin report · celestialdental.org</div>
+      </body></html>`;
+
+    const w = window.open('', '_blank');
+    if (!w) { toast('Please allow pop-ups to generate the report', 'error'); return; }
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { try { w.print(); } catch (e) {} }, 500);
+    toast('Report ready — choose "Save as PDF"');
+  } catch (e) {
+    toast('Could not generate report', 'error');
+  } finally {
+    btn.innerHTML = original; btn.disabled = false;
+  }
+}
+el('reportBtn').addEventListener('click', generateReport);
+
+// ════════════════════════════════════════════════════
+//  Analytics (website visitors)
+// ════════════════════════════════════════════════════
+const COUNTRY_NAMES = { KE:'Kenya', US:'United States', GB:'United Kingdom', UG:'Uganda', TZ:'Tanzania', RW:'Rwanda', ET:'Ethiopia', SO:'Somalia', SS:'South Sudan', NG:'Nigeria', ZA:'South Africa', IN:'India', CN:'China', DE:'Germany', FR:'France', NL:'Netherlands', CA:'Canada', AU:'Australia', AE:'UAE', SA:'Saudi Arabia', QA:'Qatar' };
+
+const SOURCE_NAMES = { direct:'Direct (typed / bookmark / WhatsApp)', 'google.com':'Google Search', 'google.co.ke':'Google Search (Kenya)', 'bing.com':'🤖 Bing / Copilot AI', 'facebook.com':'Facebook', 'm.facebook.com':'Facebook', 'l.facebook.com':'Facebook', 'instagram.com':'Instagram', 'l.instagram.com':'Instagram', 't.co':'X (Twitter)', 'linkedin.com':'LinkedIn', 'tiktok.com':'TikTok', 'youtube.com':'YouTube', 'duckduckgo.com':'DuckDuckGo',
+  'chatgpt.com':'🤖 ChatGPT', 'chat.openai.com':'🤖 ChatGPT', 'openai.com':'🤖 ChatGPT', 'perplexity.ai':'🤖 Perplexity AI', 'gemini.google.com':'🤖 Google Gemini', 'bard.google.com':'🤖 Google Gemini', 'copilot.microsoft.com':'🤖 Microsoft Copilot', 'claude.ai':'🤖 Claude', 'you.com':'🤖 You.com AI', 'poe.com':'🤖 Poe AI', 'phind.com':'🤖 Phind AI' };
+
+function friendlyPage(path) {
+  if (!path || path === '/') return 'Home';
+  const clean = path.split('?')[0].replace(/\/$/, '');
+  const map = { '/about':'About', '/careers':'Careers', '/blog':'Blog', '/#booking':'Booking', '/#branches':'Branches' };
+  if (map[clean]) return map[clean];
+  if (clean.startsWith('/branch/')) return 'Branch · ' + clean.split('/')[2];
+  if (clean.startsWith('/blog/'))   return 'Blog · ' + clean.split('/')[2];
+  return clean;
+}
+
+function timeAgo(iso) {
+  const s = Math.floor((Date.now() - Date.parse(iso)) / 1000);
+  if (isNaN(s)) return '';
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+
+function renderSessions(sessions) {
+  if (!sessions || !sessions.length) {
+    return '<p style="color:var(--ink-4);font-size:14px;">No visits recorded yet — this fills in as people browse the website.</p>';
+  }
+  return sessions.map(s => {
+    const place = [s.city, COUNTRY_NAMES[s.country] || s.country].filter(Boolean).join(', ') || 'Unknown location';
+    const src = SOURCE_NAMES[s.referrer] || s.referrer || 'direct';
+    const dev = s.device === 'mobile' ? '📱' : '💻';
+    const crumbs = s.pages.map((p, i) =>
+      `${i ? '<span style="color:var(--ink-4);margin:0 6px;">→</span>' : ''}<span style="display:inline-block;background:var(--bg);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600;color:var(--ink-2);margin:2px 0;">${esc(friendlyPage(p.path))}</span>`
+    ).join('');
+    return `
+      <div style="padding:12px 0;border-top:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--ink-4);margin-bottom:6px;">
+          <span>${dev} ${esc(place)} · via ${esc(src)}</span>
+          <span>${s.pages.length} page${s.pages.length > 1 ? 's' : ''} · ${timeAgo(s.lastTs)}</span>
+        </div>
+        <div style="line-height:1.9;">${crumbs}</div>
+      </div>`;
+  }).join('');
+}
+
+function statList(items, nameFn) {
+  if (!items || !items.length) return '<p style="color:var(--ink-4);font-size:14px;">No data yet — check back once the site has had some visits.</p>';
+  const max = items[0].count;
+  return items.map(it => `
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
+        <span style="color:var(--ink-2);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;">${esc(nameFn ? nameFn(it.name) : it.name)}</span>
+        <span style="color:var(--ink-4);font-weight:700;">${it.count}</span>
+      </div>
+      <div style="height:6px;border-radius:3px;background:var(--bg);overflow:hidden;">
+        <div style="height:100%;width:${Math.max(4, Math.round(it.count / max * 100))}%;border-radius:3px;background:var(--brand);"></div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadAnalytics() {
+  try {
+    const d = await api('/api/track');
+    el('anToday').textContent = d.totals.today;
+    el('anPeopleToday').textContent = d.totals.visitorsToday ?? 0;
+    el('an7').textContent     = d.totals.last7;
+    el('anV7').textContent    = d.totals.visitors7;
+    el('an30').textContent    = d.totals.last30;
+    el('anAll').textContent   = d.totals.allTime;
+    el('anNew').textContent       = d.totals.newVisitors ?? '—';
+    el('anReturning').textContent = d.totals.returningVisitors ?? '—';
+    el('anAi').textContent        = d.totals.aiVisits ?? '—';
+
+    const maxViews = Math.max(1, ...d.series.map(s => s.views));
+    el('anChart').innerHTML = d.series.map(s => `
+      <div title="${s.date}: ${s.views} views, ${s.visitors} visitors" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;">
+        <div style="width:100%;border-radius:4px 4px 0 0;background:var(--brand);opacity:${s.views ? 1 : 0.15};height:${s.views ? Math.max(4, Math.round(s.views / maxViews * 100)) : 4}%;"></div>
+      </div>`).join('');
+    el('anChartLabels').innerHTML = d.series.map(s => `<div style="flex:1;text-align:center;">${s.date.slice(8)}</div>`).join('');
+
+    el('anReferrers').innerHTML = statList(d.todayReferrers, n => SOURCE_NAMES[n] || n);
+    const locations = (d.todayCountries || []).map(c => ({ name: COUNTRY_NAMES[c.name] || c.name, count: c.count }));
+    el('anLocations').innerHTML =
+      statList(locations) +
+      ((d.todayCities || []).length ? `<div class="card-title" style="margin-top:16px;">Today's cities</div>${statList(d.todayCities)}` : '');
+    el('anPages').innerHTML = statList(d.todayPages);
+    el('anDevices').innerHTML = statList(d.todayDevices, n => n === 'mobile' ? '📱 Mobile' : '💻 Desktop');
+
+    // Blog post performance — map slug → post title where we can
+    try { if (!S.posts || !S.posts.length) { const bd = await api('/api/blog'); S.posts = bd.posts || []; } } catch {}
+    const blogPerf = (d.blogViews || []).map(b => {
+      const post = (S.posts || []).find(p => p.slug === b.name);
+      return { name: post ? post.title : b.name.replace(/-/g, ' '), count: b.count };
+    });
+    el('anBlogPerf').innerHTML = blogPerf.length
+      ? statList(blogPerf)
+      : '<p style="color:var(--ink-4);font-size:14px;">No blog views yet — this fills in as people read your articles.</p>';
+
+    el('anSessions').innerHTML = renderSessions(d.sessions);
+  } catch {
+    toast('Could not load visitor stats', 'error');
+  }
+}
+
 // ════════════════════════════════════════════════════
 //  Blog
 // ════════════════════════════════════════════════════
+// Blog photo gallery (up to 5 images)
+let blogGalleryUrls = [];
+function renderBlogGallery() {
+  el('blogGalleryCount').textContent = blogGalleryUrls.length ? `${blogGalleryUrls.length}/5 photos` : '';
+  el('blogGalleryUploadBtn').style.display = blogGalleryUrls.length >= 5 ? 'none' : '';
+  el('blogGalleryThumbs').innerHTML = blogGalleryUrls.map((u, i) => `
+    <div style="position:relative;">
+      <img src="${esc(u)}" alt="" style="height:60px;width:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);" />
+      <button type="button" onclick="removeBlogGalleryPhoto(${i})" title="Remove"
+        style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:12px;line-height:1;cursor:pointer;">×</button>
+    </div>`).join('');
+}
+function removeBlogGalleryPhoto(i) { blogGalleryUrls.splice(i, 1); renderBlogGallery(); }
+
+// Fill the blog Branch dropdown. Branch Blog Editors only see their assigned
+// branches and must pick one; everyone else can leave it as "All branches".
+function populateBlogBranches() {
+  const sel = el('blogBranch');
+  if (!sel) return;
+  const restricted = S.role === 'branch_blog_editor' && S.myBranches.length;
+  const list = restricted ? ALL_BRANCHES.filter(b => S.myBranches.includes(b.slug)) : ALL_BRANCHES;
+  const allOpt = restricted ? '' : '<option value="">All branches</option>';
+  sel.innerHTML = allOpt + list.map(b => `<option value="${b.slug}">${b.label}</option>`).join('');
+}
+
 function clearBlogForm() {
-  ['blogId','blogTitle','blogTag','blogReadTime','blogExcerpt','blogBody','blogImage','blogDate'].forEach(id => el(id).value = '');
+  ['blogId','blogSlug','blogTitle','blogTag','blogReadTime','blogExcerpt','blogBody','blogImage','blogVideo','blogDate'].forEach(id => el(id).value = '');
+  blogGalleryUrls = [];
+  renderBlogGallery();
+  populateBlogBranches();
   if (S.role !== 'content_creator') el('blogStatus').value = 'published';
   el('blogMsg').textContent = '';
   el('blogFormTitle').textContent = 'New Post';
+  el('blogDeleteBtn').style.display = 'none';
   document.querySelectorAll('.post-item').forEach(i => i.classList.remove('selected'));
 }
 
 function editPost(id) {
   const p = S.posts.find(x => x.id === id); if (!p) return;
   el('blogId').value        = p.id;
+  el('blogSlug').value      = p.slug && p.slug !== p.id ? p.slug : '';
   el('blogTitle').value     = p.title || '';
   el('blogTag').value       = p.tag || '';
   el('blogReadTime').value  = p.readTime || '';
   el('blogExcerpt').value   = p.excerpt || '';
   el('blogBody').value      = p.body || '';
   el('blogImage').value     = p.image || '';
+  el('blogVideo').value     = p.video || '';
   el('blogDate').value      = p.date || '';
+  populateBlogBranches();
+  el('blogBranch').value    = p.branch || '';
+  blogGalleryUrls = (p.gallery || '').split(/[|\n]/).map(s => s.trim()).filter(Boolean).slice(0, 5);
+  renderBlogGallery();
   if (S.role !== 'content_creator') el('blogStatus').value = p.status || 'published';
   el('blogMsg').textContent = '';
   el('blogFormTitle').textContent = 'Edit Post';
+  el('blogDeleteBtn').style.display = S.role === 'content_creator' ? 'none' : '';
   document.querySelectorAll('.post-item').forEach(i => i.classList.toggle('selected', i.dataset.id === id));
 }
 
@@ -1104,6 +2059,38 @@ function renderBlog() {
 async function loadBlog() {
   try { const data = await api('/api/blog'); S.posts = data.posts || []; renderBlog(); }
   catch { toast('Could not load blog posts', 'error'); }
+  loadBlogComments();
+}
+
+async function loadBlogComments() {
+  const card = el('blogCommentsCard');
+  if (S.role === 'content_creator') { card.style.display = 'none'; return; }
+  card.style.display = '';
+  try {
+    const data = await api('/api/comments');
+    const comments = (data.comments || []).filter(c => c.status !== 'archived');
+    const postTitle = id => (S.posts.find(p => p.slug === id) || {}).title || id;
+    el('blogCommentsList').innerHTML = comments.length
+      ? comments.map(c => `
+          <div style="padding:12px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+            <div style="min-width:0;">
+              <div style="font-size:13px;"><strong>${esc(c.name)}</strong> <span style="color:var(--ink-4);">on “${esc(postTitle(c.slug))}”</span></div>
+              <div style="font-size:13px;color:var(--ink-2);margin-top:3px;white-space:pre-line;">${esc(c.message)}</div>
+              <div style="font-size:11px;color:var(--ink-4);margin-top:3px;">${esc((c.createdAt || '').slice(0, 10))}</div>
+            </div>
+            <button class="btn btn-danger btn-xs" onclick="deleteComment('${esc(c.id)}')">Delete</button>
+          </div>`).join('')
+      : '<p style="color:var(--ink-4);font-size:14px;">No comments yet.</p>';
+  } catch { el('blogCommentsList').innerHTML = '<p style="color:var(--ink-4);font-size:14px;">Could not load comments.</p>'; }
+}
+
+async function deleteComment(id) {
+  if (!confirm('Delete this comment? It will be removed from the website.')) return;
+  try {
+    await api('/api/comments', { method:'POST', body: JSON.stringify({ action:'delete', id }) });
+    toast('Comment deleted');
+    loadBlogComments();
+  } catch { toast('Failed to delete comment', 'error'); }
 }
 
 el('blogForm').addEventListener('submit', async e => {
@@ -1114,10 +2101,13 @@ el('blogForm').addEventListener('submit', async e => {
   try {
     await api('/api/blog', { method:'POST', body: JSON.stringify({
       id: el('blogId').value || undefined,
+      slug: el('blogSlug').value,
       title: el('blogTitle').value, tag: el('blogTag').value,
       readTime: el('blogReadTime').value, excerpt: el('blogExcerpt').value,
       body: el('blogBody').value, image: el('blogImage').value,
+      video: el('blogVideo').value, gallery: blogGalleryUrls.join(' | '),
       date: el('blogDate').value, status: el('blogStatus').value,
+      branch: el('blogBranch').value,
     })});
     await loadBlog();
     const isCC = S.role === 'content_creator';
@@ -1131,6 +2121,22 @@ el('blogForm').addEventListener('submit', async e => {
 el('newPostBtn').addEventListener('click', clearBlogForm);
 el('blogClearBtn').addEventListener('click', clearBlogForm);
 
+el('blogDeleteBtn').addEventListener('click', async () => {
+  const id = el('blogId').value;
+  if (!id) return;
+  const title = el('blogTitle').value || 'this post';
+  if (!confirm(`Delete "${title}"? It will be removed from the website's blog.`)) return;
+  const btn = el('blogDeleteBtn');
+  btn.innerHTML = '<span class="spinner"></span> Deleting…'; btn.disabled = true;
+  try {
+    await api('/api/blog', { method:'POST', body: JSON.stringify({ id, status:'archived' }) });
+    await loadBlog();
+    clearBlogForm();
+    toast('Blog post deleted');
+  } catch { toast('Failed to delete post', 'error'); }
+  finally { btn.innerHTML = 'Delete'; btn.disabled = false; }
+});
+
 // ════════════════════════════════════════════════════
 //  Site Updates
 // ════════════════════════════════════════════════════
@@ -1139,6 +2145,7 @@ function clearUpdateForm() {
   if (S.role !== 'content_creator') el('updateStatus').value = 'published';
   el('updateMsg').textContent = '';
   el('updateFormTitle').textContent = 'New Update';
+  el('updateDeleteBtn').style.display = 'none';
   document.querySelectorAll('.post-item[data-uid]').forEach(i => i.classList.remove('selected'));
 }
 
@@ -1153,6 +2160,7 @@ function editUpdate(id) {
   if (S.role !== 'content_creator') el('updateStatus').value = u.status || 'published';
   el('updateMsg').textContent = '';
   el('updateFormTitle').textContent = 'Edit Update';
+  el('updateDeleteBtn').style.display = S.role === 'content_creator' ? 'none' : '';
   document.querySelectorAll('.post-item[data-uid]').forEach(i => i.classList.toggle('selected', i.dataset.uid === id));
 }
 
@@ -1195,6 +2203,579 @@ el('updateForm').addEventListener('submit', async e => {
 el('newUpdateBtn').addEventListener('click', clearUpdateForm);
 el('updateClearBtn').addEventListener('click', clearUpdateForm);
 
+el('updateDeleteBtn').addEventListener('click', async () => {
+  const id = el('updateId').value;
+  if (!id) return;
+  const title = el('updateTitle').value || 'this update';
+  if (!confirm(`Delete "${title}"? It will be removed from the homepage's news section.`)) return;
+  const btn = el('updateDeleteBtn');
+  btn.innerHTML = '<span class="spinner"></span> Deleting…'; btn.disabled = true;
+  try {
+    await api('/api/content', { method:'POST', body: JSON.stringify({ id, status:'archived' }) });
+    await loadUpdates();
+    clearUpdateForm();
+    toast('Site update deleted');
+  } catch { toast('Failed to delete update', 'error'); }
+  finally { btn.innerHTML = 'Delete'; btn.disabled = false; }
+});
+
+// ════════════════════════════════════════════════════
+//  Careers
+// ════════════════════════════════════════════════════
+function clearJobForm() {
+  ['jobId','jobTitle','jobType','jobLocation','jobDescription','jobImage'].forEach(id => el(id).value = '');
+  el('jobImageThumb').style.display = 'none';
+  if (S.role !== 'content_creator') el('jobStatus').value = 'published';
+  el('jobMsg').textContent = '';
+  el('jobFormTitle').textContent = 'New Opening';
+  el('jobDeleteBtn').style.display = 'none';
+  document.querySelectorAll('.post-item[data-jid]').forEach(i => i.classList.remove('selected'));
+}
+
+function editJob(id) {
+  const j = S.openings.find(x => x.id === id); if (!j) return;
+  el('jobId').value          = j.id;
+  el('jobTitle').value       = j.title || '';
+  el('jobType').value        = j.type || '';
+  el('jobLocation').value    = j.location || '';
+  el('jobDescription').value = j.description || '';
+  el('jobImage').value       = j.image || '';
+  if (j.image) { el('jobImageThumb').querySelector('img').src = j.image; el('jobImageThumb').style.display = 'block'; }
+  else el('jobImageThumb').style.display = 'none';
+  if (S.role !== 'content_creator') el('jobStatus').value = j.status || 'published';
+  el('jobMsg').textContent = '';
+  el('jobFormTitle').textContent = 'Edit Opening';
+  el('jobDeleteBtn').style.display = S.role === 'content_creator' ? 'none' : '';
+  document.querySelectorAll('.post-item[data-jid]').forEach(i => i.classList.toggle('selected', i.dataset.jid === id));
+}
+
+function renderCareers() {
+  el('jobList').innerHTML = S.openings.length
+    ? S.openings.map(j => `
+        <div class="post-item" data-jid="${esc(j.id)}" onclick="editJob('${esc(j.id)}')">
+          <div class="post-item-meta">${statusBadge(j.status)} <span>${esc(j.type)}${j.location ? ' · ' + esc(j.location) : ''}</span></div>
+          <div class="post-item-title">${esc(j.title)}</div>
+          <div class="post-item-excerpt">${esc(j.description)}</div>
+        </div>`).join('')
+    : '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><p>No job openings yet.</p></div>';
+}
+
+async function loadCareers() {
+  try { const data = await api('/api/careers'); S.openings = data.openings || []; renderCareers(); }
+  catch { toast('Could not load careers', 'error'); }
+}
+
+el('jobForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = el('jobSaveBtn');
+  btn.innerHTML = '<span class="spinner"></span> Saving…'; btn.disabled = true;
+  el('jobMsg').textContent = '';
+  try {
+    await api('/api/careers', { method:'POST', body: JSON.stringify({
+      id: el('jobId').value || undefined,
+      title: el('jobTitle').value, type: el('jobType').value,
+      location: el('jobLocation').value, description: el('jobDescription').value,
+      image: el('jobImage').value,
+      status: el('jobStatus').value,
+    })});
+    await loadCareers();
+    const isCC = S.role === 'content_creator';
+    el('jobMsg').textContent = isCC ? '✓ Draft saved — awaiting review' : '✓ Saved successfully';
+    el('jobMsg').style.color = 'var(--green)';
+    toast(isCC ? 'Draft saved for review' : 'Job opening saved');
+  } catch { toast('Failed to save opening', 'error'); }
+  finally { btn.innerHTML = 'Save Opening'; btn.disabled = false; }
+});
+
+el('newJobBtn').addEventListener('click', clearJobForm);
+el('jobClearBtn').addEventListener('click', clearJobForm);
+
+el('jobDeleteBtn').addEventListener('click', async () => {
+  const id = el('jobId').value;
+  if (!id) return;
+  const title = el('jobTitle').value || 'this opening';
+  if (!confirm(`Delete "${title}"? It will be removed from the website's Careers page.`)) return;
+  const btn = el('jobDeleteBtn');
+  btn.innerHTML = '<span class="spinner"></span> Deleting…'; btn.disabled = true;
+  try {
+    await api('/api/careers', { method:'POST', body: JSON.stringify({ id, status:'archived' }) });
+    await loadCareers();
+    clearJobForm();
+    toast('Job opening deleted');
+  } catch { toast('Failed to delete opening', 'error'); }
+  finally { btn.innerHTML = 'Delete'; btn.disabled = false; }
+});
+
+// ════════════════════════════════════════════════════
+//  Branches
+// ════════════════════════════════════════════════════
+const BRANCH_FIELDS = ['branchId','branchName','branchSlug','branchPhone','branchRegion','branchBadge','branchTagline','branchAddress','branchDescription','branchLandmark','branchParking','branchHours','branchImage','branchWhatsapp','branchMap','branchLat','branchLng','branchPhotos'];
+
+function renderBranchThumbs() {
+  const urls = el('branchPhotos').value.split('\n').map(s => s.trim()).filter(Boolean);
+  el('branchPhotosCount').textContent = urls.length
+    ? `${Math.min(urls.length, 5)}/5 photos${urls.length > 5 ? ' — only the first 5 will be saved' : ''}`
+    : '';
+  el('branchPhotosThumbs').innerHTML = urls.slice(0, 5).map(u =>
+    `<img src="${esc(u)}" alt="" style="height:52px;width:70px;object-fit:cover;border-radius:8px;border:1px solid var(--border);" />`
+  ).join('');
+}
+
+function clearBranchForm() {
+  BRANCH_FIELDS.forEach(id => el(id).value = '');
+  el('branchStatus').value = 'published';
+  el('branchMsg').textContent = '';
+  el('branchFormTitle').textContent = 'New Branch';
+  renderBranchThumbs();
+  document.querySelectorAll('.post-item[data-bid]').forEach(i => i.classList.remove('selected'));
+}
+
+function editBranch(id) {
+  const b = S.branches.find(x => x.id === id); if (!b) return;
+  el('branchId').value          = b.id;
+  el('branchName').value        = b.name || '';
+  el('branchSlug').value        = b.slug || '';
+  el('branchPhone').value       = b.phone || '';
+  el('branchRegion').value      = b.region || '';
+  el('branchBadge').value       = b.badge || '';
+  el('branchTagline').value     = b.tagline || '';
+  el('branchAddress').value     = b.address || '';
+  el('branchDescription').value = b.description || '';
+  el('branchLandmark').value    = b.landmark || '';
+  el('branchParking').value     = b.parking || '';
+  el('branchHours').value       = b.hours || '';
+  el('branchImage').value       = b.image || '';
+  el('branchWhatsapp').value    = b.whatsapp || '';
+  el('branchMap').value         = b.map || '';
+  el('branchLat').value         = b.lat || '';
+  el('branchLng').value         = b.lng || '';
+  el('branchPhotos').value      = b.photos || '';
+  el('branchStatus').value      = b.status || 'published';
+  renderBranchThumbs();
+  el('branchMsg').textContent = '';
+  el('branchFormTitle').textContent = 'Edit Branch';
+  document.querySelectorAll('.post-item[data-bid]').forEach(i => i.classList.toggle('selected', i.dataset.bid === id));
+}
+
+function renderBranches() {
+  el('branchList').innerHTML = S.branches.length
+    ? S.branches.map(b => `
+        <div class="post-item" data-bid="${esc(b.id)}" onclick="editBranch('${esc(b.id)}')">
+          <div class="post-item-meta">${statusBadge(b.status)} <span>${esc(b.phone)}</span></div>
+          <div class="post-item-title">${esc(b.name)}</div>
+          <div class="post-item-excerpt">${esc((b.address || '').split('\n')[0])}</div>
+          ${b.slug && b.status === 'published' ? `<a href="/branches/${esc(b.slug)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="display:inline-block;margin-top:7px;font-size:12px;font-weight:700;color:var(--teal);">View live branch page →</a>` : ''}
+        </div>`).join('')
+    : '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><p>No branches yet.</p></div>';
+}
+
+async function loadBranches() {
+  try { const data = await api('/api/branches'); S.branches = data.branches || []; renderBranches(); }
+  catch { toast('Could not load branches', 'error'); }
+}
+
+el('branchForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = el('branchSaveBtn');
+  btn.innerHTML = '<span class="spinner"></span> Saving…'; btn.disabled = true;
+  el('branchMsg').textContent = '';
+  try {
+    const photos = el('branchPhotos').value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 5).join('\n');
+    el('branchPhotos').value = photos;
+    const result = await api('/api/branches', { method:'POST', body: JSON.stringify({
+      id: el('branchId').value || undefined,
+      name: el('branchName').value, slug: el('branchSlug').value,
+      phone: el('branchPhone').value, region: el('branchRegion').value,
+      badge: el('branchBadge').value, tagline: el('branchTagline').value,
+      address: el('branchAddress').value, description: el('branchDescription').value,
+      landmark: el('branchLandmark').value, parking: el('branchParking').value,
+      hours: el('branchHours').value, image: el('branchImage').value,
+      whatsapp: el('branchWhatsapp').value, map: el('branchMap').value,
+      lat: el('branchLat').value, lng: el('branchLng').value,
+      photos,
+      status: el('branchStatus').value,
+    })});
+    await loadBranches();
+    const liveSlug = result.branch?.slug || el('branchSlug').value;
+    if (liveSlug) el('branchSlug').value = liveSlug;
+    el('branchMsg').innerHTML = liveSlug
+      ? `✓ Saved successfully — <a href="/branches/${esc(liveSlug)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">view branch page</a>`
+      : '✓ Saved successfully';
+    el('branchMsg').style.color = 'var(--green)';
+    toast('Branch saved');
+  } catch (err) { toast(err.message || 'Failed to save branch', 'error'); }
+  finally { btn.innerHTML = 'Save Branch'; btn.disabled = false; }
+});
+
+el('newBranchBtn').addEventListener('click', clearBranchForm);
+el('branchClearBtn').addEventListener('click', clearBranchForm);
+
+// Multi-photo uploader for the branch gallery
+el('branchPhotosUploadBtn').addEventListener('click', () => el('branchPhotosFile').click());
+el('branchPhotos').addEventListener('input', renderBranchThumbs);
+el('branchPhotosFile').addEventListener('change', async () => {
+  const existingPhotos = el('branchPhotos').value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 5);
+  const available = Math.max(0, 5 - existingPhotos.length);
+  const selectedFiles = [...el('branchPhotosFile').files];
+  const files = selectedFiles.slice(0, available);
+  if (!available) {
+    toast('This branch already has 5 photos. Remove one before uploading another.', 'error');
+    el('branchPhotosFile').value = '';
+    return;
+  }
+  if (!files.length) return;
+  const btn = el('branchPhotosUploadBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  let done = 0;
+  try {
+    for (const file of files) {
+      btn.innerHTML = `<span class="spinner"></span> ${done + 1}/${files.length}`;
+      const url = await uploadImage(file);
+      const current = el('branchPhotos').value.trim();
+      el('branchPhotos').value = current ? current + '\n' + url : url;
+      renderBranchThumbs();
+      done++;
+    }
+    const skipped = selectedFiles.length - files.length;
+    toast(`${done} photo${done !== 1 ? 's' : ''} uploaded${skipped ? `; ${skipped} skipped because the limit is 5` : ''} — click Save Branch to publish`);
+  } catch (e) {
+    toast(e.message || 'Upload failed', 'error');
+  } finally {
+    btn.innerHTML = original;
+    btn.disabled = false;
+    el('branchPhotosFile').value = '';
+  }
+});
+
+// ════════════════════════════════════════════════════
+//  Website Pages (generic site content editor)
+// ════════════════════════════════════════════════════
+const WEB_SECTIONS = {
+  hero:        { label: 'Homepage Hero (top banner)', single: true, name: () => 'Hero content', fields: [
+                  { k: 'eyebrow',  l: 'Small top line',            t: 'text' },
+                  { k: 'title',    l: 'Headline — plain part',      t: 'text' },
+                  { k: 'highlight',l: 'Headline — coloured part',   t: 'text' },
+                  { k: 'subtitle', l: 'Sub-heading',                t: 'textarea' },
+                  { k: 'pills',    l: 'Pills (comma-separated)',    t: 'text' },
+                  { k: 'slides',   l: 'Background slideshow photos — one URL per line (leave empty to use the Clinic Gallery photos)', t: 'images' } ] },
+  about:       { label: 'About Us page', single: true, name: () => 'About Us content', fields: [
+                  { k: 'title',   l: 'Page headline',                  t: 'text' },
+                  { k: 'intro',   l: 'Intro paragraph',                t: 'textarea' },
+                  { k: 'story',   l: 'Our story (one paragraph per line)', t: 'textarea' },
+                  { k: 'mission', l: 'Mission statement',              t: 'textarea' },
+                  { k: 'vision',  l: 'Vision statement',               t: 'textarea' },
+                  { k: 'image',   l: 'Story photo',                    t: 'image' } ] },
+  stats:       { label: 'Hero statistics', name: d => `${d.value || ''} — ${d.label || ''}`, fields: [
+                  { k: 'value', l: 'Value (e.g. 20+)', t: 'text' },
+                  { k: 'label', l: 'Label',            t: 'text' } ] },
+  team:        { label: 'About Us — Staff', name: d => d.name, fields: [
+                  { k: 'name',  l: 'Staff name',            t: 'text', required: true },
+                  { k: 'role',  l: 'Role / title (optional)', t: 'text' },
+                  { k: 'image', l: 'Portrait',              t: 'image' } ] },
+  services:    { label: 'Services', name: d => d.title, fields: [
+                  { k: 'title',       l: 'Service name', t: 'text' },
+                  { k: 'description', l: 'Description',  t: 'textarea' },
+                  { k: 'image',       l: 'Photo',        t: 'image' } ] },
+  whyChooseUs: { label: 'Why Choose Us', name: d => d.title, fields: [
+                  { k: 'tag',         l: 'Small tag (e.g. Safety)', t: 'text' },
+                  { k: 'title',       l: 'Title',                   t: 'text' },
+                  { k: 'description', l: 'Description',             t: 'textarea' } ] },
+  gallery:     { label: 'Clinic Gallery', name: d => d.caption, fields: [
+                  { k: 'src',     l: 'Photo',   t: 'image' },
+                  { k: 'caption', l: 'Caption', t: 'text' } ] },
+  testimonials:{ label: 'Testimonials (Patient Stories)', name: d => d.author, fields: [
+                  { k: 'quote',  l: 'Quote',        t: 'textarea' },
+                  { k: 'author', l: 'Patient name', t: 'text' },
+                  { k: 'branch', l: 'Branch',       t: 'text' },
+                  { k: 'stars',  l: 'Stars (1–5)',  t: 'text' } ] },
+  insurers:    { label: 'Insurance Partners', name: d => d.name, fields: [
+                  { k: 'name', l: 'Insurer name', t: 'text' },
+                  { k: 'logo', l: 'Logo',         t: 'image' } ] },
+  footer:      { label: 'Footer (bottom of every page)', single: true, name: () => 'Footer content', fields: [
+                  { k: 'blurb',    l: 'Short description under the logo',                     t: 'textarea' },
+                  { k: 'hours',    l: 'Opening hours — one line per row',                     t: 'textarea' },
+                  { k: 'email',    l: 'Contact email',                                        t: 'text' },
+                  { k: 'phone',    l: 'Contact phone (e.g. +254 707 535 000)',                t: 'text' },
+                  { k: 'facebook', l: 'Facebook URL — social fields left empty are hidden; leave ALL empty to keep the current links', t: 'text' },
+                  { k: 'instagram',l: 'Instagram URL',                                        t: 'text' },
+                  { k: 'x',        l: 'X (Twitter) URL',                                      t: 'text' },
+                  { k: 'linkedin', l: 'LinkedIn URL',                                         t: 'text' },
+                  { k: 'tiktok',   l: 'TikTok URL',                                           t: 'text' },
+                  { k: 'whatsapp', l: 'WhatsApp link (https://wa.me/2547…)',                  t: 'text' },
+                  { k: 'tagline',  l: 'Bottom bar tagline',                                   t: 'text' } ] },
+};
+
+S.webItems = [];
+
+function populateWebSections(role = S.role) {
+  const select = el('webSection');
+  const previous = select.value;
+  select.innerHTML = Object.entries(WEB_SECTIONS)
+    .filter(([key]) => key !== 'team' || role === 'super_admin')
+    .map(([key, cfg]) => `<option value="${key}">${cfg.label}</option>`).join('');
+  if ([...select.options].some(option => option.value === previous)) select.value = previous;
+}
+populateWebSections();
+
+function webCfg() { return WEB_SECTIONS[el('webSection').value]; }
+
+function buildWebForm(item) {
+  const cfg = webCfg();
+  const isTeam = el('webSection').value === 'team';
+  const data = item ? item.data : {};
+  el('webItemId').value = item ? item.id : '';
+  el('webFormTitle').textContent = isTeam
+    ? (item ? 'Edit Staff Member' : 'Add New Staff Member')
+    : (item ? `Edit — ${cfg.label}` : `New — ${cfg.label}`);
+  el('webSaveBtn').textContent = isTeam ? (item ? 'Save Staff' : 'Add Staff') : 'Save';
+  el('webClearBtn').textContent = isTeam ? 'Clear Form' : 'Clear';
+  el('webStatus').value = item ? (item.status || 'published') : 'published';
+  const deleteBtn = el('webDeleteBtn');
+  deleteBtn.style.display = item && !cfg.single ? '' : 'none';
+  deleteBtn.textContent = el('webSection').value === 'team' ? 'Delete staff' : 'Delete item';
+  el('webFields').innerHTML = cfg.fields.map(f => {
+    const val = esc(data[f.k] != null ? String(data[f.k]) : '');
+    if (f.t === 'textarea') {
+      return `<div class="field full" style="margin-bottom:12px;"><label>${f.l}</label><textarea id="wf_${f.k}" style="min-height:90px;">${val}</textarea></div>`;
+    }
+    if (f.t === 'image') {
+      return `<div class="field full" style="margin-bottom:12px;"><label>${f.l}</label>
+        <div class="upload-row">
+          <input id="wf_${f.k}" value="${val}" placeholder="Paste a URL or upload →" />
+          <input type="file" id="wf_${f.k}_file" accept="image/*" hidden />
+          <button type="button" class="btn btn-ghost btn-sm" id="wf_${f.k}_btn">⬆ Upload</button>
+        </div>
+        <div class="upload-thumb" id="wf_${f.k}_thumb" style="${val ? 'display:block;' : ''}"><img alt="preview" src="${val}" /></div>
+      </div>`;
+    }
+    if (f.t === 'images') {
+      return `<div class="field full" style="margin-bottom:12px;"><label>${f.l}</label>
+        <textarea id="wf_${f.k}" style="min-height:70px;" placeholder="One photo URL per line — or click Upload photos">${val}</textarea>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px;">
+          <input type="file" id="wf_${f.k}_file" accept="image/*" multiple hidden />
+          <button type="button" class="btn btn-ghost btn-sm" id="wf_${f.k}_btn">⬆ Upload photos</button>
+          <span style="font-size:12px;color:var(--ink-3);" id="wf_${f.k}_count"></span>
+        </div>
+        <div id="wf_${f.k}_thumbs" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;"></div>
+      </div>`;
+    }
+    return `<div class="field full" style="margin-bottom:12px;"><label>${f.l}${f.required ? ' *' : ''}</label><input id="wf_${f.k}" value="${val}" ${f.required ? 'required' : ''} /></div>`;
+  }).join('');
+
+  // Wire upload buttons for image fields
+  cfg.fields.filter(f => f.t === 'image').forEach(f => {
+    wireUpload(`wf_${f.k}_btn`, `wf_${f.k}_file`, `wf_${f.k}`, `wf_${f.k}_thumb`);
+  });
+  cfg.fields.filter(f => f.t === 'images').forEach(f => {
+    wireMultiUpload(`wf_${f.k}_btn`, `wf_${f.k}_file`, `wf_${f.k}`, `wf_${f.k}_thumbs`, `wf_${f.k}_count`);
+  });
+}
+
+// Multi-photo field: textarea of URLs + batch upload + thumbnail strip
+function wireMultiUpload(btnId, fileId, textId, thumbsId, countId) {
+  const btn = el(btnId), fileInput = el(fileId), text = el(textId);
+  if (!btn || !fileInput || !text) return;
+  const renderThumbs = () => {
+    const urls = text.value.split('\n').map(s => s.trim()).filter(Boolean);
+    if (el(countId)) el(countId).textContent = urls.length ? `${urls.length} photo${urls.length !== 1 ? 's' : ''}` : '';
+    if (el(thumbsId)) el(thumbsId).innerHTML = urls.slice(0, 12).map(u =>
+      `<img src="${esc(u)}" alt="" style="height:52px;width:70px;object-fit:cover;border-radius:8px;border:1px solid var(--border);" />`
+    ).join('');
+  };
+  renderThumbs();
+  text.addEventListener('input', renderThumbs);
+  btn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const files = [...fileInput.files];
+    if (!files.length) return;
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    let done = 0;
+    try {
+      for (const file of files) {
+        btn.innerHTML = `<span class="spinner"></span> ${done + 1}/${files.length}`;
+        const url = await uploadImage(file);
+        const current = text.value.trim();
+        text.value = current ? current + '\n' + url : url;
+        renderThumbs();
+        done++;
+      }
+      toast(`${done} photo${done !== 1 ? 's' : ''} uploaded — click Save to publish`);
+    } catch (e) {
+      toast(e.message || 'Upload failed', 'error');
+    } finally {
+      btn.innerHTML = original;
+      btn.disabled = false;
+      fileInput.value = '';
+    }
+  });
+}
+
+function renderWebList() {
+  const cfg = webCfg();
+  const section = el('webSection').value;
+  const items = S.webItems.filter(i => i.section === section);
+  el('webListTitle').textContent = `${cfg.label} — ${items.length} item${items.length !== 1 ? 's' : ''}`;
+  el('newWebItemBtn').style.display = cfg.single ? 'none' : '';
+  el('newWebItemBtn').textContent = section === 'team' ? '+ Add Staff' : '+ New Item';
+  el('webList').innerHTML = items.length
+    ? items.map(i => `
+        <div class="post-item" data-wid="${esc(i.id)}" onclick="editWebItem('${esc(i.id)}')">
+          <div class="post-item-meta">${statusBadge(i.status)}</div>
+          <div class="post-item-title">${esc(cfg.name(i.data) || '(untitled)')}</div>
+        </div>`).join('')
+    : '<div class="empty"><p>No items in this section yet.</p></div>';
+}
+
+function editWebItem(id) {
+  const item = S.webItems.find(i => i.id === id);
+  if (!item) return;
+  buildWebForm(item);
+  document.querySelectorAll('.post-item[data-wid]').forEach(n => n.classList.toggle('selected', n.dataset.wid === id));
+}
+
+async function loadWebsite() {
+  try {
+    const data = await api('/api/site-data');
+    S.webItems = data.items || [];
+    renderWebList();
+    // Auto-open the item for single-item sections (like the hero)
+    const cfg = webCfg();
+    const section = el('webSection').value;
+    const first = S.webItems.find(i => i.section === section);
+    buildWebForm(cfg.single && first ? first : null);
+  } catch { toast('Could not load website content', 'error'); }
+}
+
+el('webSection').addEventListener('change', () => {
+  renderWebList();
+  const cfg = webCfg();
+  const first = S.webItems.find(i => i.section === el('webSection').value);
+  buildWebForm(cfg.single && first ? first : null);
+});
+
+el('newWebItemBtn').addEventListener('click', () => {
+  buildWebForm(null);
+  document.querySelectorAll('.post-item[data-wid]').forEach(n => n.classList.remove('selected'));
+});
+el('webClearBtn').addEventListener('click', () => buildWebForm(null));
+
+el('webDeleteBtn').addEventListener('click', async () => {
+  const id = el('webItemId').value;
+  const item = S.webItems.find(i => i.id === id);
+  if (!item) return;
+  const cfg = webCfg();
+  const name = cfg.name(item.data) || 'this item';
+  const noun = el('webSection').value === 'team' ? 'staff member' : 'item';
+  if (!confirm(`Delete ${noun} "${name}"? It will be removed from the website.`)) return;
+
+  const btn = el('webDeleteBtn');
+  btn.innerHTML = '<span class="spinner"></span> Deleting…';
+  btn.disabled = true;
+  el('webMsg').textContent = '';
+  try {
+    await api(`/api/site-data?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+    await loadWebsite();
+    el('webMsg').textContent = '✓ Deleted — removed from the website';
+    toast(`${name} deleted`);
+  } catch (e) {
+    toast(e.message || 'Failed to delete item', 'error');
+  } finally {
+    btn.textContent = el('webSection').value === 'team' ? 'Delete staff' : 'Delete item';
+    btn.disabled = false;
+  }
+});
+
+el('webForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const cfg = webCfg();
+  const isTeam = el('webSection').value === 'team';
+  const isNew = !el('webItemId').value;
+  const data = {};
+  cfg.fields.forEach(f => { data[f.k] = el(`wf_${f.k}`) ? el(`wf_${f.k}`).value.trim() : ''; });
+  const btn = el('webSaveBtn');
+  btn.innerHTML = '<span class="spinner"></span> Saving…'; btn.disabled = true;
+  el('webMsg').textContent = '';
+  try {
+    await api('/api/site-data', { method: 'POST', body: JSON.stringify({
+      id: el('webItemId').value || undefined,
+      section: el('webSection').value,
+      status: el('webStatus').value,
+      data,
+    })});
+    await loadWebsite();
+    el('webMsg').textContent = isTeam
+      ? `✓ Staff member ${isNew ? 'added' : 'updated'} — the website updates immediately`
+      : '✓ Saved — the website updates immediately';
+    toast(isTeam ? `Staff member ${isNew ? 'added' : 'updated'}` : 'Website content saved');
+  } catch { toast('Failed to save website content', 'error'); }
+  finally {
+    btn.textContent = isTeam ? 'Add Staff' : 'Save';
+    btn.disabled = false;
+  }
+});
+
+// ════════════════════════════════════════════════════
+//  FAQs
+// ════════════════════════════════════════════════════
+function clearFaqForm() {
+  ['faqId','faqQuestion','faqAnswer'].forEach(id => el(id).value = '');
+  el('faqStatus').value = 'published';
+  el('faqMsg').textContent = '';
+  el('faqFormTitle').textContent = 'New FAQ';
+  document.querySelectorAll('.post-item[data-fid]').forEach(i => i.classList.remove('selected'));
+}
+
+function editFaq(id) {
+  const f = S.faqs.find(x => x.id === id); if (!f) return;
+  el('faqId').value       = f.id;
+  el('faqQuestion').value = f.question || '';
+  el('faqAnswer').value   = f.answer || '';
+  el('faqStatus').value   = f.status || 'published';
+  el('faqMsg').textContent = '';
+  el('faqFormTitle').textContent = 'Edit FAQ';
+  document.querySelectorAll('.post-item[data-fid]').forEach(i => i.classList.toggle('selected', i.dataset.fid === id));
+}
+
+function renderFaqs() {
+  el('faqList').innerHTML = S.faqs.length
+    ? S.faqs.map(f => `
+        <div class="post-item" data-fid="${esc(f.id)}" onclick="editFaq('${esc(f.id)}')">
+          <div class="post-item-meta">${statusBadge(f.status)}</div>
+          <div class="post-item-title">${esc(f.question)}</div>
+          <div class="post-item-excerpt">${esc(f.answer)}</div>
+        </div>`).join('')
+    : '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p>No FAQs yet.</p></div>';
+}
+
+async function loadFaqs() {
+  try { const data = await api('/api/faqs'); S.faqs = data.faqs || []; renderFaqs(); }
+  catch { toast('Could not load FAQs', 'error'); }
+}
+
+el('faqForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = el('faqSaveBtn');
+  btn.innerHTML = '<span class="spinner"></span> Saving…'; btn.disabled = true;
+  el('faqMsg').textContent = '';
+  try {
+    await api('/api/faqs', { method:'POST', body: JSON.stringify({
+      id: el('faqId').value || undefined,
+      question: el('faqQuestion').value, answer: el('faqAnswer').value,
+      status: el('faqStatus').value,
+    })});
+    await loadFaqs();
+    el('faqMsg').textContent = '✓ Saved successfully';
+    el('faqMsg').style.color = 'var(--green)';
+    toast('FAQ saved');
+  } catch (err) { toast(err.message || 'Failed to save FAQ', 'error'); }
+  finally { btn.innerHTML = 'Save FAQ'; btn.disabled = false; }
+});
+
+el('newFaqBtn').addEventListener('click', clearFaqForm);
+el('faqClearBtn').addEventListener('click', clearFaqForm);
+
 // ════════════════════════════════════════════════════
 //  Users (Super Admin only)
 // ════════════════════════════════════════════════════
@@ -1208,7 +2789,7 @@ async function loadUsers() {
 
 function renderUsers() {
   const pending  = S.users.filter(u => u.status === 'pending');
-  const active   = S.users.filter(u => u.status === 'active');
+  const active   = S.users.filter(u => u.status === 'active' || u.status === 'invited');
   const disabled = S.users.filter(u => u.status === 'disabled');
 
   // Pending badge on nav
@@ -1232,8 +2813,10 @@ function renderUsers() {
       </div>
       <div class="pending-card-actions">
         <select id="approveRole-${esc(u.id)}" style="border:1px solid var(--border);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;">
-          <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-          <option value="content_creator" ${u.role==='content_creator'?'selected':''}>Content Creator</option>
+          <option value="branch_blog_editor" ${u.role==='branch_blog_editor'||u.role==='content_creator'?'selected':''}>Branch Blog Editor</option>
+          <option value="website_content_editor" ${u.role==='website_content_editor'||u.role==='admin'?'selected':''}>Website Content Editor</option>
+          <option value="appointments_manager" ${u.role==='appointments_manager'?'selected':''}>Appointments Manager</option>
+          <option value="super_admin" ${u.role==='super_admin'?'selected':''}>Super Admin</option>
         </select>
         <button class="btn btn-primary btn-xs" onclick="approveUser('${esc(u.id)}')">✓ Approve</button>
         <button class="btn btn-danger btn-xs"  onclick="rejectUser('${esc(u.id)}')">✗ Reject</button>
@@ -1243,20 +2826,33 @@ function renderUsers() {
   // Active users
   el('activeList').innerHTML = active.length
     ? active.map(u => `
-        <div class="user-row">
+        <div class="user-row" style="flex-wrap:wrap;">
           <div class="user-avatar">${esc(initials(u.name))}</div>
           <div class="user-info">
             <div class="user-name">${esc(u.name)}</div>
             <div class="user-email">${esc(u.email)}</div>
           </div>
           ${roleBadgeHtml(u.role)}
+          ${u.status === 'invited' ? '<span class="badge badge-yellow">Invite pending</span>' : ''}
           <div class="user-actions">
+            <button class="btn btn-ghost btn-xs" onclick="sendUserInvite('${esc(u.id)}', this)">Send Invite</button>
             <select onchange="changeUserRole('${esc(u.id)}', this.value)" style="border:1px solid var(--border);border-radius:8px;padding:5px 9px;font:inherit;font-size:12px;">
-              <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-              <option value="content_creator" ${u.role==='content_creator'?'selected':''}>Content Creator</option>
+              <option value="branch_blog_editor" ${u.role==='branch_blog_editor'||u.role==='content_creator'?'selected':''}>Branch Blog Editor</option>
+              <option value="website_content_editor" ${u.role==='website_content_editor'||u.role==='admin'?'selected':''}>Website Content Editor</option>
+              <option value="appointments_manager" ${u.role==='appointments_manager'?'selected':''}>Appointments Manager</option>
+              <option value="super_admin" ${u.role==='super_admin'?'selected':''}>Super Admin</option>
             </select>
             <button class="btn btn-danger btn-xs" onclick="disableUser('${esc(u.id)}')">Disable</button>
           </div>
+          ${(u.role==='branch_blog_editor'||u.role==='content_creator') ? `
+          <div style="flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">
+            <span style="font-size:12px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;">Branches</span>
+            ${ALL_BRANCHES.map(b => `
+              <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;">
+                <input type="checkbox" data-uid="${esc(u.id)}" class="ub-${esc(u.id)}" value="${b.slug}" ${(u.branches||[]).includes(b.slug)?'checked':''} onchange="saveUserBranches('${esc(u.id)}')" /> ${b.label}
+              </label>`).join('')}
+            <span style="font-size:12px;color:var(--ink-4);">${(u.branches||[]).length ? '' : 'All branches (none restricted)'}</span>
+          </div>` : ''}
         </div>`).join('')
     : '<p style="color:var(--ink-4);font-size:14px;padding:12px 0;">No active users yet.</p>';
 
@@ -1278,10 +2874,10 @@ function renderUsers() {
 
 async function approveUser(id) {
   const roleSelect = el('approveRole-' + id);
-  const role = roleSelect ? roleSelect.value : 'admin';
+  const role = roleSelect ? roleSelect.value : 'branch_blog_editor';
   try {
-    await api('/api/users', { method:'POST', body: JSON.stringify({ action:'update', id, role, status:'active' }) });
-    toast('User approved');
+    const result = await api('/api/users', { method:'POST', body: JSON.stringify({ action:'update', id, role, status:'active' }) });
+    toast(result.inviteSent ? 'User approved and invitation emailed' : 'User approved, but the invitation email could not be sent', result.inviteSent ? 'success' : 'error');
     loadUsers();
   } catch { toast('Failed to approve user', 'error'); }
 }
@@ -1301,6 +2897,103 @@ async function changeUserRole(id, role) {
     toast('Role updated');
     loadUsers();
   } catch { toast('Failed to update role', 'error'); }
+}
+
+async function saveUserBranches(id) {
+  const branches = [...document.querySelectorAll('.ub-' + id + ':checked')].map(c => c.value);
+  try {
+    await api('/api/users', { method:'POST', body: JSON.stringify({ action:'update', id, branches }) });
+    toast('Branch access updated');
+    loadUsers();
+  } catch { toast('Failed to update branches', 'error'); }
+}
+
+// ════════════════════════════════════════════════════
+//  Recently Deleted — undo accidental deletions
+// ════════════════════════════════════════════════════
+let trashPosts = [], trashItems = [], trashNews = [], trashCareers = [], trashBranches = [], trashFaqs = [];
+async function loadTrash() {
+  const box = el('trashList');
+  box.innerHTML = '<p style="color:var(--ink-4);font-size:14px;">Loading…</p>';
+  try {
+    const [posts, items, news, careers, branches, faqs] = await Promise.all([
+      api('/api/blog?trash=1').then(d => d.posts || []).catch(() => []),
+      api('/api/site-data?trash=1').then(d => d.items || []).catch(() => []),
+      api('/api/content?trash=1').then(d => d.items || []).catch(() => []),
+      api('/api/careers?trash=1').then(d => d.openings || []).catch(() => []),
+      api('/api/branches?trash=1').then(d => d.branches || []).catch(() => []),
+      api('/api/faqs?trash=1').then(d => d.faqs || []).catch(() => []),
+    ]);
+    trashPosts = posts; trashItems = items; trashNews = news; trashCareers = careers; trashBranches = branches; trashFaqs = faqs;
+    const rows = [];
+    posts.forEach(p => rows.push({ kind: 'Blog post', name: p.title || p.slug || p.id, when: p.updatedAt, act: `restoreTrash('blog','${esc(p.id)}')` }));
+    items.forEach(it => {
+      const cfg = WEB_SECTIONS[it.section];
+      const label = cfg ? cfg.label : it.section;
+      const nm = (cfg && cfg.name && cfg.name(it.data)) || it.data.name || it.data.title || it.data.caption || it.id;
+      rows.push({ kind: label, name: nm, when: it.updatedAt, act: `restoreTrash('web','${esc(it.id)}')` });
+    });
+    news.forEach(item => rows.push({ kind: 'News & Updates', name: item.title || item.id, when: item.updatedAt, act: `restoreTrash('news','${esc(item.id)}')` }));
+    careers.forEach(item => rows.push({ kind: 'Career opening', name: item.title || item.id, when: item.updatedAt, act: `restoreTrash('career','${esc(item.id)}')` }));
+    branches.forEach(item => rows.push({ kind: 'Branch', name: item.name || item.slug || item.id, when: item.updatedAt, act: `restoreTrash('branch','${esc(item.id)}')` }));
+    faqs.forEach(item => rows.push({ kind: 'FAQ', name: item.question || item.id, when: item.updatedAt, act: `restoreTrash('faq','${esc(item.id)}')` }));
+    if (!rows.length) { box.innerHTML = '<p style="color:var(--ink-4);font-size:14px;">Nothing has been deleted recently.</p>'; return; }
+    rows.sort((a, b) => (b.when || '').localeCompare(a.when || ''));
+    box.innerHTML = rows.map(r => `
+      <div class="user-row">
+        <div class="user-info">
+          <div class="user-name">${esc(r.name)}</div>
+          <div class="user-email">${esc(r.kind)}${r.when ? ' · deleted ' + esc((r.when || '').slice(0, 10)) : ''}</div>
+        </div>
+        <button class="btn btn-primary btn-xs" onclick="${r.act}">↩ Restore</button>
+      </div>`).join('');
+  } catch { box.innerHTML = '<p style="color:var(--red);font-size:14px;">Could not load deleted items.</p>'; }
+}
+
+async function restoreTrash(kind, id) {
+  try {
+    if (kind === 'blog') {
+      const p = trashPosts.find(x => x.id === id) || {};
+      await api('/api/blog', { method:'POST', body: JSON.stringify({ id, title: p.title || 'Untitled', status:'published' }) });
+    } else if (kind === 'web') {
+      const it = trashItems.find(x => x.id === id) || {};
+      await api('/api/site-data', { method:'POST', body: JSON.stringify({ id, section: it.section, status:'published' }) });
+    } else if (kind === 'news') {
+      const item = trashNews.find(x => x.id === id) || {};
+      await api('/api/content', { method:'POST', body: JSON.stringify({ id, title: item.title || 'Untitled', status:'published' }) });
+    } else if (kind === 'career') {
+      const item = trashCareers.find(x => x.id === id) || {};
+      await api('/api/careers', { method:'POST', body: JSON.stringify({ id, title: item.title || 'Untitled', status:'published' }) });
+    } else if (kind === 'branch') {
+      const item = trashBranches.find(x => x.id === id) || {};
+      await api('/api/branches', { method:'POST', body: JSON.stringify({ id, name: item.name || 'Untitled branch', status:'published' }) });
+    } else if (kind === 'faq') {
+      const item = trashFaqs.find(x => x.id === id) || {};
+      await api('/api/faqs', { method:'POST', body: JSON.stringify({ id, question: item.question || 'Untitled question', status:'published' }) });
+    }
+    toast('Restored — it\'s back on the website');
+    loadTrash();
+  } catch (e) { toast(e.message || 'Failed to restore', 'error'); }
+}
+
+async function sendUserInvite(id, btn) {
+  const original = btn.textContent;
+  btn.innerHTML = '<span class="spinner spinner-dark"></span> Sending…';
+  btn.disabled = true;
+  try {
+    const result = await api('/api/users', { method:'POST', body: JSON.stringify({ action:'invite', id }) });
+    if (!result.inviteSent && result.inviteUrl) {
+      await navigator.clipboard.writeText(result.inviteUrl).catch(() => {});
+      toast('Email could not be sent; the new invite link was copied', 'error');
+    } else toast('Invitation email sent');
+    btn.textContent = 'Invite Sent ✓';
+    setTimeout(() => { btn.textContent = original; }, 2500);
+  } catch (e) {
+    toast(e.message || 'Failed to send invitation', 'error');
+    btn.textContent = original;
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 async function disableUser(id) {
@@ -1332,29 +3025,92 @@ el('cuCancelBtn').addEventListener('click', () => {
   el('createUserBtn').textContent = '+ Create User';
 });
 
+// Branch checkboxes for the Create-User form
+function renderCuBranches() {
+  el('cuBranches').innerHTML = ALL_BRANCHES.map(b =>
+    `<label style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink-2);cursor:pointer;">
+       <input type="checkbox" class="cu-branch" value="${b.slug}" /> ${b.label}
+     </label>`).join('');
+}
+function getCuBranches() {
+  return [...document.querySelectorAll('.cu-branch:checked')].map(c => c.value);
+}
+function syncCuBranchVisibility() {
+  el('cuBranchesField').style.display = el('cuRole').value === 'branch_blog_editor' ? '' : 'none';
+}
+renderCuBranches();
+syncCuBranchVisibility();
+el('cuRole').addEventListener('change', syncCuBranchVisibility);
+
 el('cuSaveBtn').addEventListener('click', async () => {
   const name     = el('cuName').value.trim();
   const email    = el('cuEmail').value.trim();
-  const password = el('cuPassword').value.trim();
   const role     = el('cuRole').value;
+  const branches = role === 'branch_blog_editor' ? getCuBranches() : [];
   const msgEl    = el('cuMsg');
 
   msgEl.style.color = 'var(--red)';
-  if (!name || !email || !password) { msgEl.textContent = 'All fields are required.'; return; }
-  if (password.length < 6) { msgEl.textContent = 'Password must be at least 6 characters.'; return; }
+  if (!name || !email) { msgEl.textContent = 'Name and email are required.'; return; }
 
   const btn = el('cuSaveBtn');
   btn.innerHTML = '<span class="spinner"></span>'; btn.disabled = true;
   try {
-    await api('/api/users', { method:'POST', body: JSON.stringify({ action:'create', name, email, password, role }) });
+    const result = await api('/api/users', { method:'POST', body: JSON.stringify({ action:'create-invite', name, email, role, branches }) });
     msgEl.style.color = 'var(--green)';
-    msgEl.textContent = `✓ ${name} created successfully`;
-    ['cuName','cuEmail','cuPassword'].forEach(id => el(id).value = '');
+    if (result.inviteSent) {
+      msgEl.textContent = `✓ Invitation sent to ${name}. They can create their own password from the link.`;
+    } else {
+      // Email delivery isn't configured for outside addresses yet — the account
+      // still works, so guide the Super Admin to share the login details.
+      const loginUrl = location.origin + '/admin/';
+      msgEl.innerHTML =
+        `✓ <strong>Invitation created for ${esc(name)}.</strong>` +
+        `<br>Copy and share this private link securely (it expires in 48 hours):` +
+        `<span style="display:block;margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--ink-2);font-size:13px;">` +
+        `🔗 <strong>${esc(result.inviteUrl || loginUrl)}</strong>` +
+        `</span>`;
+    }
+    ['cuName','cuEmail'].forEach(id => el(id).value = '');
+    document.querySelectorAll('.cu-branch').forEach(c => c.checked = false);
     loadUsers();
-    toast(`User ${name} created`);
+    toast(`User ${name} created`, 'success');
   } catch (e) {
     msgEl.textContent = e.message || 'Failed to create user.';
-  } finally { btn.innerHTML = 'Create User'; btn.disabled = false; }
+  } finally { btn.innerHTML = 'Create Invitation'; btn.disabled = false; }
+});
+
+const inviteToken = new URLSearchParams(location.search).get('invite');
+const resetToken = new URLSearchParams(location.search).get('reset');
+if (inviteToken) showView('inviteView');
+else if (resetToken) showView('resetPasswordView');
+el('acceptInviteBtn').addEventListener('click', async () => {
+  const password = el('invitePassword').value;
+  const confirm = el('invitePasswordConfirm').value;
+  const error = el('inviteError'); error.style.display = 'none';
+  if (password.length < 15) { error.textContent = 'Password must be at least 15 characters.'; error.style.display = 'block'; return; }
+  if (password !== confirm) { error.textContent = 'Passwords do not match.'; error.style.display = 'block'; return; }
+  const btn = el('acceptInviteBtn'); btn.disabled = true; btn.textContent = 'Activating…';
+  try {
+    const response = await fetch('/api/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'accept-invite', token:inviteToken, password }) });
+    const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Could not accept invitation');
+    history.replaceState({}, '', location.pathname); showView('loginView'); el('loginEmail').value = data.email || ''; el('loginError').style.display = 'block'; el('loginError').style.color = 'var(--green)'; el('loginError').textContent = 'Account activated. Sign in with your new password.';
+  } catch (e) { error.textContent = e.message; error.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = 'Activate Account'; }
+});
+el('completeResetBtn').addEventListener('click', async () => {
+  const password = el('resetPassword').value;
+  const confirm = el('resetPasswordConfirm').value;
+  const error = el('resetError'); error.style.display = 'none';
+  if (password.length < 15) { error.textContent = 'Password must be at least 15 characters.'; error.style.display = 'block'; return; }
+  if (password !== confirm) { error.textContent = 'Passwords do not match.'; error.style.display = 'block'; return; }
+  const btn = el('completeResetBtn'); btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const response = await fetch('/api/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'reset-password', token:resetToken, password }) });
+    const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Could not reset password');
+    history.replaceState({}, '', location.pathname); showView('loginView'); el('loginEmail').value = data.email || ''; el('loginError').style.display = 'block'; el('loginError').style.color = 'var(--green)'; el('loginError').textContent = 'Password updated. Sign in with your new password.';
+    el('resetPassword').value = ''; el('resetPasswordConfirm').value = '';
+  } catch (e) { error.textContent = e.message; error.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = 'Save New Password'; }
 });
 </script>
 </body>

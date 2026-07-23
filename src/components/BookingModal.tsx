@@ -1,18 +1,26 @@
 import { useEffect, useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
-import { referralSources, serviceOptions } from '../data/site';
+import { referralSources, services as staticServices } from '../data/site';
+import { useBranches } from '../data/branches';
+import { useSection } from '../data/siteData';
 import { useBooking } from './booking';
+import { pushEvent } from '../lib/track';
 
 export function BookingModal() {
   const { open, closeBooking, presetService } = useBooking();
+  const branches = useBranches();
+  const services = useSection<{ title: string }>('services', staticServices);
+  const serviceOptions = [...services.map(s => s.title), 'Other'];
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [branch, setBranch] = useState('');
   const [service, setService] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [message, setMessage] = useState('');
   const [referral, setReferral] = useState('');
+  const [referralOther, setReferralOther] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -36,14 +44,21 @@ export function BookingModal() {
       const res = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, email, service, date, time, message, referral }),
+        body: JSON.stringify({
+          name, phone, email, branch, service, date, time, message,
+          referral: referral === 'Other' ? (referralOther.trim() || 'Other') : referral,
+        }),
       });
 
       if (!res.ok) throw new Error('Failed to save');
 
-      const waMsg = `Hello! I'd like to book an appointment.%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0AService: ${encodeURIComponent(service || 'General')}%0ADate: ${encodeURIComponent(date)}%0ATime: ${encodeURIComponent(time)}`;
-      window.open(`https://wa.me/254707535000?text=${waMsg}`, '_blank');
+      // Conversion: appointment request saved (GTM 'booking_submitted' + Meta Lead)
+      pushEvent('booking_submitted', { service: service || 'General', branch: branch || 'Any' });
+      window.fbq?.('track', 'Lead');
 
+      // The server now delivers the booking straight to the selected branch's
+      // WhatsApp via the bot gateway (see api/appointments.ts), so there's no
+      // longer a need to open the patient's WhatsApp and ask them to press send.
       setSent(true);
     } catch {
       setError('Something went wrong. Please try again or call us directly.');
@@ -69,13 +84,13 @@ export function BookingModal() {
           <div className="py-8 text-center">
             <div className="mb-4 text-5xl">✓</div>
             <h3 className="mb-2 text-xl font-900 text-ink-900">Booking received!</h3>
-            <p className="text-sm text-ink-500">Your request has been saved and the team has been notified. WhatsApp is open, send the message for an instant reply.</p>
+            <p className="text-sm text-ink-500">Your request has been saved and sent straight to your chosen branch on WhatsApp. The team will confirm shortly — usually within 5 minutes during opening hours.</p>
             <button onClick={closeBooking} className="btn-primary mt-6 w-full">Done</button>
           </div>
         ) : (
           <>
             <h3 className="mb-1 text-xl font-900 text-ink-900">Book an appointment</h3>
-            <p className="mb-5 text-sm text-ink-500">Fill in your details and we'll confirm within 10 minutes.</p>
+            <p className="mb-5 text-sm text-ink-500">Fill in your details and we'll confirm within 5 minutes.</p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
@@ -83,6 +98,13 @@ export function BookingModal() {
                 <input required value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone number *" className={inputClass} />
                 <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email (optional)" className={inputClass} />
               </div>
+
+              <select required value={branch} onChange={e => setBranch(e.target.value)} className={inputClass}>
+                <option value="">Select a branch *</option>
+                {branches.map(b => (
+                  <option key={b.slug} value={b.name}>{b.name}</option>
+                ))}
+              </select>
 
               <select required value={service} onChange={e => setService(e.target.value)} className={inputClass}>
                 <option value="">Select a service *</option>
@@ -117,6 +139,14 @@ export function BookingModal() {
                     <option key={source} value={source}>{source}</option>
                   ))}
                 </select>
+                {referral === 'Other' && (
+                  <input
+                    value={referralOther}
+                    onChange={e => setReferralOther(e.target.value)}
+                    placeholder="Please tell us how you heard about us"
+                    className={`mt-3 ${inputClass}`}
+                  />
+                )}
               </div>
 
               {error && <p className="text-sm font-600 text-red-500">{error}</p>}
