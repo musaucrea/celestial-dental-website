@@ -1,5 +1,66 @@
 {
+  "crons": [
+    { "path": "/api/track?weekly=1", "schedule": "0 5 * * 1" }
+  ],
+  "functions": {
+    "api/appointments.ts": { "maxDuration": 30 },
+    "api/careers.ts": { "maxDuration": 30 }
+  },
+  "redirects": [
+    { "source": "/best-dental-clinic-nairobi", "destination": "/", "permanent": true },
+    { "source": "/home", "destination": "/", "permanent": true },
+    { "source": "/aboutus", "destination": "/about", "permanent": true },
+    { "source": "/appointment", "destination": "/?book=1", "permanent": true },
+    { "source": "/contact-us", "destination": "/#branches", "permanent": true },
+    { "source": "/services/generaldentistry", "destination": "/services/general-dentistry", "permanent": true },
+    { "source": "/services/dentalemergencies", "destination": "/services/dental-emergencies", "permanent": true },
+    { "source": "/services/cosmeticdentistry", "destination": "/services/cosmetic-dentistry", "permanent": true },
+    { "source": "/services/teethwhitening", "destination": "/services/teeth-whitening", "permanent": true },
+    { "source": "/services/dentalbridgescrowns", "destination": "/services/dental-bridges-and-crowns", "permanent": true },
+    { "source": "/services/fullpartialdentures", "destination": "/services/full-and-partial-dentures", "permanent": true },
+    { "source": "/services/dentalimplants", "destination": "/services/dental-implants", "permanent": true },
+    { "source": "/services/orthodonticsbraces", "destination": "/services/orthodontics-braces", "permanent": true },
+    { "source": "/services/rootcanaltherapy", "destination": "/services/root-canal-therapy", "permanent": true },
+    { "source": "/services/childrendentistry", "destination": "/services/childrens-dentistry", "permanent": true },
+    { "source": "/services/dentalfillings", "destination": "/services/dental-fillings", "permanent": true },
+    { "source": "/services/gumdiseasetreatment", "destination": "/services/gum-disease-treatment", "permanent": true },
+    { "source": "/services/teethextraction", "destination": "/services/teeth-extraction", "permanent": true },
+    { "source": "/services/teethcleaning", "destination": "/services/teeth-cleaning", "permanent": true },
+    {
+      "source": "/:path*",
+      "has": [
+        { "type": "host", "value": "www.celestialdental.org" }
+      ],
+      "destination": "https://celestialdental.org/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
   "headers": [
+    {
+      "source": "/admin",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    },
+    {
+      "source": "/admin/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [

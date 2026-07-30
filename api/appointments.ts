@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { timingSafeEqual } from 'node:crypto';
 import { google } from 'googleapis';
-import { isAdminOrAbove, canManageAppointments } from './_utils.js';
+import { isAdminOrAbove, canManageAppointments, getRole } from './_utils.js';
 
 type AppointmentPayload = {
   name?: string;
@@ -20,8 +21,39 @@ function clean(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+// Once the booking is in the sheet it is saved, full stop. The notifiers that
+// run afterwards (Resend, CRM, WhatsApp) talk to third parties that can be slow
+// — CallMeBot in particular — and every one of them used to be awaited before
+// the response. A single stalled gateway therefore ran the function past its
+// time limit and the patient was told "Something went wrong" for a booking that
+// had actually been saved. Every outbound call is now bounded, so the worst
+// case is a missing notification, never a failed-looking booking.
+const NOTIFY_TIMEOUT_MS = 4000;
+const NOTIFY_BUDGET_MS = 6000;
+
+function notifyTimeout() {
+  return AbortSignal.timeout(NOTIFY_TIMEOUT_MS);
+}
+
+function withBudget<T>(label: string, task: Promise<T>) {
+  return Promise.race([
+    task,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} notifier timed out`)), NOTIFY_BUDGET_MS)),
+  ]);
+}
+
 function getPrivateKey() {
   return process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+}
+
+function isCrmSyncAuthorized(req: VercelRequest) {
+  const secret = process.env.CRM_LEAD_WEBHOOK_SECRET;
+  const supplied = String(req.headers['x-website-lead-secret'] || '');
+  if (!secret || !supplied) return false;
+  const expected = Buffer.from(secret);
+  const received = Buffer.from(supplied);
+  return expected.length === received.length && timingSafeEqual(expected, received);
 }
 
 // Branch lives in column K (appended after the original A:J layout) so existing
@@ -186,6 +218,7 @@ async function sendEmailNotification(payload: AppointmentPayload) {
     recipients.map(async (to) => {
       const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
+        signal: notifyTimeout(),
         headers: {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
@@ -227,18 +260,87 @@ function branchWhatsAppNumber(branch: string): string {
   return process.env.WHATSAPP_TO_KASARANI?.replace(/\D/g, '') || BRANCH_WHATSAPP.kasarani;
 }
 
-// Best-effort push of the booking straight into the preferred branch's WhatsApp
-// via a bot gateway. Like the email and CRM notifiers, a failure here must never
-// fail the booking response.
-//
-// Two providers are supported (Green API is checked first):
+// Who gets the booking on WhatsApp: the preferred branch's line, plus the
+// owner's own phone when WHATSAPP_TO_OWNER is set (digits, international, no
+// '+'). Set WHATSAPP_BRANCH_NOTIFY=off to make the owner the *only* recipient —
+// useful while the branch lines are still being trained on the new flow.
+function whatsAppRecipients(branch: string): string[] {
+  const owner = process.env.WHATSAPP_TO_OWNER?.replace(/\D/g, '');
+  const branchOff = (process.env.WHATSAPP_BRANCH_NOTIFY || '').trim().toLowerCase() === 'off';
+  const recipients: string[] = [];
+  // Never silence the branch unless an owner number is actually configured,
+  // otherwise a stray env var would drop bookings on the floor.
+  if (!(branchOff && owner)) recipients.push(branchWhatsAppNumber(branch));
+  if (owner) recipients.push(owner);
+  return [...new Set(recipients.filter(Boolean))];
+}
+
+// Delivers one booking to one WhatsApp number through whichever gateway is
+// configured. Providers are tried in order of setup cost and the first one with
+// credentials wins:
 //   Green API (free Developer tier) — set GREEN_API_ID_INSTANCE +
 //     GREEN_API_TOKEN_INSTANCE (optional GREEN_API_URL to override the host).
+//     Needs a dedicated sender line linked by QR; can message any number.
 //   UltraMsg / compatible — set WHATSAPP_API_TOKEN + WHATSAPP_INSTANCE_ID
 //     (or WHATSAPP_API_URL for the full {token,to,body} endpoint).
-// If neither is configured the function skips silently.
+//   CallMeBot (free, no sender line) — set CALLMEBOT_APIKEY_<digits> per
+//     recipient, e.g. CALLMEBOT_APIKEY_254712345678. Each recipient grants
+//     permission once from their own phone and gets their own key, so a number
+//     without a key is skipped rather than treated as a failure.
+// If nothing is configured the function skips silently.
+async function sendWhatsAppTo(to: string, text: string) {
+  // Green API: POST /waInstance{id}/sendMessage/{token} with {chatId, message}.
+  const greenId = process.env.GREEN_API_ID_INSTANCE;
+  const greenToken = process.env.GREEN_API_TOKEN_INSTANCE;
+  if (greenId && greenToken) {
+    const base = (process.env.GREEN_API_URL || 'https://api.green-api.com').replace(/\/$/, '');
+    const response = await fetch(`${base}/waInstance${greenId}/sendMessage/${greenToken}`, {
+      method: 'POST',
+      signal: notifyTimeout(),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chatId: `${to}@c.us`, message: text }),
+    });
+    if (!response.ok) {
+      console.error('WhatsApp (Green API) notification failed', to, response.status, await response.text());
+    }
+    return;
+  }
+
+  // UltraMsg (or any gateway sharing its {token, to, body} shape).
+  const token = process.env.WHATSAPP_API_TOKEN;
+  const instanceId = process.env.WHATSAPP_INSTANCE_ID;
+  const url = process.env.WHATSAPP_API_URL
+    || (instanceId ? `https://api.ultramsg.com/${instanceId}/messages/chat` : '');
+  if (token && url) {
+    const response = await fetch(url, {
+      method: 'POST',
+      signal: notifyTimeout(),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, to, body: text }),
+    });
+    if (!response.ok) {
+      console.error('WhatsApp (UltraMsg) notification failed', to, response.status, await response.text());
+    }
+    return;
+  }
+
+  // CallMeBot: GET whatsapp.php?phone=&text=&apikey=, one key per recipient.
+  const callMeBotKey = process.env[`CALLMEBOT_APIKEY_${to}`];
+  if (!callMeBotKey) return; // not configured for this number → skip silently
+  const endpoint = `https://api.callmebot.com/whatsapp.php?phone=${to}`
+    + `&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(callMeBotKey)}`;
+  const response = await fetch(endpoint, { signal: notifyTimeout() });
+  if (!response.ok) {
+    console.error('WhatsApp (CallMeBot) notification failed', to, response.status, await response.text());
+  }
+}
+
+// Best-effort push of the booking straight into WhatsApp — the preferred
+// branch's line and, when configured, the owner's own phone. Like the email and
+// CRM notifiers, a failure here must never fail the booking response, and one
+// unreachable recipient must not stop the rest.
 async function sendWhatsAppNotification(payload: AppointmentPayload) {
-  const to = branchWhatsAppNumber(clean(payload.branch)); // digits, e.g. 254754400500
+  const recipients = whatsAppRecipients(clean(payload.branch)); // digits, e.g. 254754400500
   const text = [
     'New appointment request',
     `Patient: ${clean(payload.name)}`,
@@ -252,82 +354,32 @@ async function sendWhatsAppNotification(payload: AppointmentPayload) {
     clean(payload.referral) ? `Heard via: ${clean(payload.referral)}` : '',
   ].filter(Boolean).join('\n');
 
-  // Green API: POST /waInstance{id}/sendMessage/{token} with {chatId, message}.
-  const greenId = process.env.GREEN_API_ID_INSTANCE;
-  const greenToken = process.env.GREEN_API_TOKEN_INSTANCE;
-  if (greenId && greenToken) {
-    const base = (process.env.GREEN_API_URL || 'https://api.green-api.com').replace(/\/$/, '');
-    const response = await fetch(`${base}/waInstance${greenId}/sendMessage/${greenToken}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chatId: `${to}@c.us`, message: text }),
-    });
-    if (!response.ok) {
-      console.error('WhatsApp (Green API) notification failed', response.status, await response.text());
-    }
-    return;
-  }
-
-  // UltraMsg (or any gateway sharing its {token, to, body} shape).
-  const token = process.env.WHATSAPP_API_TOKEN;
-  const instanceId = process.env.WHATSAPP_INSTANCE_ID;
-  const url = process.env.WHATSAPP_API_URL
-    || (instanceId ? `https://api.ultramsg.com/${instanceId}/messages/chat` : '');
-  if (!token || !url) return; // not configured → skip silently
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, to, body: text }),
-  });
-  if (!response.ok) {
-    console.error('WhatsApp (UltraMsg) notification failed', response.status, await response.text());
-  }
+  await Promise.all(
+    recipients.map(async (to) => {
+      try {
+        await sendWhatsAppTo(to, text);
+      } catch (error) {
+        console.error('WhatsApp notification failed', to, error);
+      }
+    }),
+  );
 }
 
-// Maps the website's free-text service titles (src/data/site.ts) to the CRM's
-// DentalService enum. Unmatched/renamed titles fall back to OTHER — the raw
-// title is always preserved in the CRM lead's notes, so nothing is lost.
-function mapServiceTitleToEnum(service: string): string {
-  const s = service.toLowerCase();
-  if (s.includes('brace') || s.includes('orthodont')) return 'BRACES';
-  if (s.includes('whiten')) return 'WHITENING';
-  if (s.includes('implant')) return 'IMPLANTS';
-  if (s.includes('root canal')) return 'ROOT_CANAL';
-  if (s.includes('filling')) return 'FILLING';
-  if (s.includes('extraction')) return 'EXTRACTION';
-  if (s.includes('clean') || s.includes('checkup')) return 'CLEANING';
-  return 'OTHER';
-}
-
-// Matches against the CRM's known branches by loose name; returns null (not
-// mapped) for branches the CRM doesn't have yet (e.g. Eldoret). The raw
-// branch name is always preserved in notes regardless.
-function mapBranchNameToId(branch: string): string | null {
-  const b = branch.toLowerCase();
-  if (b.includes('kasarani')) return 'branch-kasarani';
-  if (b.includes('kamakis')) return 'branch-kamakis';
-  return null;
-}
-
-// Best-effort push into the CRM as a real lead. Mirrors sendEmailNotification's
-// contract: a failure here must never fail the booking response.
-async function sendToCrm(payload: AppointmentPayload) {
+// Best-effort push into the CRM, which records the booking as a lead *and* a
+// linked appointment so it appears on the CRM's Appointments page. Mirrors
+// sendEmailNotification's contract: a failure here must never fail the booking.
+//
+// Service/branch mapping, date parsing and de-duplication all live CRM-side in
+// /api/website-bookings, so this just forwards the booking verbatim. Exported so
+// the sheet backfill below reuses exactly this path.
+export async function sendToCrm(payload: AppointmentPayload, status = 'pending') {
   const url = process.env.CRM_LEAD_WEBHOOK_URL;
   const secret = process.env.CRM_LEAD_WEBHOOK_SECRET;
   if (!url || !secret) return;
 
-  const branch = clean(payload.branch);
-  const service = clean(payload.service);
-  const notesParts = [
-    'Booking request via website.',
-    branch ? `Branch: ${branch}.` : '',
-    `Requested: ${clean(payload.date)} ${clean(payload.time)}.`,
-    clean(payload.message) ? `Message: ${clean(payload.message)}` : '',
-  ].filter(Boolean);
-
   const response = await fetch(url, {
     method: 'POST',
+    signal: notifyTimeout(),
     headers: {
       'Content-Type': 'application/json',
       'x-website-lead-secret': secret,
@@ -335,17 +387,33 @@ async function sendToCrm(payload: AppointmentPayload) {
     body: JSON.stringify({
       name: clean(payload.name),
       phone: clean(payload.phone),
-      email: clean(payload.email) || undefined,
-      source: 'WEBSITE',
-      services: service ? [mapServiceTitleToEnum(service)] : [],
-      branchId: branch ? mapBranchNameToId(branch) : null,
-      notes: notesParts.join(' '),
+      email: clean(payload.email),
+      branch: clean(payload.branch),
+      service: clean(payload.service),
+      date: clean(payload.date),
+      time: clean(payload.time),
+      message: clean(payload.message),
+      referral: clean(payload.referral),
+      status,
     }),
   });
 
   if (!response.ok) {
-    console.error('CRM lead push failed', response.status, await response.text());
+    const detail = await response.text();
+    console.error('CRM booking push failed', response.status, detail);
+    throw new Error(`CRM booking push failed (${response.status})`);
   }
+}
+
+// A bare "Unauthorized" sends desk staff off resetting a password that was
+// never the problem. Say which of the two it is: signed out, or signed in
+// without the role. The status stays 401 either way so the admin portal's
+// existing sign-in handling is unaffected.
+async function denyReason(req: VercelRequest, action: string) {
+  const role = await getRole(req);
+  return role
+    ? `Your ${role.replace(/_/g, ' ')} account is not allowed to ${action}. Ask a super admin for access.`
+    : `You are signed out. Sign in again to ${action}.`;
 }
 
 // Deleting stays restricted to admins.
@@ -392,61 +460,153 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'GET') {
-    if (!await isDeskAuthed(req)) return res.status(401).json({ error: 'Unauthorized' });
+    if (!await isDeskAuthed(req)) {
+      return res.status(401).json({ error: await denyReason(req, 'view appointments') });
+    }
     try {
       const appointments = await readAppointments();
       return res.status(200).json({ appointments });
     } catch (error) {
-      return res.status(500).json({ error: 'Could not read appointments' });
+      console.error('Could not read appointments', error);
+      return res.status(500).json({
+        error: error instanceof Error && error.message.includes('env vars')
+          ? "Appointments can't be read — the appointments store isn't configured."
+          : "Appointments can't be read — the appointments store didn't respond.",
+      });
     }
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: `${req.method} is not supported here — appointments accept GET and POST.` });
   }
 
   const body = (req.body || {}) as Record<string, string>;
 
+  // Production backfill: replay the website appointment sheet through the
+  // normal CRM sender. Keeping this operation inside the existing appointments
+  // function avoids an extra serverless function on Vercel Hobby.
+  if (body.action === 'syncToCrm') {
+    // Machine caller: name the cause without naming the header it got wrong.
+    if (!isCrmSyncAuthorized(req)) {
+      return res.status(401).json({ error: 'The CRM sync secret is missing or does not match.' });
+    }
+    if (!process.env.CRM_LEAD_WEBHOOK_URL) {
+      return res.status(503).json({ error: 'CRM_LEAD_WEBHOOK_URL is not configured' });
+    }
+
+    let appointments: Array<Record<string, string>>;
+    try {
+      appointments = await readAppointments();
+    } catch (error) {
+      console.error('CRM backfill could not read appointments', error);
+      return res.status(500).json({
+        error: 'The backfill could not read the appointments sheet, so nothing was pushed.',
+      });
+    }
+
+    const limit = Number(body.limit);
+    if (Number.isFinite(limit) && limit > 0) {
+      appointments = appointments.slice(0, Math.floor(limit));
+    }
+
+    let pushed = 0;
+    const failures: Array<{ row: number; reason: string }> = [];
+    for (const [index, appointment] of appointments.entries()) {
+      if (!clean(appointment.name)) continue;
+      try {
+        await sendToCrm(
+          {
+            name: appointment.name,
+            phone: appointment.phone,
+            email: appointment.email,
+            branch: appointment.branch,
+            service: appointment.service,
+            date: appointment.date,
+            time: appointment.time,
+            message: appointment.message,
+            referral: appointment.referral,
+          },
+          appointment.status || 'pending',
+        );
+        pushed++;
+      } catch (error) {
+        failures.push({
+          row: index + 1,
+          reason: error instanceof Error ? error.message : 'unknown error',
+        });
+      }
+    }
+
+    return res.status(200).json({
+      sheetRows: appointments.length,
+      pushed,
+      failed: failures.length,
+      failures: failures.slice(0, 20),
+      note: 'Safe to rerun; CRM imports are de-duplicated by lead and scheduled time.',
+    });
+  }
+
   // Admin: mark an appointment confirmed (or another status)
   if (body.action === 'updateStatus') {
-    if (!await isDeskAuthed(req)) return res.status(401).json({ error: 'Unauthorized' });
+    if (!await isDeskAuthed(req)) {
+      return res.status(401).json({ error: await denyReason(req, 'confirm appointments') });
+    }
     const timestamp = clean(body.timestamp);
     const status = ['confirmed', 'pending', 'cancelled'].includes(body.status) ? body.status : 'confirmed';
-    if (!timestamp) return res.status(400).json({ error: 'Appointment timestamp required' });
+    if (!timestamp) {
+      return res.status(400).json({ error: 'This appointment has no timestamp, so it cannot be identified in the sheet.' });
+    }
     try {
       await updateStatus(timestamp, status);
       return res.status(200).json({ ok: true });
     } catch (error) {
       if (error instanceof Error && error.message === 'NOT_FOUND') {
-        return res.status(404).json({ error: 'Appointment not found' });
+        return res.status(404).json({ error: `No appointment matches ${timestamp} — it may already have been deleted.` });
       }
       console.error('Status update failed', error);
-      return res.status(500).json({ error: 'Could not update appointment' });
+      return res.status(500).json({ error: `The appointment could not be marked ${status} — the appointments store rejected the update.` });
     }
   }
 
   // Admin: permanently remove an appointment (e.g. test bookings)
   if (body.action === 'delete') {
-    if (!await isAuthed(req)) return res.status(401).json({ error: 'Unauthorized' });
+    if (!await isAuthed(req)) {
+      return res.status(401).json({ error: await denyReason(req, 'delete appointments') });
+    }
     const timestamp = clean(body.timestamp);
-    if (!timestamp) return res.status(400).json({ error: 'Appointment timestamp required' });
+    if (!timestamp) {
+      return res.status(400).json({ error: 'This appointment has no timestamp, so it cannot be identified in the sheet.' });
+    }
     try {
       await deleteAppointment(timestamp);
       return res.status(200).json({ ok: true });
     } catch (error) {
       if (error instanceof Error && error.message === 'NOT_FOUND') {
-        return res.status(404).json({ error: 'Appointment not found' });
+        return res.status(404).json({ error: `No appointment matches ${timestamp} — it may already have been deleted.` });
       }
       console.error('Appointment delete failed', error);
-      return res.status(500).json({ error: 'Could not delete appointment' });
+      return res.status(500).json({ error: 'The appointment could not be deleted — the appointments store rejected the change.' });
     }
   }
 
   const payload = body as AppointmentPayload;
   const missing = requiredFields.filter((field) => !clean(payload[field]));
 
+  // Name the missing fields: "Missing required appointment details" leaves the
+  // patient guessing which box they skipped.
   if (missing.length > 0) {
-    return res.status(400).json({ error: 'Missing required appointment details' });
+    const labels: Record<string, string> = {
+      name: 'your name', phone: 'a phone number', service: 'a service',
+      date: 'a preferred date', time: 'a preferred time',
+    };
+    const listed = missing.map(field => labels[field] || field);
+    const readable = listed.length > 1
+      ? `${listed.slice(0, -1).join(', ')} and ${listed[listed.length - 1]}`
+      : listed[0];
+    return res.status(400).json({
+      error: `Your booking is missing ${readable}.`,
+      fields: missing,
+    });
   }
 
   // Preview deployments intentionally do not inherit the production Google
@@ -466,26 +626,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await appendToSheet(payload);
   } catch (error) {
     console.error('Appointment request failed', error);
-    return res.status(500).json({ error: 'Could not save appointment request' });
+    // Say which half broke — a misconfigured deployment and a rejected write
+    // need completely different responses from whoever reads this. Details stay
+    // in the log; the patient gets the cause in plain words (the site adds the
+    // "call us instead" line to any 5xx).
+    const misconfigured = error instanceof Error && error.message.includes('environment variables');
+    return res.status(500).json({
+      error: misconfigured
+        ? "We couldn't save your booking — our appointments system isn't configured right now."
+        : "We couldn't save your booking — our appointments system rejected it.",
+      reason: misconfigured ? 'sheets_not_configured' : 'sheets_write_failed',
+    });
   }
 
-  // Email and CRM push are best-effort — neither failure may fail the booking.
-  try {
-    await sendEmailNotification(payload);
-  } catch (error) {
-    console.error('Appointment saved but email notification failed', error);
-  }
-
-  try {
-    await sendToCrm(payload);
-  } catch (error) {
-    console.error('Appointment saved but CRM lead push failed', error);
-  }
-
-  try {
-    await sendWhatsAppNotification(payload);
-  } catch (error) {
-    console.error('Appointment saved but WhatsApp notification failed', error);
+  // The booking is saved from here on. Email, CRM and WhatsApp are best-effort:
+  // they run together rather than one after another, each on its own budget, so
+  // no combination of slow gateways can push the function past its time limit
+  // and turn a saved booking into an error on the patient's screen.
+  const notifications = await Promise.allSettled([
+    withBudget('email', sendEmailNotification(payload)),
+    withBudget('CRM', sendToCrm(payload)),
+    withBudget('WhatsApp', sendWhatsAppNotification(payload)),
+  ]);
+  for (const result of notifications) {
+    if (result.status === 'rejected') {
+      console.error('Appointment saved but a notification failed', result.reason);
+    }
   }
 
   return res.status(200).json({ ok: true });

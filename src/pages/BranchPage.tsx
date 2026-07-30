@@ -1,16 +1,21 @@
 import { useParams, Link } from 'react-router-dom';
-import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft } from 'lucide-react';
-import { branches, services, testimonials, site } from '../data/site';
+import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
+import { googleBusinessProfiles, services as staticServices, site } from '../data/site';
+import { useBranches } from '../data/branches';
+import { useSection } from '../data/siteData';
 import { Header } from '../components/Header';
 import { Reveal } from '../components/Reveal';
 import { BookingProvider, useBooking } from '../components/booking';
 import { BookingModal } from '../components/BookingModal';
 import { SchemaOrg } from '../components/SchemaOrg';
+import { SEO } from '../components/SEO';
 
 function BranchPageInner() {
   const { slug } = useParams<{ slug: string }>();
+  const branches = useBranches();
   const branch = branches.find(b => b.slug === slug);
   const { openBooking } = useBooking();
+  const services = useSection<{ title: string; description: string; image: string }>('services', staticServices);
 
   if (!branch) {
     return (
@@ -22,9 +27,31 @@ function BranchPageInner() {
   }
 
   const otherBranches = branches.filter(b => b.slug !== slug);
+  const googleProfile = googleBusinessProfiles[branch.slug];
+  const mapUrl = googleProfile?.profileUrl || branch.map;
+
+  // Search phrasing includes the wider locality, not just the branch name
+  // (e.g. people search "dentist in ruiru" for Kamakis, "nairobi" for Kasarani).
+  const locality = { kasarani: 'Kasarani, Nairobi', kamakis: 'Kamakis, Ruiru' }[branch.slug] || branch.name;
 
   return (
     <>
+      <SEO
+        title={`Dentist in ${locality} | ${site.name}`}
+        description={`${branch.description} Open daily 07:00-20:00. SHA and 20+ insurance schemes accepted. Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
+        image={branch.image}
+        canonicalPath={`/branches/${branch.slug}`}
+        keywords={[
+          `dentist ${branch.name}`,
+          `dental clinic ${branch.name}`,
+          `emergency dentist ${branch.name}`,
+          `braces ${branch.name}`,
+          `orthodontist ${branch.name}`,
+          `dental implants ${branch.name}`,
+          `teeth cleaning ${branch.name}`,
+          `dental checkup ${branch.name}`,
+        ]}
+      />
       <SchemaOrg />
       <Header />
       <main className="pt-28">
@@ -94,7 +121,7 @@ function BranchPageInner() {
                       {branch.address.map((line, i) => <span key={i} className="block">{line}</span>)}
                     </address>
                     <a
-                      href={branch.map}
+                      href={mapUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-2 inline-flex items-center gap-1 text-xs font-800 text-brand-600 hover:text-brand-800 transition-colors"
@@ -140,8 +167,76 @@ function BranchPageInner() {
                 </div>
               </Reveal>
             </div>
+
+            <Reveal delay={240}>
+              <div className="mt-6 rounded-3xl bg-white p-6 shadow-card flex items-start gap-4">
+                <ShieldCheck className="h-6 w-6 shrink-0 text-brand-500" />
+                <div>
+                  <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">Insurance &amp; SHA</p>
+                  <p className="text-sm text-ink-700 leading-relaxed">
+                    We accept SHA (Social Health Authority) for eligible schemes and covered treatments at our {branch.name} branch,
+                    plus direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance.
+                    Bring your insurance card or SHA details and our front desk will handle pre-authorisation. M-Pesa and cash also accepted.
+                  </p>
+                </div>
+              </div>
+            </Reveal>
+
+            {googleProfile && (
+              <Reveal delay={280}>
+                <div className="mt-6 rounded-3xl border border-gold-200 bg-gold-50 p-6 shadow-card sm:flex sm:items-center sm:justify-between sm:gap-6">
+                  <div className="flex items-start gap-4">
+                    <Star className="h-6 w-6 shrink-0 fill-gold-400 text-gold-500" />
+                    <div>
+                      <p className="font-900 text-ink-900">Visited our {branch.name} branch?</p>
+                      <p className="mt-1 text-sm leading-relaxed text-ink-600">
+                        Read the current feedback or share an honest review on our official Google Business Profile.
+                        Every genuine patient experience helps people make a better-informed choice.
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href={googleProfile.profileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-ghost mt-5 shrink-0 text-sm sm:mt-0"
+                  >
+                    View or review on Google
+                    <ChevronRight className="h-4 w-4" />
+                  </a>
+                </div>
+              </Reveal>
+            )}
           </div>
         </section>
+
+        {/* Branch photo gallery (admin-managed, up to 5 photos) */}
+        {branch.photos && branch.photos.length > 0 && (
+          <section className="py-16 lg:py-20 bg-mint">
+            <div className="container-page">
+              <Reveal>
+                <span className="eyebrow"><span className="h-1.5 w-1.5 rounded-full bg-gold-500" />Photo Tour</span>
+              </Reveal>
+              <Reveal delay={80}>
+                <h2 className="mt-4 text-3xl font-900 text-ink-900">Inside our {branch.name} branch</h2>
+              </Reveal>
+              <div className="mt-10 grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+                {branch.photos.slice(0, 5).map((src, i) => (
+                  <Reveal key={`${src}-${i}`} delay={i * 50}>
+                    <div className={`group overflow-hidden rounded-2xl shadow-card transition-all duration-300 hover:shadow-float ${i === 0 ? 'col-span-2' : ''}`}>
+                      <img
+                        src={src}
+                        alt={`Celestial Dental ${branch.name} — photo ${i + 1}`}
+                        loading="lazy"
+                        className="w-full h-auto group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Services */}
         <section className="py-20 lg:py-28">
@@ -157,40 +252,13 @@ function BranchPageInner() {
                 <Reveal key={s.title} delay={i * 60}>
                   <div className="group overflow-hidden rounded-3xl bg-white shadow-card border border-brand-100 hover:-translate-y-1 transition-transform duration-300">
                     <div className="relative h-48 overflow-hidden">
-                      <img src={s.image} alt={s.title} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img loading="lazy" decoding="async" src={s.image} alt={s.title} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>
                     <div className="p-6">
                       <h3 className="text-lg font-800 text-ink-900">{s.title}</h3>
                       <p className="mt-2 text-sm leading-relaxed text-ink-500">{s.description}</p>
                       <button onClick={() => openBooking(s.title)} className="mt-4 text-sm font-800 text-brand-600 hover:text-brand-800 transition-colors">Book this →</button>
                     </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials */}
-        <section className="py-20 lg:py-28 bg-mint">
-          <div className="container-page">
-            <Reveal>
-              <span className="eyebrow"><span className="h-1.5 w-1.5 rounded-full bg-gold-500" />Patient Stories</span>
-            </Reveal>
-            <Reveal delay={80}>
-              <h2 className="mt-4 text-4xl font-900 text-ink-900 max-w-xl">Loved by the community</h2>
-            </Reveal>
-            <div className="mt-12 grid gap-6 sm:grid-cols-3">
-              {testimonials.map((t, i) => (
-                <Reveal key={i} delay={i * 80}>
-                  <div className="rounded-3xl border border-brand-100 bg-white p-7 shadow-card">
-                    <div className="flex gap-1 text-gold-500 mb-4">
-                      {Array.from({ length: 5 }).map((_, j) => (
-                        <svg key={j} className="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                      ))}
-                    </div>
-                    <p className="text-sm leading-relaxed text-ink-700 italic">"{t.quote}"</p>
-                    <p className="mt-4 text-xs font-800 text-ink-500">— {t.author}</p>
                   </div>
                 </Reveal>
               ))}
@@ -262,7 +330,7 @@ function BranchPageInner() {
             <div className="text-sm text-white/50 text-center sm:text-right">
               <p>{site.hours}</p>
               <p className="mt-1">{site.email}</p>
-              <p className="mt-1">&copy; {new Date().getFullYear()} {site.name}</p>
+              <p className="mt-1">&copy; {new Date().getFullYear()} {site.name}. Built by MusauCreative.</p>
             </div>
           </div>
         </div>

@@ -1,10 +1,15 @@
 import { useEffect } from 'react';
-import { branches, faqs, blogPosts, site, services } from '../data/site';
+import { blogPosts, googleBusinessProfiles, serviceSlug, site, services, socials } from '../data/site';
+import { useBranches, type Branch } from '../data/branches';
+import { useFaqs, type Faq } from '../data/faqs';
 
-/** Injects JSON-LD <script> tags into <head> on mount. */
+/** Injects JSON-LD <script> tags into <head>. Rebuilds when branches/FAQs load. */
 export function SchemaOrg() {
+  const branches = useBranches();
+  const faqs = useFaqs();
+
   useEffect(() => {
-    const schemas = buildSchemas();
+    const schemas = buildSchemas(branches, faqs);
     const tags = schemas.map((schema) => {
       const el = document.createElement('script');
       el.type = 'application/ld+json';
@@ -13,20 +18,35 @@ export function SchemaOrg() {
       return el;
     });
     return () => tags.forEach((el) => el.remove());
-  }, []);
+  }, [branches, faqs]);
 
   return null;
 }
 
-function buildSchemas() {
+function buildSchemas(branches: Branch[], faqs: Faq[]) {
   return [
     websiteSchema(),
-    organizationSchema(),
+    serviceNavigationSchema(),
+    organizationSchema(branches),
     ...branches.map(branchSchema),
-    faqSchema(),
+    faqSchema(faqs),
     ...blogPosts.map(blogPostingSchema),
-    ...services.filter(s => 'priceFrom' in s && s.priceFrom).map(medicalServiceSchema),
+    ...services.map(s => medicalServiceSchema(s, branches)),
   ];
+}
+
+function serviceNavigationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Celestial Dental Centre services',
+    itemListElement: services.map((service, index) => ({
+      '@type': 'SiteNavigationElement',
+      position: index + 1,
+      name: service.title,
+      url: `https://celestialdental.org/services/${serviceSlug(service.title)}`,
+    })),
+  };
 }
 
 /* ─── WebSite ─────────────────────────────────────────────── */
@@ -35,6 +55,7 @@ function websiteSchema() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: site.name,
+    alternateName: [site.shortName, ...site.alternateNames],
     url: 'https://celestialdental.org/',
     description:
       'Celestial Dental Centre offers teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and emergency dental care in Kasarani, Kamakis, and Eldoret.',
@@ -47,11 +68,13 @@ function websiteSchema() {
 }
 
 /* ─── Organization ────────────────────────────────────────── */
-function organizationSchema() {
+function organizationSchema(branches: Branch[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': 'https://celestialdental.org/#organization',
     name: site.name,
+    alternateName: site.alternateNames,
     url: 'https://celestialdental.org/',
     logo: 'https://celestialdental.org/brand/celestial-logo.png',
     contactPoint: [
@@ -63,7 +86,26 @@ function organizationSchema() {
         availableLanguage: ['English', 'Swahili'],
       },
     ],
-    sameAs: [site.whatsappHref],
+    sameAs: socials.map((social) => social.href),
+    department: branches.map((branch) => ({
+      '@type': 'Dentist',
+      '@id': `https://celestialdental.org/branches/${branch.slug}#dentist`,
+      name: googleBusinessProfiles[branch.slug]?.name || `${site.name} – ${branch.name}`,
+      url: `https://celestialdental.org/branches/${branch.slug}`,
+    })),
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Dental and orthodontic services',
+      itemListElement: services.map((service) => ({
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'MedicalProcedure',
+          '@id': `https://celestialdental.org/services/${serviceSlug(service.title)}#procedure`,
+          name: service.title,
+          url: `https://celestialdental.org/services/${serviceSlug(service.title)}`,
+        },
+      })),
+    },
   };
 }
 
@@ -74,21 +116,28 @@ const branchGeo: Record<string, { lat: number; lng: number }> = {
   Eldoret:  { lat:  0.5143,  lng: 35.2698 },
 };
 
-function branchSchema(branch: (typeof branches)[0]) {
-  const geo = branchGeo[branch.name];
+function branchSchema(branch: Branch) {
+  const geo = branch.lat != null && branch.lng != null
+    ? { lat: branch.lat, lng: branch.lng }
+    : branchGeo[branch.name];
+  const googleProfile = googleBusinessProfiles[branch.slug];
   return {
     '@context': 'https://schema.org',
     '@type': 'Dentist',
-    name: `${site.name} – ${branch.name}`,
-    url: 'https://celestialdental.org/',
+    '@id': `https://celestialdental.org/branches/${branch.slug}#dentist`,
+    name: googleProfile?.name || `${site.name} – ${branch.name}`,
+    alternateName: branch.slug === 'kasarani'
+      ? ['Celestial Dental & Orthodontic Centre Nairobi', 'Celestial Dental Centre Kasarani']
+      : [`Celestial Dental Centre ${branch.name}`],
+    url: `https://celestialdental.org/branches/${branch.slug}`,
     telephone: branch.phone,
     email: site.email,
     image: 'https://celestialdental.org/facility/reception-lounge.jpg',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: branch.address[0],
+      streetAddress: branch.address.join(', '),
       addressLocality: branch.name,
-      addressRegion: branch.name === 'Eldoret' ? 'Uasin Gishu' : 'Nairobi',
+      addressRegion: branch.region || (branch.name === 'Eldoret' ? 'Uasin Gishu' : 'Nairobi'),
       addressCountry: 'KE',
     },
     ...(geo && {
@@ -108,15 +157,20 @@ function branchSchema(branch: (typeof branches)[0]) {
         closes: '20:00',
       },
     ],
-    priceRange: '$$',
-    currenciesAccepted: 'KES',
-    paymentAccepted: 'Cash, M-Pesa, Insurance, NHIF, AAR, Jubilee, Madison, CIC, Britam, SHA, APA',
+    paymentAccepted: 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA',
     knowsAbout: [
       'Braces', 'Orthodontics', 'Teeth Whitening', 'Dental Implants',
       'Root Canal Treatment', 'Children\'s Dentistry', 'Emergency Dentistry',
       'Dental Cleaning', 'Cosmetic Dentistry',
     ],
-    hasMap: branch.map,
+    hasMap: googleProfile?.mapsUrl || branch.map,
+    ...(googleProfile && { sameAs: [googleProfile.profileUrl] }),
+    parentOrganization: {
+      '@type': 'Organization',
+      '@id': 'https://celestialdental.org/#organization',
+      name: site.name,
+      url: 'https://celestialdental.org/',
+    },
     medicalSpecialty: [
       'Dentistry',
       'Orthodontics',
@@ -128,7 +182,7 @@ function branchSchema(branch: (typeof branches)[0]) {
 }
 
 /* ─── FAQPage ─────────────────────────────────────────────── */
-function faqSchema() {
+function faqSchema(faqs: Faq[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -143,24 +197,16 @@ function faqSchema() {
   };
 }
 
-/* ─── MedicalService (one per service with pricing) ──────── */
-function medicalServiceSchema(service: (typeof services)[0]) {
+/* ─── MedicalProcedure (one per service) ─────────────────── */
+function medicalServiceSchema(service: (typeof services)[0], branches: Branch[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'MedicalProcedure',
+    '@id': `https://celestialdental.org/services/${serviceSlug(service.title)}#procedure`,
     name: service.title,
     description: service.description,
     procedureType: 'https://schema.org/TherapeuticProcedure',
     followup: 'Follow-up advice provided by dentist',
-    ...('priceFrom' in service && service.priceFrom ? {
-      offers: {
-        '@type': 'Offer',
-        priceCurrency: 'KES',
-        description: `${service.priceFrom}${service.priceNote ? ' — ' + service.priceNote : ''}`,
-        availability: 'https://schema.org/InStock',
-        seller: { '@type': 'Organization', name: site.name },
-      },
-    } : {}),
     provider: branches.map(b => ({
       '@type': 'Dentist',
       name: `${site.name} – ${b.name}`,

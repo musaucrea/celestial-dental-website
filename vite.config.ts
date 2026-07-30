@@ -15,4 +15,14 @@ export default defineConfig({
       polyfill: false,
     },
   },
+  // Local preview only: proxy /api to production so pages that fetch
+  // CMS content (blog, gallery, branches) render with real data.
+  preview: {
+    proxy: {
+      '/api': {
+        target: 'https://celestialdental.org',
+        changeOrigin: true,
+      },
+    },
+  },
 });

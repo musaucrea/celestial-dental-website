@@ -299,11 +299,48 @@
     .empty svg { width: 40px; height: 40px; margin: 0 auto 14px; opacity: 0.35; display: block; }
     .empty p { font-size: 14px; }
 
+    /* Career applications */
+    .application-summary {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px; margin-bottom: 18px;
+    }
+    .application-summary > div {
+      border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+      background: var(--surface);
+    }
+    .application-summary strong { display: block; color: var(--brand); font-size: 24px; line-height: 1; }
+    .application-summary span { display: block; color: var(--ink-3); font-size: 12px; font-weight: 700; margin-top: 5px; }
+    .application-actions { display: flex; flex-wrap: wrap; gap: 6px; min-width: 220px; }
+    .application-cover {
+      max-width: 360px; white-space: pre-wrap; color: var(--ink-3);
+      line-height: 1.5; font-size: 12px;
+    }
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 300; display: none; align-items: center;
+      justify-content: center; padding: 24px; background: rgba(13,31,30,.66);
+      backdrop-filter: blur(4px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-panel {
+      width: 100%; max-width: 620px; max-height: calc(100vh - 48px); overflow-y: auto;
+      border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--surface);
+      box-shadow: var(--shadow-lg); padding: 26px;
+    }
+    .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .modal-title { font-size: 20px; font-weight: 800; }
+    .modal-sub { color: var(--ink-3); font-size: 13px; line-height: 1.5; margin-top: 4px; }
+    .modal-close {
+      border: none; background: var(--brand-light); color: var(--brand-dark); border-radius: 999px;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; font-size: 20px; flex-shrink: 0;
+    }
+
     /* Responsive */
     @media (max-width: 900px) {
       .sidebar { display: none; }
       .split { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
+      .application-summary { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -468,6 +505,7 @@
       <button class="nav-item" data-page="careers" id="careersNavItem">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
         Careers
+        <span class="nav-badge" id="careersAppBadge" style="display:none;"></span>
       </button>
 
       <button class="nav-item" data-page="branches" id="branchesNavItem">
@@ -739,6 +777,7 @@ Formatting you can use:
             <div id="updateList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
           </div>
         </div>
+
       </div>
 
       <!-- ── CAREERS ───────────────────────── -->
@@ -784,6 +823,35 @@ Formatting you can use:
             <div class="card-title">All Openings</div>
             <div id="jobList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
           </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:34px;margin-bottom:14px;">
+          <div>
+            <div class="page-title" style="font-size:19px;">Applications</div>
+            <div class="page-sub" style="margin:4px 0 0;">Review submitted resumes and send a personalised shortlist or regret email.</div>
+          </div>
+          <div class="search-bar" style="margin:0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="applicationSearch" placeholder="Search candidates or roles…" />
+          </div>
+        </div>
+        <div class="application-summary" id="applicationSummary">
+          <div><strong>—</strong><span>Total applications</span></div>
+          <div><strong>—</strong><span>Awaiting review</span></div>
+          <div><strong>—</strong><span>Shortlisted</span></div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Received</th><th>Candidate</th><th>Role</th><th>Notice</th><th>Cover letter</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="applicationTable">
+                <tr><td colspan="7" style="text-align:center;color:var(--ink-4);padding:32px;">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="applicationCount" style="font-size:13px;color:var(--ink-4);margin-top:12px;"></p>
         </div>
       </div>
 
@@ -984,6 +1052,35 @@ Formatting you can use:
   </div><!-- /layout -->
 </div><!-- /app -->
 
+<div class="modal-backdrop" id="applicationResponseModal" role="dialog" aria-modal="true" aria-labelledby="applicationResponseTitle">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="applicationResponseTitle">Respond to applicant</div>
+        <div class="modal-sub" id="applicationResponseSub"></div>
+      </div>
+      <button type="button" class="modal-close" id="applicationResponseClose" aria-label="Close">×</button>
+    </div>
+    <form id="applicationResponseForm" class="form-grid">
+      <input type="hidden" id="applicationResponseId" />
+      <input type="hidden" id="applicationResponseDecision" />
+      <div class="field full">
+        <label>Email subject *</label>
+        <input id="applicationResponseSubject" required maxlength="200" />
+      </div>
+      <div class="field full">
+        <label>Email message *</label>
+        <textarea id="applicationResponseMessage" required style="min-height:260px;" maxlength="8000"></textarea>
+        <small style="font-size:11px;color:var(--ink-4);">Review and edit this message before sending. It will be emailed directly to the applicant.</small>
+      </div>
+      <div class="actions full" style="justify-content:flex-end;">
+        <button type="button" class="btn btn-ghost" id="applicationResponseCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="applicationResponseSend">Send email</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -997,7 +1094,7 @@ const S = {
   myBranches: [],   // branch slugs this user (Branch Blog Editor) may publish to
   otpChallenge: '',
   otpMode: '',
-  appointments: [], posts: [], updates: [], openings: [], branches: [], faqs: [], users: [],
+  appointments: [], posts: [], updates: [], openings: [], applications: [], branches: [], faqs: [], users: [],
 };
 
 const ALL_BRANCHES = [
@@ -1212,7 +1309,10 @@ wireUpload('jobImageUploadBtn', 'jobImageFile', 'jobImage', 'jobImageThumb');
 })();
 
 function statusBadge(status) {
-  const map = { published: 'badge-green', draft: 'badge-yellow', archived: 'badge-gray' };
+  const map = {
+    published: 'badge-green', draft: 'badge-yellow', archived: 'badge-gray',
+    new: 'badge-yellow', shortlisted: 'badge-green', regretted: 'badge-red',
+  };
   return `<span class="badge ${map[status] || 'badge-gray'}">${esc(status)}</span>`;
 }
 
@@ -1552,6 +1652,10 @@ async function bootApp(role) {
   }
   if (role === 'appointments_manager') {
     navigate('appointments');
+    return;
+  }
+  if (new URLSearchParams(location.search).get('page') === 'careers' && ['super_admin', 'admin'].includes(role)) {
+    navigate('careers');
     return;
   }
   loadDashboard();
@@ -2261,9 +2365,168 @@ function renderCareers() {
 }
 
 async function loadCareers() {
-  try { const data = await api('/api/careers'); S.openings = data.openings || []; renderCareers(); }
+  try {
+    const data = await api('/api/careers');
+    S.openings = data.openings || [];
+    renderCareers();
+    await loadApplications();
+  }
   catch { toast('Could not load careers', 'error'); }
 }
+
+function renderApplications(list = S.applications) {
+  const total = S.applications.length;
+  const awaiting = S.applications.filter(a => a.status === 'new').length;
+  const shortlisted = S.applications.filter(a => a.status === 'shortlisted').length;
+  el('applicationSummary').innerHTML = `
+    <div><strong>${total}</strong><span>Total applications</span></div>
+    <div><strong>${awaiting}</strong><span>Awaiting review</span></div>
+    <div><strong>${shortlisted}</strong><span>Shortlisted</span></div>`;
+  const badge = el('careersAppBadge');
+  badge.textContent = awaiting;
+  badge.style.display = awaiting ? '' : 'none';
+
+  el('applicationTable').innerHTML = list.length
+    ? list.map(a => `
+      <tr>
+        <td style="white-space:nowrap;">${esc(fmt(a.createdAt))}</td>
+        <td>
+          <strong style="display:block;font-size:13px;">${esc(a.fullName)}</strong>
+          <a href="mailto:${encodeURIComponent(a.email)}" style="display:block;color:var(--brand);font-size:12px;margin-top:3px;">${esc(a.email)}</a>
+        </td>
+        <td><strong>${esc(a.roleTitle)}</strong></td>
+        <td style="white-space:nowrap;">${esc(a.noticePeriod)}</td>
+        <td><div class="application-cover">${a.coverLetter ? esc(a.coverLetter) : '<em>Not provided</em>'}</div></td>
+        <td>${statusBadge(a.status || 'new')}${a.responseSentAt ? `<div style="font-size:10px;color:var(--ink-4);margin-top:5px;">Sent ${esc(fmt(a.responseSentAt))}</div>` : ''}</td>
+        <td>
+          <div class="application-actions">
+            <a class="btn btn-ghost btn-xs" href="/api/careers?section=applications&action=resume&id=${encodeURIComponent(a.id)}" target="_blank" rel="noopener">View PDF</a>
+            <button type="button" class="btn btn-primary btn-xs" onclick="openApplicationResponse('${esc(a.id)}','shortlist')">Shortlist</button>
+            <button type="button" class="btn btn-danger btn-xs" onclick="openApplicationResponse('${esc(a.id)}','regret')">Regret</button>
+          </div>
+        </td>
+      </tr>`).join('')
+    : '<tr><td colspan="7" style="text-align:center;color:var(--ink-4);padding:40px;">No applications found.</td></tr>';
+  el('applicationCount').textContent = `${list.length} of ${total} application${total === 1 ? '' : 's'}`;
+}
+
+async function loadApplications() {
+  if (!['super_admin', 'admin'].includes(S.role)) {
+    S.applications = [];
+    renderApplications();
+    el('applicationTable').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink-4);padding:40px;">Application review is available to admins.</td></tr>';
+    return;
+  }
+  try {
+    const data = await api('/api/careers?section=applications');
+    S.applications = data.applications || [];
+    renderApplications();
+  } catch {
+    el('applicationTable').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--red);padding:40px;">Could not load applications.</td></tr>';
+    toast('Could not load career applications', 'error');
+  }
+}
+
+function applicationTemplate(application, decision) {
+  const firstName = (application.fullName || 'Applicant').split(/\s+/)[0];
+  if (decision === 'shortlist') {
+    return {
+      subject: `You have been shortlisted — ${application.roleTitle}`,
+      message: `Dear ${firstName},
+
+Thank you for applying for the ${application.roleTitle} role at Celestial Dental Centre.
+
+We are pleased to let you know that you have been shortlisted. Our HR team would like to invite you to the next stage of our recruitment process and will contact you with the interview details.
+
+Please reply to this email if you have any questions or if your availability has changed.
+
+Kind regards,
+Celestial Dental HR`,
+    };
+  }
+  return {
+    subject: `Update on your application — ${application.roleTitle}`,
+    message: `Dear ${firstName},
+
+Thank you for the time and effort you put into applying for the ${application.roleTitle} role at Celestial Dental Centre.
+
+After careful consideration, we will not be progressing your application to the next stage on this occasion. We appreciate your interest in joining our team and encourage you to apply for future opportunities that match your experience.
+
+We wish you every success in your job search.
+
+Kind regards,
+Celestial Dental HR`,
+  };
+}
+
+function openApplicationResponse(id, decision) {
+  const application = S.applications.find(item => item.id === id);
+  if (!application) return;
+  const template = applicationTemplate(application, decision);
+  el('applicationResponseId').value = id;
+  el('applicationResponseDecision').value = decision;
+  el('applicationResponseSubject').value = template.subject;
+  el('applicationResponseMessage').value = template.message;
+  el('applicationResponseTitle').textContent = decision === 'shortlist' ? 'Shortlist applicant' : 'Send regret email';
+  el('applicationResponseSub').textContent = `${application.fullName} · ${application.roleTitle} · ${application.email}`;
+  el('applicationResponseSend').textContent = decision === 'shortlist' ? 'Send shortlist email' : 'Send regret email';
+  el('applicationResponseSend').className = decision === 'shortlist' ? 'btn btn-primary' : 'btn btn-danger';
+  el('applicationResponseModal').classList.add('open');
+  setTimeout(() => el('applicationResponseSubject').focus(), 50);
+}
+
+function closeApplicationResponse() {
+  el('applicationResponseModal').classList.remove('open');
+  el('applicationResponseForm').reset();
+}
+
+el('applicationResponseClose').addEventListener('click', closeApplicationResponse);
+el('applicationResponseCancel').addEventListener('click', closeApplicationResponse);
+el('applicationResponseModal').addEventListener('mousedown', event => {
+  if (event.target === el('applicationResponseModal')) closeApplicationResponse();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && el('applicationResponseModal').classList.contains('open')) {
+    closeApplicationResponse();
+  }
+});
+
+el('applicationResponseForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = el('applicationResponseSend');
+  const decision = el('applicationResponseDecision').value;
+  const original = button.textContent;
+  button.innerHTML = '<span class="spinner"></span> Sending…';
+  button.disabled = true;
+  try {
+    await api('/api/careers?section=applications', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'respond',
+        id: el('applicationResponseId').value,
+        decision,
+        subject: el('applicationResponseSubject').value,
+        message: el('applicationResponseMessage').value,
+      }),
+    });
+    closeApplicationResponse();
+    await loadApplications();
+    toast(decision === 'shortlist' ? 'Shortlist email sent' : 'Regret email sent');
+  } catch (error) {
+    toast(error.message || 'Email could not be sent', 'error');
+  } finally {
+    button.textContent = original;
+    button.disabled = false;
+  }
+});
+
+el('applicationSearch').addEventListener('input', event => {
+  const query = event.target.value.trim().toLowerCase();
+  renderApplications(query
+    ? S.applications.filter(a => [a.fullName, a.email, a.roleTitle, a.noticePeriod, a.status]
+      .some(value => String(value || '').toLowerCase().includes(query)))
+    : S.applications);
+});
 
 el('jobForm').addEventListener('submit', async e => {
   e.preventDefault();

@@ -1,0 +1,75 @@
+# Celestial Dental — cPanel/LiteSpeed configuration
+
+RewriteEngine On
+
+# Force HTTPS and canonical apex domain (www -> apex)
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://celestialdental.org%{REQUEST_URI} [R=301,L]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://celestialdental.org%{REQUEST_URI} [R=301,L]
+
+# Relay API calls to the Vercel deployment via PHP (backend + secrets live there)
+RewriteRule ^api/(.*)$ /api-proxy.php?__apipath=$1 [QSA,L]
+
+# AI/crawler content generated live from the blog feed: sitemap and llms.txt
+# always include every published post; every article has a markdown version
+# at its URL + .md (blog.md is the markdown article index).
+RewriteRule ^sitemap\.xml$ /sitemap.php [L]
+RewriteRule ^llms\.txt$ /llms.php [L]
+RewriteRule ^(blog/)?[A-Za-z0-9%_-]+\.md$ /post-md.php [L]
+
+# ── Legacy URLs from the old site → new equivalents (301) ──────────
+# Retired 2026-07-27: the Nairobi clinic comparison guide was removed, so the
+# indexed URL 301s home rather than soft-redirecting through the SPA.
+RewriteRule ^best-dental-clinic-nairobi/?$ / [R=301,L]
+RewriteRule ^home/?$ / [R=301,L]
+RewriteRule ^aboutus/?$ /about [R=301,L]
+RewriteRule ^appointment/?$ /?book=1 [R=301,L]
+RewriteRule ^contact-us/?$ /#branches [R=301,L,NE]
+RewriteRule ^services/generaldentistry/?$ /services/general-dentistry [R=301,L]
+RewriteRule ^services/dentalemergencies/?$ /services/dental-emergencies [R=301,L]
+RewriteRule ^services/cosmeticdentistry/?$ /services/cosmetic-dentistry [R=301,L]
+RewriteRule ^services/teethwhitening/?$ /services/teeth-whitening [R=301,L]
+RewriteRule ^services/dentalbridgescrowns/?$ /services/dental-bridges-and-crowns [R=301,L]
+RewriteRule ^services/fullpartialdentures/?$ /services/full-and-partial-dentures [R=301,L]
+RewriteRule ^services/dentalimplants/?$ /services/dental-implants [R=301,L]
+RewriteRule ^services/orthodonticsbraces/?$ /services/orthodontics-braces [R=301,L]
+RewriteRule ^services/rootcanaltherapy/?$ /services/root-canal-therapy [R=301,L]
+RewriteRule ^services/childrendentistry/?$ /services/childrens-dentistry [R=301,L]
+RewriteRule ^services/dentalfillings/?$ /services/dental-fillings [R=301,L]
+RewriteRule ^services/gumdiseasetreatment/?$ /services/gum-disease-treatment [R=301,L]
+RewriteRule ^services/teethextraction/?$ /services/teeth-extraction [R=301,L]
+RewriteRule ^services/teethcleaning/?$ /services/teeth-cleaning [R=301,L]
+
+# A missing static file must 404, not fall through to the app shell below.
+# Scrapers probe for image URLs this site never had; answering them with
+# index.html made the analytics beacon log each one as a pageview.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule \.(jpe?g|png|gif|webp|avif|bmp|svg|ico|css|js|mjs|map|woff2?|ttf|eot|mp4|webm|mp3|zip)$ - [R=404,L]
+
+# Crawlers and AI assistants don't run the JavaScript app — serve them
+# pre-rendered article HTML instead (regular visitors never hit this).
+RewriteCond %{HTTP_USER_AGENT} (googlebot|bingbot|duckduckbot|slurp|yandex|baiduspider|gptbot|oai-searchbot|chatgpt|claudebot|claude-web|anthropic|perplexity|youbot|amazonbot|applebot|cohere|bytespider|duckassistbot|meta-externalagent|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot) [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /prerender.php [L]
+
+# SPA fallback — serve index.html for client-side routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /index.html [L]
+
+# Never cache the HTML shell; long-cache hashed/static assets
+<IfModule mod_headers.c>
+  <FilesMatch "^index\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(js|css|woff2?|jpg|jpeg|png|webp|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Sensible MIME types
+AddType image/webp .webp
+AddType application/manifest+json .webmanifest

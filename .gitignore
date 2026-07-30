@@ -7,3 +7,12 @@ node_modules/
 .DS_Store
 **/.DS_Store
 .claude/
+
+# Deploy bundles and local report/scratch artifacts (not source)
+*.zip
+tmp/
+output/
+make_instagram_report.py
+tiktok-audience-question-report-*.md
+tiktok-competitor-service-question-report-*.md
+weekly-ai-citation-website-report-*.md

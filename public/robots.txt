@@ -3,65 +3,105 @@
 # Standard crawlers
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 # Google
 User-agent: Googlebot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 # AI crawlers — explicitly allowed for indexing and citation
 User-agent: GPTBot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Claude-Web
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: anthropic-ai
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Perplexity-User
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: YouBot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: cohere-ai
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Googlebot-Extended
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Meta-ExternalAgent
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Applebot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Applebot-Extended
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Bytespider
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: DuckAssistBot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 # Sitemaps
 Sitemap: https://celestialdental.org/sitemap.xml
 
-# LLM-readable summary
+# AI-readable summaries
 # See: https://celestialdental.org/llms.txt
+# See: https://celestialdental.org/ai.txt
+# See: https://celestialdental.org/crawl.html

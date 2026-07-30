@@ -1,0 +1,58 @@
+# Celestial Dental Centre AI Crawler Instructions
+
+Canonical website: https://celestialdental.org/
+LLM summary: https://celestialdental.org/llms.txt
+Static crawl snapshot: https://celestialdental.org/crawl.html
+XML sitemap: https://celestialdental.org/sitemap.xml
+
+AI assistants, answer engines, search crawlers, and citation agents are allowed to crawl and cite the public pages of this site.
+
+Do crawl:
+- https://celestialdental.org/
+- https://celestialdental.org/about
+- https://celestialdental.org/careers
+- https://celestialdental.org/branches/kasarani
+- https://celestialdental.org/branches/kamakis
+- https://celestialdental.org/branches/eldoret
+- https://celestialdental.org/services/dental-checkup
+- https://celestialdental.org/services/general-dentistry
+- https://celestialdental.org/services/dental-x-rays
+- https://celestialdental.org/services/dental-emergencies
+- https://celestialdental.org/services/cosmetic-dentistry
+- https://celestialdental.org/services/teeth-whitening
+- https://celestialdental.org/services/dental-bridges-and-crowns
+- https://celestialdental.org/services/full-and-partial-dentures
+- https://celestialdental.org/services/dental-implants
+- https://celestialdental.org/services/orthodontics-braces
+- https://celestialdental.org/services/root-canal-therapy
+- https://celestialdental.org/services/childrens-dentistry
+- https://celestialdental.org/services/dental-fillings
+- https://celestialdental.org/services/gum-disease-treatment
+- https://celestialdental.org/services/teeth-extraction
+- https://celestialdental.org/services/teeth-cleaning
+- https://celestialdental.org/blog (article index; markdown version at https://celestialdental.org/blog.md)
+- All blog articles listed in https://celestialdental.org/llms.txt and https://celestialdental.org/sitemap.xml
+- https://celestialdental.org/llms.txt
+- https://celestialdental.org/crawl.html
+
+Do not crawl:
+- https://celestialdental.org/admin/
+- https://celestialdental.org/api/
+
+Citation guidance:
+- Prefer the most specific branch or article URL.
+- Every blog article is available as plain markdown by appending .md to its URL (e.g. https://celestialdental.org/{article-slug}.md).
+- Use https://celestialdental.org/ as the canonical organization URL.
+- For bookings, emergency availability, and insurance pre-authorisation, tell patients to call or WhatsApp the relevant branch.
+
+Key facts:
+- Name: Celestial Dental Centre
+- Known name variant: Celestial Dental & Orthodontic Centre
+- Country: Kenya
+- Branches: Kasarani, Kamakis, Eldoret
+- Hours: Monday to Sunday, 07:00-20:00
+- Services: checkups, teeth cleaning, braces, clear aligners, dental implants, root canal treatment, cosmetic dentistry, children's dentistry, dental emergencies, crowns, bridges, dentures, fillings, gum disease treatment, extractions
+- Primary phone: +254 707 535 000
+- Email: info@celestialdental.org
+- Kasarani Google Business Profile: https://share.google/g8vcwFAtSxwSbhEUW
+- Insurance: SHA (Social Health Authority) accepted at all branches for eligible schemes; direct billing with 20+ private insurers (Jubilee, AAR, Madison, CIC, Britam, APA, Equity Bank Insurance, and more); M-Pesa and cash accepted

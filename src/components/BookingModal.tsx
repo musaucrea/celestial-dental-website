@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
-import { referralSources, services as staticServices } from '../data/site';
+import { referralSources, services as staticServices, site } from '../data/site';
 import { useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
 import { useBooking } from './booking';
 import { pushEvent } from '../lib/track';
+import { describeNetworkError, describeResponseError } from '../lib/errors';
+
+// Whatever the reason, a patient who can't book online should be told how to
+// reach the clinic instead of being left with a dead form.
+const BOOKING_FALLBACK = `You can also book on ${site.primaryPhone.label}.`;
 
 export function BookingModal() {
   const { open, closeBooking, presetService } = useBooking();
@@ -50,7 +55,15 @@ export function BookingModal() {
         }),
       });
 
-      if (!res.ok) throw new Error('Failed to save');
+      if (!res.ok) {
+        const detail = await res.json().catch(() => null) as { error?: string } | null;
+        console.error('Booking failed', res.status, detail);
+        setError(describeResponseError(res.status, detail?.error, {
+          action: 'save your booking',
+          fallback: BOOKING_FALLBACK,
+        }));
+        return;
+      }
 
       // Conversion: appointment request saved (GTM 'booking_submitted' + Meta Lead)
       pushEvent('booking_submitted', { service: service || 'General', branch: branch || 'Any' });
@@ -60,8 +73,12 @@ export function BookingModal() {
       // WhatsApp via the bot gateway (see api/appointments.ts), so there's no
       // longer a need to open the patient's WhatsApp and ask them to press send.
       setSent(true);
-    } catch {
-      setError('Something went wrong. Please try again or call us directly.');
+    } catch (err) {
+      console.error('Booking request failed', err);
+      setError(describeNetworkError(err, {
+        action: 'save your booking',
+        fallback: BOOKING_FALLBACK,
+      }));
     } finally {
       setLoading(false);
     }
