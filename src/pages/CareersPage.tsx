@@ -154,10 +154,11 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
             </span>
             <h3 className="mt-5 text-2xl font-900 text-ink-900">Thank you, {fullName.split(' ')[0]}.</h3>
             <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-500">
-              Your application has been sent to our HR team for review.{' '}
-              {success.emailSent
-                ? `We also sent a confirmation to ${email}.`
-                : 'HR has your application, although the confirmation email could not be delivered.'}
+              Your application has been sent to our HR team for review.
+              {/* Only worth mentioning the confirmation email when it failed —
+                  otherwise the applicant will simply see it arrive. */}
+              {!success.emailSent
+                && ' HR has your application, although the confirmation email could not be delivered.'}
             </p>
             <button type="button" onClick={onClose} className="btn-primary mt-7">
               Done

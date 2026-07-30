@@ -160,10 +160,14 @@ async function verifyResume(resumeUrl: string, resumeName: string) {
   };
 }
 
+// Absolute URL — email clients cannot resolve site-relative paths. The alt text
+// carries the brand for the many clients that block images by default.
+const LOGO_URL = 'https://celestialdental.org/brand/celestial-logo.png';
+
 function emailShell(title: string, body: string, action?: { label: string; href: string }) {
   return `<div style="background:#f2faf8;padding:28px 12px">
     <div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;background:#fff;border:1px solid #d4e9e6;border-radius:18px;padding:32px;color:#153536;line-height:1.6">
-      <div style="font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#0f766e">Celestial Dental Centre</div>
+      <img src="${LOGO_URL}" alt="Celestial Dental Centre" width="150" height="60" style="display:block;border:0;outline:none;text-decoration:none;width:150px;height:60px;margin:0 0 18px">
       <h1 style="font-size:24px;line-height:1.25;margin:10px 0 18px;color:#0d1f1e">${escapeHtml(title)}</h1>
       <div style="font-size:15px">${body}</div>
       ${action ? `<p style="margin:26px 0 4px"><a href="${escapeHtml(action.href)}" style="display:inline-block;background:#0f766e;color:#fff;text-decoration:none;border-radius:999px;padding:12px 22px;font-weight:700">${escapeHtml(action.label)}</a></p>` : ''}
