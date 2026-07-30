@@ -252,7 +252,8 @@ async function sendSubmissionEmails(
     'We received your application',
     `<p>Dear ${escapeHtml(application.fullName)},</p>
      <p>Thank you for applying for the <strong>${escapeHtml(application.roleTitle)}</strong> role. We have received your application and our recruitment team will review it.</p>
-     <p>If your experience matches what we are looking for, HR will contact you with the next steps.</p>`,
+     <p>If your experience matches what we are looking for, HR will contact you with the next steps.</p>
+     <p>Kind regards,<br>Celestial Dental HR</p>`,
   );
 
   const hrRecipients = Array.from(new Set([
