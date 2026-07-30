@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { get, head } from '@vercel/blob';
+import { get } from '@vercel/blob';
 import { randomUUID } from 'node:crypto';
 import { getRole, getSheetsClient } from './_utils.js';
 
@@ -89,13 +89,15 @@ async function ensureApplicationsSheet() {
         requests: [{ addSheet: { properties: { title: APPLICATIONS_SHEET } } }],
       },
     });
+    // Header only needs writing once, when the tab is first created — not on
+    // every submission.
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `'${APPLICATIONS_SHEET}'!A1:Q1`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [Array.from(APPLICATIONS_HEADER)] },
+    });
   }
-  await sheets.spreadsheets.values.update({
-    spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A1:Q1`,
-    valueInputOption: 'RAW',
-    requestBody: { values: [Array.from(APPLICATIONS_HEADER)] },
-  });
   return { sheets, spreadsheetId };
 }
 
@@ -129,12 +131,17 @@ async function resolveRole(roleId: string) {
 
 async function verifyResume(resumeUrl: string, resumeName: string) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('Resume storage is not configured');
-  const metadata = await head(resumeUrl, { token: process.env.BLOB_READ_WRITE_TOKEN });
-  if (
-    !metadata.pathname.startsWith('career-resumes/')
-    || metadata.contentType !== 'application/pdf'
-    || metadata.size > MAX_RESUME_BYTES
-  ) {
+  // Never let a client point this at another blob — only read from the resumes
+  // folder. Checked against the URL up front so we can skip a separate head()
+  // metadata round-trip (we download the bytes below anyway, for the HR email
+  // attachment, and validate size + PDF signature from those).
+  let pathname: string;
+  try {
+    pathname = new URL(resumeUrl).pathname.replace(/^\/+/, '');
+  } catch {
+    throw new Error('The uploaded resume is invalid');
+  }
+  if (!pathname.startsWith('career-resumes/')) {
     throw new Error('The uploaded resume is invalid');
   }
   const result = await get(resumeUrl, {
@@ -143,6 +150,7 @@ async function verifyResume(resumeUrl: string, resumeName: string) {
   });
   if (!result || result.statusCode !== 200) throw new Error('Resume could not be read');
   const bytes = Buffer.from(await new Response(result.stream).arrayBuffer());
+  if (bytes.length > MAX_RESUME_BYTES) throw new Error('The uploaded resume is too large');
   if (bytes.subarray(0, 5).toString('ascii') !== '%PDF-') {
     throw new Error('The uploaded file is not a valid PDF');
   }
