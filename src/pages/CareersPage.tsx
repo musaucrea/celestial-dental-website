@@ -228,24 +228,22 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
 
             <div className="grid gap-5 sm:grid-cols-2">
               <label className="space-y-2 text-sm font-800 text-ink-800">
-                <span>Expected monthly salary (Kenyan Shillings) *</span>
-                <span className="flex items-center gap-2 rounded-xl border border-brand-100 px-4 py-3 transition focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100">
-                  <span className="text-xs font-800 text-ink-400">KSh</span>
-                  <input
-                    required
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="off"
-                    value={salaryExpectation}
-                    // Digits only, formatted with thousands separators as they type.
-                    onChange={event => {
-                      const digits = event.target.value.replace(/[^\d]/g, '').slice(0, 9);
-                      setSalaryExpectation(digits ? Number(digits).toLocaleString('en-KE') : '');
-                    }}
-                    className="w-full min-w-0 border-0 p-0 font-500 outline-none focus:ring-0"
-                    placeholder="e.g. 60,000"
-                  />
-                </span>
+                <span>Expected monthly salary *</span>
+                <input
+                  required
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  value={salaryExpectation}
+                  // Digits only, formatted with thousands separators as they type.
+                  // No figure is suggested — the applicant names their own.
+                  onChange={event => {
+                    const digits = event.target.value.replace(/[^\d]/g, '').slice(0, 9);
+                    setSalaryExpectation(digits ? Number(digits).toLocaleString('en-KE') : '');
+                  }}
+                  className="w-full rounded-xl border border-brand-100 px-4 py-3 font-500 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                  placeholder="Kenyan Shillings"
+                />
               </label>
             </div>
 
