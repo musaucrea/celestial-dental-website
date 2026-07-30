@@ -41,6 +41,7 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
   const titleId = useId();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [roleId, setRoleId] = useState(initialRoleId);
   const [noticePeriod, setNoticePeriod] = useState('');
   const [salaryExpectation, setSalaryExpectation] = useState('');
@@ -101,6 +102,7 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
           action: 'submit',
           fullName,
           email,
+          phone,
           roleId,
           noticePeriod,
           salaryExpectation,
@@ -196,6 +198,18 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
 
             <div className="grid gap-5 sm:grid-cols-2">
               <label className="space-y-2 text-sm font-800 text-ink-800">
+                <span>Phone number *</span>
+                <input
+                  required
+                  type="tel"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={event => setPhone(event.target.value)}
+                  className="w-full rounded-xl border border-brand-100 px-4 py-3 font-500 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                  placeholder="Your phone number"
+                />
+              </label>
+              <label className="space-y-2 text-sm font-800 text-ink-800">
                 <span>Role you are applying for *</span>
                 <select
                   required
@@ -210,6 +224,9 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
                   <option value={GENERAL_ROLE_ID}>General / Speculative Application</option>
                 </select>
               </label>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
               <label className="space-y-2 text-sm font-800 text-ink-800">
                 <span>Notice period *</span>
                 <select
@@ -224,9 +241,6 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
                   ))}
                 </select>
               </label>
-            </div>
-
-            <div className="grid gap-5 sm:grid-cols-2">
               <label className="space-y-2 text-sm font-800 text-ink-800">
                 <span>Expected monthly salary *</span>
                 <input

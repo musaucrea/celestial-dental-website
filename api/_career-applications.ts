@@ -27,6 +27,7 @@ type CareerApplication = {
   source: string;
   /** Expected monthly gross in KES, digits only. */
   salaryExpectation: string;
+  phone: string;
 };
 
 const APPLICATIONS_SHEET = 'Career Applications';
@@ -36,7 +37,7 @@ const APPLICATIONS_HEADER = [
   'id', 'createdAt', 'fullName', 'email', 'roleId', 'roleTitle', 'noticePeriod',
   'coverLetter', 'resumeUrl', 'resumeName', 'status', 'termsAcceptedAt',
   'updatedAt', 'responseSubject', 'responseMessage', 'responseSentAt', 'source',
-  'salaryExpectation',
+  'salaryExpectation', 'phone',
 ] as const;
 const MAX_RESUME_BYTES = 4 * 1024 * 1024;
 const NOTICE_PERIODS = new Set([
@@ -104,7 +105,7 @@ async function ensureApplicationsSheet() {
     // every submission.
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `'${APPLICATIONS_SHEET}'!A1:R1`,
+      range: `'${APPLICATIONS_SHEET}'!A1:S1`,
       valueInputOption: 'RAW',
       requestBody: { values: [Array.from(APPLICATIONS_HEADER)] },
     });
@@ -116,7 +117,7 @@ async function readApplications() {
   const { sheets, spreadsheetId } = await ensureApplicationsSheet();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A:R`,
+    range: `'${APPLICATIONS_SHEET}'!A:S`,
   });
   const rows = (result.data.values || []) as string[][];
 
@@ -128,7 +129,7 @@ async function readApplications() {
   if (headerStale) {
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `'${APPLICATIONS_SHEET}'!A1:R1`,
+      range: `'${APPLICATIONS_SHEET}'!A1:S1`,
       valueInputOption: 'RAW',
       requestBody: { values: [Array.from(APPLICATIONS_HEADER)] },
     });
@@ -258,11 +259,12 @@ async function sendSubmissionEmails(
   ].map(item => item.trim().toLowerCase()).filter(Boolean)));
   const hrSubject = `New application: ${application.fullName} — ${application.roleTitle}`;
   const salary = formatSalary(application.salaryExpectation);
-  const hrText = `New career application\n\nCandidate: ${application.fullName}\nEmail: ${application.email}\nRole: ${application.roleTitle}\nNotice period: ${application.noticePeriod}\nSalary expectation: ${salary}\nCover letter: ${application.coverLetter || 'Not provided'}\n\nOpen the admin dashboard to shortlist or regret this application: ${adminUrl()}`;
+  const hrText = `New career application\n\nCandidate: ${application.fullName}\nEmail: ${application.email}\nPhone: ${application.phone || 'Not provided'}\nRole: ${application.roleTitle}\nNotice period: ${application.noticePeriod}\nSalary expectation: ${salary}\nCover letter: ${application.coverLetter || 'Not provided'}\n\nOpen the admin dashboard to shortlist or regret this application: ${adminUrl()}`;
   const hrHtml = emailShell(
     'New career application',
     `<p><strong>Candidate:</strong> ${escapeHtml(application.fullName)}<br>
      <strong>Email:</strong> ${escapeHtml(application.email)}<br>
+     <strong>Phone:</strong> ${application.phone ? `<a href="tel:${escapeHtml(application.phone.replace(/[^\d+]/g, ''))}" style="color:#0f766e">${escapeHtml(application.phone)}</a>` : 'Not provided'}<br>
      <strong>Role:</strong> ${escapeHtml(application.roleTitle)}<br>
      <strong>Notice period:</strong> ${escapeHtml(application.noticePeriod)}<br>
      <strong>Salary expectation:</strong> ${escapeHtml(salary)}</p>
@@ -308,6 +310,7 @@ async function submitApplication(req: VercelRequest, res: VercelResponse) {
   const payload = (req.body || {}) as Record<string, unknown>;
   const fullName = clean(payload.fullName, 120);
   const email = clean(payload.email, 200).toLowerCase();
+  const phone = clean(payload.phone, 40);
   const roleId = clean(payload.roleId, 120);
   const noticePeriod = clean(payload.noticePeriod, 40);
   const coverLetter = clean(payload.coverLetter, 5000);
@@ -319,6 +322,11 @@ async function submitApplication(req: VercelRequest, res: VercelResponse) {
   if (fullName.length < 2) return res.status(400).json({ error: 'Full name is required' });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ error: 'A valid email address is required' });
+  }
+  // Deliberately permissive: only that they typed some digits. Strict Kenyan
+  // formats have refused real numbers here before, so this must not block.
+  if ((phone.match(/\d/g) || []).length < 7) {
+    return res.status(400).json({ error: 'Please enter your phone number' });
   }
   if (!NOTICE_PERIODS.has(noticePeriod)) {
     return res.status(400).json({ error: 'Please select a valid notice period' });
@@ -365,11 +373,12 @@ async function submitApplication(req: VercelRequest, res: VercelResponse) {
     responseSentAt: '',
     source: clean(req.headers.referer, 500) || 'careers-page',
     salaryExpectation,
+    phone,
   };
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A:R`,
+    range: `'${APPLICATIONS_SHEET}'!A:S`,
     valueInputOption: 'RAW',
     requestBody: { values: [applicationToRow(application)] },
   });
@@ -424,7 +433,7 @@ async function respondToApplication(req: VercelRequest, res: VercelResponse) {
   if (rowIndex < 1) return res.status(404).json({ error: 'Application row not found' });
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A${rowIndex + 1}:R${rowIndex + 1}`,
+    range: `'${APPLICATIONS_SHEET}'!A${rowIndex + 1}:S${rowIndex + 1}`,
     valueInputOption: 'RAW',
     requestBody: { values: [applicationToRow(updated)] },
   });

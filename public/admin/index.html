@@ -2393,6 +2393,7 @@ function renderApplications(list = S.applications) {
         <td>
           <strong style="display:block;font-size:13px;">${esc(a.fullName)}</strong>
           <a href="mailto:${encodeURIComponent(a.email)}" style="display:block;color:var(--brand);font-size:12px;margin-top:3px;">${esc(a.email)}</a>
+          ${a.phone ? `<a href="tel:${encodeURIComponent(a.phone.replace(/[^\d+]/g, ''))}" style="display:block;color:var(--brand);font-size:12px;margin-top:2px;">${esc(a.phone)}</a>` : ''}
         </td>
         <td><strong>${esc(a.roleTitle)}</strong></td>
         <td style="white-space:nowrap;">${esc(a.noticePeriod)}</td>
@@ -2524,7 +2525,7 @@ el('applicationResponseForm').addEventListener('submit', async event => {
 el('applicationSearch').addEventListener('input', event => {
   const query = event.target.value.trim().toLowerCase();
   renderApplications(query
-    ? S.applications.filter(a => [a.fullName, a.email, a.roleTitle, a.noticePeriod, a.status]
+    ? S.applications.filter(a => [a.fullName, a.email, a.phone, a.roleTitle, a.noticePeriod, a.status]
       .some(value => String(value || '').toLowerCase().includes(query)))
     : S.applications);
 });
