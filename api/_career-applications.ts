@@ -205,8 +205,10 @@ function emailShell(title: string, body: string, action?: { label: string; href:
 }
 
 function adminUrl() {
-  const host = process.env.VERCEL_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL;
-  return host ? `https://${host}/admin/?page=careers` : 'https://celestialdental.org/admin/?page=careers';
+  // Deliberately NOT VERCEL_URL — that is the per-deployment hostname, which
+  // would send HR to a build-specific link instead of the live admin.
+  const base = (process.env.ADMIN_URL || 'https://celestialdental.org/admin/').replace(/\/+$/, '');
+  return `${base}/?page=careers`.replace('//?', '/?');
 }
 
 async function sendEmail(input: {
