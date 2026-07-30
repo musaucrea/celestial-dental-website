@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getRole, isAuthenticated , applySheetsRetries} from './_utils.js';
+import { getRole, isAuthenticated , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic} from './_utils.js';
 // Current website content doubles as the seed so admins immediately see (and can
 // edit) exactly what is live today.
 import { services, testimonials, gallery, whyChooseUs, insurers, stats, team } from '../src/data/site.js';
@@ -216,11 +216,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         return res.status(200).json({ items: await readArchivedItems() });
       }
+      if (await isAuthenticated(req)) {
+        return res.status(200).json({ items: await readItems() });
+      }
+      const hit = getCachedPublic<object>('site-data');
+      if (hit) return res.status(200).json(hit);
       const items = await readItems();
-      const authed = await isAuthenticated(req);
-      return res.status(200).json({
-        items: authed ? items : items.filter(i => i.status === 'published'),
-      });
+      const body = { items: items.filter(i => i.status === 'published') };
+      setCachedPublic('site-data', body);
+      return res.status(200).json(body);
     }
     if (req.method === 'POST') {
       const role = await getRole(req);
@@ -238,6 +242,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Valid section required' });
       }
       await saveItem(payload);
+      clearCachedPublic('site-data');
       return res.status(200).json({ ok: true });
     }
     if (req.method === 'DELETE') {

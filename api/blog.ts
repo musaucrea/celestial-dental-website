@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getUserContext, canManageBlog , applySheetsRetries} from './_utils.js';
+import { getUserContext, canManageBlog , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic} from './_utils.js';
 
 type BlogPost = {
   id: string;
@@ -227,9 +227,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         return res.status(200).json({ posts: await readArchivedPosts() });
       }
-      const posts = await readPosts();
       const ctx = await getUserContext(req);
-      if (!ctx) return res.status(200).json({ posts: posts.filter(p => p.status === 'published') });
+      if (!ctx) {
+        const hit = getCachedPublic<object>('blog');
+        if (hit) return res.status(200).json(hit);
+        const body = { posts: (await readPosts()).filter(p => p.status === 'published') };
+        setCachedPublic('blog', body);
+        return res.status(200).json(body);
+      }
+      const posts = await readPosts();
       // Branch Blog Editors only see posts for the branch(es) they're assigned
       if (ctx.role === 'branch_blog_editor' && !ctx.branches.includes('all')) {
         return res.status(200).json({
@@ -263,6 +269,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       await savePost(payload);
+      clearCachedPublic('blog');
       return res.status(200).json({ ok: true });
     }
     return res.status(405).json({ error: 'Method not allowed' });

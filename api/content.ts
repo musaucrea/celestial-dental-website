@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getRole, isAuthenticated , applySheetsRetries} from './_utils.js';
+import { getRole, isAuthenticated , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic} from './_utils.js';
 import { testimonials } from '../src/data/site.js';
 
 type ContentItem = {
@@ -224,10 +224,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return res.status(200).json({ reviews: fallbackGoogleReviews(), live: false });
         }
       }
+      if (await isAuthed(req)) {
+        return res.status(200).json({ items: await readItems() });
+      }
+      const hit = getCachedPublic<object>('content');
+      if (hit) return res.status(200).json(hit);
       const items = await readItems();
-      return res.status(200).json({
-        items: await isAuthed(req) ? items : items.filter((item) => item.status === 'published'),
-      });
+      const body = { items: items.filter((item) => item.status === 'published') };
+      setCachedPublic('content', body);
+      return res.status(200).json(body);
     }
 
     if (req.method === 'POST') {
@@ -247,6 +252,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       await saveItem(payload);
+      clearCachedPublic('content');
       return res.status(200).json({ ok: true });
     }
 

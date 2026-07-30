@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getRole, isAuthenticated , applySheetsRetries} from './_utils.js';
+import { getRole, isAuthenticated , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic} from './_utils.js';
 
 type Faq = {
   id: string;
@@ -144,12 +144,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (role !== 'super_admin' && role !== 'admin') return res.status(403).json({ error: 'Super admin access required' });
         return res.status(200).json({ faqs: await readArchivedFaqs() });
       }
+      if (await isAuthed(req)) {
+        const faqs = await readFaqs();
+        return res.status(200).json({ faqs });
+      }
+      const hit = getCachedPublic<object>('faqs');
+      if (hit) return res.status(200).json(hit);
       const faqs = await readFaqs();
-      return res.status(200).json({
-        faqs: await isAuthed(req)
-          ? faqs
-          : faqs.filter(f => f.status === 'published' && !isPricingFaq(f)),
-      });
+      const body = { faqs: faqs.filter(f => f.status === 'published' && !isPricingFaq(f)) };
+      setCachedPublic('faqs', body);
+      return res.status(200).json(body);
     }
     if (req.method === 'POST') {
       const role = await getRole(req);
@@ -161,6 +165,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Question is required' });
       }
       await saveFaq(payload);
+      clearCachedPublic('faqs');
       return res.status(200).json({ ok: true });
     }
     return res.status(405).json({ error: 'Method not allowed' });

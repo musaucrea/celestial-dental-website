@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getRole, isAuthenticated , applySheetsRetries} from './_utils.js';
+import { getRole, isAuthenticated , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic} from './_utils.js';
 
 type Branch = {
   id: string;
@@ -239,10 +239,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (role !== 'super_admin' && role !== 'admin') return res.status(403).json({ error: 'Super admin access required' });
         return res.status(200).json({ branches: await readArchivedBranches() });
       }
+      if (await isAuthed(req)) {
+        return res.status(200).json({ branches: await readBranches() });
+      }
+      const hit = getCachedPublic<object>('branches');
+      if (hit) return res.status(200).json(hit);
       const branches = await readBranches();
-      return res.status(200).json({
-        branches: await isAuthed(req) ? branches : branches.filter(b => b.status === 'published'),
-      });
+      const body = { branches: branches.filter(b => b.status === 'published') };
+      setCachedPublic('branches', body);
+      return res.status(200).json(body);
     }
     if (req.method === 'POST') {
       // Only admins/super admins manage branches (they drive the public site & schema).
@@ -255,6 +260,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Branch name is required' });
       }
       const branch = await saveBranch(payload);
+      clearCachedPublic('branches');
       return res.status(200).json({ ok: true, branch });
     }
     return res.status(405).json({ error: 'Method not allowed' });

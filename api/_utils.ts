@@ -63,6 +63,36 @@ export function applySheetsRetries(google: { options: (o: Record<string, unknown
   });
 }
 
+/**
+ * Short-lived cache for anonymous responses.
+ *
+ * Every read endpoint used to make two Sheets calls per request — a
+ * spreadsheets.get to confirm the tab exists, then the values.get — so a single
+ * page view (which fans out to ~5 endpoints) cost ~10 calls against a 60/min
+ * quota. That exhausted it at roughly six visitors a minute and 500'd the
+ * public site.
+ *
+ * Only anonymous responses are cached, so an admin always sees their own edits
+ * immediately. The store is per warm instance; a cold start simply refills it.
+ */
+const publicCache = new Map<string, { at: number; body: unknown }>();
+const PUBLIC_TTL_MS = 60_000;
+
+export function getCachedPublic<T>(key: string): T | null {
+  const hit = publicCache.get(key);
+  if (!hit || Date.now() - hit.at > PUBLIC_TTL_MS) return null;
+  return hit.body as T;
+}
+
+export function setCachedPublic(key: string, body: unknown) {
+  publicCache.set(key, { at: Date.now(), body });
+}
+
+/** Called after a write so the next anonymous read reflects it right away. */
+export function clearCachedPublic(key?: string) {
+  if (key) publicCache.delete(key); else publicCache.clear();
+}
+
 export async function getSheetsClient() {
   const { google } = await import('googleapis');
   applySheetsRetries(google);
