@@ -4,7 +4,9 @@
   ],
   "functions": {
     "api/appointments.ts": { "maxDuration": 30 },
-    "api/careers.ts": { "maxDuration": 30 }
+    "api/careers.ts": { "maxDuration": 30 },
+    "api/auth.ts": { "maxDuration": 30 },
+    "api/users.ts": { "maxDuration": 30 }
   },
   "redirects": [
     { "source": "/best-dental-clinic-nairobi", "destination": "/", "permanent": true },

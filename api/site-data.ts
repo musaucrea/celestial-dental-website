@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getRole, isAuthenticated } from './_utils.js';
+import { getRole, isAuthenticated , applySheetsRetries} from './_utils.js';
 // Current website content doubles as the seed so admins immediately see (and can
 // edit) exactly what is live today.
 import { services, testimonials, gallery, whyChooseUs, insurers, stats, team } from '../src/data/site.js';
@@ -31,6 +31,7 @@ async function getSheets() {
     email: clientEmail, key: privateKey,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
+  applySheetsRetries(google);
   return { spreadsheetId, sheets: google.sheets({ version: 'v4', auth }) };
 }
 

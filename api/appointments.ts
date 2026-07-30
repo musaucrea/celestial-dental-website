@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { timingSafeEqual } from 'node:crypto';
 import { google } from 'googleapis';
-import { isAdminOrAbove, canManageAppointments, getRole } from './_utils.js';
+import { isAdminOrAbove, canManageAppointments, getRole , applySheetsRetries} from './_utils.js';
 
 type AppointmentPayload = {
   name?: string;
@@ -103,6 +103,8 @@ async function appendToSheet(payload: AppointmentPayload) {
     key: privateKey,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
+
+  applySheetsRetries(google);
 
   const sheets = google.sheets({ version: 'v4', auth });
   await ensureTab(sheets, spreadsheetId);

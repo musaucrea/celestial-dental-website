@@ -188,6 +188,19 @@
     }
     .field textarea { min-height: 110px; resize: vertical; }
 
+    /* Show/hide toggle, added to every password field by enhancePasswordFields() */
+    .pw-wrap { position: relative; display: block; }
+    .pw-wrap input { padding-right: 42px; }
+    .pw-toggle {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      display: flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; padding: 0; border: 0; border-radius: 7px;
+      background: none; color: var(--ink-4); cursor: pointer; transition: color 0.15s, background 0.15s;
+    }
+    .pw-toggle:hover { color: var(--brand); background: var(--surface-2, rgba(0,0,0,0.04)); }
+    .pw-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .pw-toggle svg { width: 17px; height: 17px; }
+
     /* Image upload row */
     .upload-row { display: flex; gap: 8px; align-items: center; }
     .upload-row > input:not([type=file]) { flex: 1; }
@@ -1084,6 +1097,44 @@ Formatting you can use:
 <div id="toast"></div>
 
 <script>
+// ════════════════════════════════════════════════════
+//  Password show/hide
+// ════════════════════════════════════════════════════
+// Applied to every password field on the page — sign-in, invite and reset —
+// so a typo can be checked before submitting. Starts hidden every time; the
+// revealed state is never persisted.
+const EYE_OPEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M6.61 6.61A18.4 18.4 0 0 0 2 11s3.5 7 10 7a9 9 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg>';
+
+function enhancePasswordFields(root) {
+  (root || document).querySelectorAll('input[type="password"]').forEach(input => {
+    if (input.closest('.pw-wrap')) return;           // already enhanced
+    const wrap = document.createElement('span');
+    wrap.className = 'pw-wrap';
+    input.parentNode.insertBefore(wrap, input);
+    wrap.appendChild(input);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pw-toggle';
+    btn.innerHTML = EYE_OPEN;
+    btn.title = 'Show password';
+    btn.setAttribute('aria-label', 'Show password');
+    btn.addEventListener('click', () => {
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.innerHTML = show ? EYE_OFF : EYE_OPEN;
+      const label = show ? 'Hide password' : 'Show password';
+      btn.title = label;
+      btn.setAttribute('aria-label', label);
+      input.focus();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => enhancePasswordFields());
+
 // ════════════════════════════════════════════════════
 //  State
 // ════════════════════════════════════════════════════

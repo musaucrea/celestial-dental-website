@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getRole, isAuthenticated } from './_utils.js';
+import { getRole, isAuthenticated , applySheetsRetries} from './_utils.js';
 
 type Faq = {
   id: string;
@@ -42,6 +42,7 @@ async function getSheets() {
     email: clientEmail, key: privateKey,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
+  applySheetsRetries(google);
   return { spreadsheetId, sheets: google.sheets({ version: 'v4', auth }) };
 }
 

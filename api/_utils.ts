@@ -42,8 +42,30 @@ const SESSION_COOKIE = '__Host-cda_session';
 const SESSION_TTL_SECONDS = 2 * 60 * 60;
 
 // ── Google Sheets client ────────────────────────────────────────
+/**
+ * Sheets quota is enforced per minute, so a burst of traffic makes every
+ * sheet-backed endpoint 500 at once until the window rolls over. Backing off
+ * and retrying turns that into a slightly slower request instead of an outage.
+ *
+ * Only 429 is retried: it means the call was rejected before doing anything, so
+ * replaying it cannot duplicate an append. 5xx is deliberately NOT retried — a
+ * write that timed out may still have landed.
+ */
+export function applySheetsRetries(google: { options: (o: Record<string, unknown>) => void }) {
+  google.options({
+    retry: true,
+    retryConfig: {
+      retry: 4,
+      retryDelay: 500,
+      statusCodesToRetry: [[429, 429]],
+      httpMethodsToRetry: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+    },
+  });
+}
+
 export async function getSheetsClient() {
   const { google } = await import('googleapis');
+  applySheetsRetries(google);
   const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
   const spreadsheetId = process.env.GOOGLE_SHEET_ID;
