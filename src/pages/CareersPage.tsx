@@ -228,9 +228,9 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
 
             <div className="grid gap-5 sm:grid-cols-2">
               <label className="space-y-2 text-sm font-800 text-ink-800">
-                <span>Salary expectation (KES per month) *</span>
+                <span>Expected monthly salary (Kenyan Shillings) *</span>
                 <span className="flex items-center gap-2 rounded-xl border border-brand-100 px-4 py-3 transition focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100">
-                  <span className="text-xs font-800 text-ink-400">KES</span>
+                  <span className="text-xs font-800 text-ink-400">KSh</span>
                   <input
                     required
                     type="text"

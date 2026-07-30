@@ -2396,7 +2396,7 @@ function renderApplications(list = S.applications) {
         </td>
         <td><strong>${esc(a.roleTitle)}</strong></td>
         <td style="white-space:nowrap;">${esc(a.noticePeriod)}</td>
-        <td style="white-space:nowrap;">${a.salaryExpectation ? 'KES ' + esc(Number(a.salaryExpectation).toLocaleString('en-KE')) : '<em>—</em>'}</td>
+        <td style="white-space:nowrap;">${a.salaryExpectation ? 'KSh ' + esc(Number(a.salaryExpectation).toLocaleString('en-KE')) : '<em>—</em>'}</td>
         <td><div class="application-cover">${a.coverLetter ? esc(a.coverLetter) : '<em>Not provided</em>'}</div></td>
         <td>${statusBadge(a.status || 'new')}${a.responseSentAt ? `<div style="font-size:10px;color:var(--ink-4);margin-top:5px;">Sent ${esc(fmt(a.responseSentAt))}</div>` : ''}</td>
         <td>

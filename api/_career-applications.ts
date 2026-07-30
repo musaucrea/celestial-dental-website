@@ -67,10 +67,10 @@ function textToHtml(value: string) {
   return escapeHtml(value).replace(/\n/g, '<br>');
 }
 
-/** Stored digits-only; shown to HR as "KES 120,000". */
+/** Stored digits-only; shown to HR as "KSh 120,000". */
 function formatSalary(value: string) {
   if (!value) return 'Not provided';
-  return `KES ${Number(value).toLocaleString('en-KE')}`;
+  return `KSh ${Number(value).toLocaleString('en-KE')}`;
 }
 
 function rowsToApplications(rows: string[][] = []): CareerApplication[] {
@@ -324,7 +324,7 @@ async function submitApplication(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Please select a valid notice period' });
   }
   if (!salaryExpectation || Number(salaryExpectation) <= 0) {
-    return res.status(400).json({ error: 'Please enter your salary expectation in Kenya Shillings' });
+    return res.status(400).json({ error: 'Please enter your expected monthly salary in Kenyan Shillings' });
   }
   if (payload.termsAccepted !== true) {
     return res.status(400).json({ error: 'You must agree to the recruitment terms' });
