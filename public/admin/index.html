@@ -844,10 +844,10 @@ Formatting you can use:
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Received</th><th>Candidate</th><th>Role</th><th>Notice</th><th>Cover letter</th><th>Status</th><th>Actions</th></tr>
+                <tr><th>Received</th><th>Candidate</th><th>Role</th><th>Notice</th><th>Expected salary</th><th>Cover letter</th><th>Status</th><th>Actions</th></tr>
               </thead>
               <tbody id="applicationTable">
-                <tr><td colspan="7" style="text-align:center;color:var(--ink-4);padding:32px;">Loading…</td></tr>
+                <tr><td colspan="8" style="text-align:center;color:var(--ink-4);padding:32px;">Loading…</td></tr>
               </tbody>
             </table>
           </div>
@@ -2396,6 +2396,7 @@ function renderApplications(list = S.applications) {
         </td>
         <td><strong>${esc(a.roleTitle)}</strong></td>
         <td style="white-space:nowrap;">${esc(a.noticePeriod)}</td>
+        <td style="white-space:nowrap;">${a.salaryExpectation ? 'KES ' + esc(Number(a.salaryExpectation).toLocaleString('en-KE')) : '<em>—</em>'}</td>
         <td><div class="application-cover">${a.coverLetter ? esc(a.coverLetter) : '<em>Not provided</em>'}</div></td>
         <td>${statusBadge(a.status || 'new')}${a.responseSentAt ? `<div style="font-size:10px;color:var(--ink-4);margin-top:5px;">Sent ${esc(fmt(a.responseSentAt))}</div>` : ''}</td>
         <td>
@@ -2406,7 +2407,7 @@ function renderApplications(list = S.applications) {
           </div>
         </td>
       </tr>`).join('')
-    : '<tr><td colspan="7" style="text-align:center;color:var(--ink-4);padding:40px;">No applications found.</td></tr>';
+    : '<tr><td colspan="8" style="text-align:center;color:var(--ink-4);padding:40px;">No applications found.</td></tr>';
   el('applicationCount').textContent = `${list.length} of ${total} application${total === 1 ? '' : 's'}`;
 }
 
@@ -2414,7 +2415,7 @@ async function loadApplications() {
   if (!['super_admin', 'admin'].includes(S.role)) {
     S.applications = [];
     renderApplications();
-    el('applicationTable').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink-4);padding:40px;">Application review is available to admins.</td></tr>';
+    el('applicationTable').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--ink-4);padding:40px;">Application review is available to admins.</td></tr>';
     return;
   }
   try {
@@ -2422,7 +2423,7 @@ async function loadApplications() {
     S.applications = data.applications || [];
     renderApplications();
   } catch {
-    el('applicationTable').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--red);padding:40px;">Could not load applications.</td></tr>';
+    el('applicationTable').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--red);padding:40px;">Could not load applications.</td></tr>';
     toast('Could not load career applications', 'error');
   }
 }

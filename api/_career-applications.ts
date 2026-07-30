@@ -25,13 +25,18 @@ type CareerApplication = {
   responseMessage: string;
   responseSentAt: string;
   source: string;
+  /** Expected monthly gross in KES, digits only. */
+  salaryExpectation: string;
 };
 
 const APPLICATIONS_SHEET = 'Career Applications';
+// Append-only: new fields go on the end so rows written before they existed
+// still line up with the columns before them.
 const APPLICATIONS_HEADER = [
   'id', 'createdAt', 'fullName', 'email', 'roleId', 'roleTitle', 'noticePeriod',
   'coverLetter', 'resumeUrl', 'resumeName', 'status', 'termsAcceptedAt',
   'updatedAt', 'responseSubject', 'responseMessage', 'responseSentAt', 'source',
+  'salaryExpectation',
 ] as const;
 const MAX_RESUME_BYTES = 4 * 1024 * 1024;
 const NOTICE_PERIODS = new Set([
@@ -60,6 +65,12 @@ function escapeHtml(value: unknown) {
 
 function textToHtml(value: string) {
   return escapeHtml(value).replace(/\n/g, '<br>');
+}
+
+/** Stored digits-only; shown to HR as "KES 120,000". */
+function formatSalary(value: string) {
+  if (!value) return 'Not provided';
+  return `KES ${Number(value).toLocaleString('en-KE')}`;
 }
 
 function rowsToApplications(rows: string[][] = []): CareerApplication[] {
@@ -93,7 +104,7 @@ async function ensureApplicationsSheet() {
     // every submission.
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `'${APPLICATIONS_SHEET}'!A1:Q1`,
+      range: `'${APPLICATIONS_SHEET}'!A1:R1`,
       valueInputOption: 'RAW',
       requestBody: { values: [Array.from(APPLICATIONS_HEADER)] },
     });
@@ -105,10 +116,26 @@ async function readApplications() {
   const { sheets, spreadsheetId } = await ensureApplicationsSheet();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A:Q`,
+    range: `'${APPLICATIONS_SHEET}'!A:R`,
   });
+  const rows = (result.data.values || []) as string[][];
+
+  // Columns get appended over time, so a sheet created against an older header
+  // is missing the new labels. The read above already tells us what row 1 holds,
+  // so reconcile it here rather than paying for a write on every submission.
+  const headerRow = rows[0] || [];
+  const headerStale = APPLICATIONS_HEADER.some((key, i) => headerRow[i] !== key);
+  if (headerStale) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `'${APPLICATIONS_SHEET}'!A1:R1`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [Array.from(APPLICATIONS_HEADER)] },
+    });
+  }
+
   return {
-    applications: rowsToApplications((result.data.values || []) as string[][]),
+    applications: rowsToApplications(rows),
     sheets,
     spreadsheetId,
   };
@@ -230,13 +257,15 @@ async function sendSubmissionEmails(
     ...(process.env.CAREERS_NOTIFICATION_EMAIL || '').split(','),
   ].map(item => item.trim().toLowerCase()).filter(Boolean)));
   const hrSubject = `New application: ${application.fullName} — ${application.roleTitle}`;
-  const hrText = `New career application\n\nCandidate: ${application.fullName}\nEmail: ${application.email}\nRole: ${application.roleTitle}\nNotice period: ${application.noticePeriod}\nCover letter: ${application.coverLetter || 'Not provided'}\n\nOpen the admin dashboard to shortlist or regret this application: ${adminUrl()}`;
+  const salary = formatSalary(application.salaryExpectation);
+  const hrText = `New career application\n\nCandidate: ${application.fullName}\nEmail: ${application.email}\nRole: ${application.roleTitle}\nNotice period: ${application.noticePeriod}\nSalary expectation: ${salary}\nCover letter: ${application.coverLetter || 'Not provided'}\n\nOpen the admin dashboard to shortlist or regret this application: ${adminUrl()}`;
   const hrHtml = emailShell(
     'New career application',
     `<p><strong>Candidate:</strong> ${escapeHtml(application.fullName)}<br>
      <strong>Email:</strong> ${escapeHtml(application.email)}<br>
      <strong>Role:</strong> ${escapeHtml(application.roleTitle)}<br>
-     <strong>Notice period:</strong> ${escapeHtml(application.noticePeriod)}</p>
+     <strong>Notice period:</strong> ${escapeHtml(application.noticePeriod)}<br>
+     <strong>Salary expectation:</strong> ${escapeHtml(salary)}</p>
      <p><strong>Cover letter</strong><br>${application.coverLetter ? textToHtml(application.coverLetter) : '<em>Not provided</em>'}</p>
      <p>The candidate’s PDF resume is attached. Open the admin dashboard to review and send a shortlist or regret email.</p>`,
     { label: 'Review application', href: adminUrl() },
@@ -284,6 +313,8 @@ async function submitApplication(req: VercelRequest, res: VercelResponse) {
   const coverLetter = clean(payload.coverLetter, 5000);
   const resumeUrl = clean(payload.resumeUrl, 1000);
   const resumeName = clean(payload.resumeName, 180);
+  // Accept what people actually type — "120,000", "KES 120000", "120 000".
+  const salaryExpectation = clean(payload.salaryExpectation, 20).replace(/[^\d]/g, '');
 
   if (fullName.length < 2) return res.status(400).json({ error: 'Full name is required' });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -291,6 +322,9 @@ async function submitApplication(req: VercelRequest, res: VercelResponse) {
   }
   if (!NOTICE_PERIODS.has(noticePeriod)) {
     return res.status(400).json({ error: 'Please select a valid notice period' });
+  }
+  if (!salaryExpectation || Number(salaryExpectation) <= 0) {
+    return res.status(400).json({ error: 'Please enter your salary expectation in Kenya Shillings' });
   }
   if (payload.termsAccepted !== true) {
     return res.status(400).json({ error: 'You must agree to the recruitment terms' });
@@ -330,11 +364,12 @@ async function submitApplication(req: VercelRequest, res: VercelResponse) {
     responseMessage: '',
     responseSentAt: '',
     source: clean(req.headers.referer, 500) || 'careers-page',
+    salaryExpectation,
   };
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A:Q`,
+    range: `'${APPLICATIONS_SHEET}'!A:R`,
     valueInputOption: 'RAW',
     requestBody: { values: [applicationToRow(application)] },
   });
@@ -389,7 +424,7 @@ async function respondToApplication(req: VercelRequest, res: VercelResponse) {
   if (rowIndex < 1) return res.status(404).json({ error: 'Application row not found' });
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A${rowIndex + 1}:Q${rowIndex + 1}`,
+    range: `'${APPLICATIONS_SHEET}'!A${rowIndex + 1}:R${rowIndex + 1}`,
     valueInputOption: 'RAW',
     requestBody: { values: [applicationToRow(updated)] },
   });

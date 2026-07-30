@@ -43,6 +43,7 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
   const [email, setEmail] = useState('');
   const [roleId, setRoleId] = useState(initialRoleId);
   const [noticePeriod, setNoticePeriod] = useState('');
+  const [salaryExpectation, setSalaryExpectation] = useState('');
   const [coverLetter, setCoverLetter] = useState('');
   const [resume, setResume] = useState<File | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -102,6 +103,7 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
           email,
           roleId,
           noticePeriod,
+          salaryExpectation,
           coverLetter,
           resumeUrl: blob.url,
           resumeName: filename,
@@ -221,6 +223,29 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
                     <option key={period} value={period}>{period}</option>
                   ))}
                 </select>
+              </label>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className="space-y-2 text-sm font-800 text-ink-800">
+                <span>Salary expectation (KES per month) *</span>
+                <span className="flex items-center gap-2 rounded-xl border border-brand-100 px-4 py-3 transition focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100">
+                  <span className="text-xs font-800 text-ink-400">KES</span>
+                  <input
+                    required
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={salaryExpectation}
+                    // Digits only, formatted with thousands separators as they type.
+                    onChange={event => {
+                      const digits = event.target.value.replace(/[^\d]/g, '').slice(0, 9);
+                      setSalaryExpectation(digits ? Number(digits).toLocaleString('en-KE') : '');
+                    }}
+                    className="w-full min-w-0 border-0 p-0 font-500 outline-none focus:ring-0"
+                    placeholder="e.g. 60,000"
+                  />
+                </span>
               </label>
             </div>
 
