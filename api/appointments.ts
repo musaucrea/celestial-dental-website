@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { timingSafeEqual } from 'node:crypto';
 import { google } from 'googleapis';
 import { isAdminOrAbove, canManageAppointments, getRole , applySheetsRetries} from './_utils.js';
+import { emailShell, textToHtml } from './_email.js';
 
 type AppointmentPayload = {
   name?: string;
@@ -230,6 +231,10 @@ async function sendEmailNotification(payload: AppointmentPayload) {
           to,
           subject: `New appointment request: ${clean(payload.name)}`,
           text: body,
+          html: emailShell(
+            'New appointment request',
+            `<p>${textToHtml(body)}</p>`,
+          ),
         }),
       });
 

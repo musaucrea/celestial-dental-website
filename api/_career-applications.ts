@@ -2,6 +2,11 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { get } from '@vercel/blob';
 import { randomUUID } from 'node:crypto';
 import { getRole, getSheetsClient } from './_utils.js';
+import { emailShell as brandedShell, escapeHtml, textToHtml } from './_email.js';
+
+/** Careers mail signs off as the recruitment team rather than the clinic. */
+const emailShell = (title: string, body: string, action?: { label: string; href: string }) =>
+  brandedShell(title, body, action, 'Celestial Dental Centre · Recruitment Team');
 
 // Routed through /api/careers to stay within Vercel Hobby's function limit.
 
@@ -53,19 +58,6 @@ const GENERAL_ROLE_TITLE = 'General / Speculative Application';
 
 function clean(value: unknown, max = 5000) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
-}
-
-function escapeHtml(value: unknown) {
-  return String(value || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function textToHtml(value: string) {
-  return escapeHtml(value).replace(/\n/g, '<br>');
 }
 
 /** Stored digits-only; shown to HR as "KSh 120,000". */
@@ -186,22 +178,6 @@ async function verifyResume(resumeUrl: string, resumeName: string) {
     filename: resumeName,
     content: bytes.toString('base64'),
   };
-}
-
-// Absolute URL — email clients cannot resolve site-relative paths. The alt text
-// carries the brand for the many clients that block images by default.
-const LOGO_URL = 'https://celestialdental.org/brand/celestial-logo.png';
-
-function emailShell(title: string, body: string, action?: { label: string; href: string }) {
-  return `<div style="background:#f2faf8;padding:28px 12px">
-    <div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;background:#fff;border:1px solid #d4e9e6;border-radius:18px;padding:32px;color:#153536;line-height:1.6">
-      <img src="${LOGO_URL}" alt="Celestial Dental Centre" width="150" height="60" style="display:block;border:0;outline:none;text-decoration:none;width:150px;height:60px;margin:0 0 18px">
-      <h1 style="font-size:24px;line-height:1.25;margin:10px 0 18px;color:#0d1f1e">${escapeHtml(title)}</h1>
-      <div style="font-size:15px">${body}</div>
-      ${action ? `<p style="margin:26px 0 4px"><a href="${escapeHtml(action.href)}" style="display:inline-block;background:#0f766e;color:#fff;text-decoration:none;border-radius:999px;padding:12px 22px;font-weight:700">${escapeHtml(action.label)}</a></p>` : ''}
-      <p style="font-size:12px;color:#718080;margin:28px 0 0">Celestial Dental Centre · Recruitment Team</p>
-    </div>
-  </div>`;
 }
 
 function adminUrl() {

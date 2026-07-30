@@ -1,5 +1,6 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import { getSheetsClient } from './_utils.js';
+import { emailShell, escapeHtml } from './_email.js';
 
 const SHEET = 'OtpChallenges';
 const HEADER = [
@@ -136,6 +137,13 @@ export async function sendOtpEmail(email: string, code: string, purpose: 'login'
         '',
         'If you did not request this code, you can ignore this email.',
       ].join('\n'),
+      html: emailShell(
+        'Your verification code',
+        `<p>Use this code to ${escapeHtml(action)}:</p>
+         <p style="margin:22px 0"><span style="display:inline-block;background:#f2faf8;border:1px solid #d4e9e6;border-radius:12px;padding:14px 26px;font-family:monospace;font-size:30px;font-weight:700;letter-spacing:.24em;color:#0d1f1e">${escapeHtml(code)}</span></p>
+         <p>It expires in 10 minutes and can only be used once.</p>
+         <p style="font-size:13px;color:#5d7071">If you did not request this code, you can ignore this email.</p>`,
+      ),
     }),
   });
   if (!response.ok) {

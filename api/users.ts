@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getRole, ensureUsersSheet, hashPassword, USERS_SHEET, parseBranches } from './_utils.js';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import { emailShell } from './_email.js';
 
 const INVITE_TTL_MS = 48 * 60 * 60 * 1000;
 const RESET_TTL_MS = 60 * 60 * 1000;
@@ -28,7 +29,6 @@ async function sendInviteEmail(
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
   const destination = inviteUrl || adminUrl;
-  const safeAdminUrl = escapeHtml(destination);
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -55,18 +55,17 @@ async function sendInviteEmail(
         '',
         'For your security, passwords are never included in invitation emails.',
       ].join('\n'),
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#102627;line-height:1.6">
-          <h2 style="color:#087f78">Celestial Dental Admin Portal</h2>
-          <p>Hello ${safeName},</p>
-          <p>${kind === 'approved'
-            ? 'Your admin access has been approved.'
-            : 'A Super Admin has created an admin account for you.'}</p>
-          <p><a href="${safeAdminUrl}" style="display:inline-block;background:#087f78;color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:700">${inviteUrl ? 'Accept Invitation' : 'Sign in to the Admin Portal'}</a></p>
-          <p>Account email: <strong>${safeEmail}</strong></p>
-          <p>${inviteUrl ? 'This private link expires in 48 hours. Open it to create your password and activate your account.' : 'Use the password provided to you securely by the Super Admin. A one-time verification code will then be sent to this email address.'}</p>
-          <p style="font-size:13px;color:#5d7071">For your security, passwords are never included in invitation emails.</p>
-        </div>`,
+      html: emailShell(
+        'Celestial Dental Admin Portal',
+        `<p>Hello ${safeName},</p>
+         <p>${kind === 'approved'
+           ? 'Your admin access has been approved.'
+           : 'A Super Admin has created an admin account for you.'}</p>
+         <p>Account email: <strong>${safeEmail}</strong></p>
+         <p>${inviteUrl ? 'This private link expires in 48 hours. Open it to create your password and activate your account.' : 'Use the password provided to you securely by the Super Admin. A one-time verification code will then be sent to this email address.'}</p>
+         <p style="font-size:13px;color:#5d7071">For your security, passwords are never included in invitation emails.</p>`,
+        { label: inviteUrl ? 'Accept Invitation' : 'Sign in to the Admin Portal', href: destination },
+      ),
     }),
   });
   if (!response.ok) {
@@ -80,7 +79,6 @@ async function sendPasswordResetEmail(name: string, email: string, resetUrl: str
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return false;
   const safeName = escapeHtml(name);
-  const safeUrl = escapeHtml(resetUrl);
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
@@ -95,14 +93,14 @@ async function sendPasswordResetEmail(name: string, email: string, resetUrl: str
         'This private link expires in 60 minutes and can only be used once.',
         'If you did not request this change, you can safely ignore this email.',
       ].join('\n'),
-      html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#102627;line-height:1.6">
-        <h2 style="color:#087f78">Reset your admin password</h2>
-        <p>Hello ${safeName},</p>
-        <p>A password reset was requested for your Celestial Dental admin account.</p>
-        <p><a href="${safeUrl}" style="display:inline-block;background:#087f78;color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:700">Create New Password</a></p>
-        <p>This private link expires in 60 minutes and can only be used once.</p>
-        <p style="font-size:13px;color:#5d7071">If you did not request this change, you can safely ignore this email.</p>
-      </div>`,
+      html: emailShell(
+        'Reset your admin password',
+        `<p>Hello ${safeName},</p>
+         <p>A password reset was requested for your Celestial Dental admin account.</p>
+         <p>This private link expires in 60 minutes and can only be used once.</p>
+         <p style="font-size:13px;color:#5d7071">If you did not request this change, you can safely ignore this email.</p>`,
+        { label: 'Create New Password', href: resetUrl },
+      ),
     }),
   });
   if (!response.ok) {

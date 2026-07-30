@@ -2,6 +2,8 @@ import { getSheetsClient, USERS_SHEET } from './_utils.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+import { emailShell } from './_email.js';
+
 function escapeHtml(value: unknown) {
   return String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
@@ -84,8 +86,7 @@ export async function sendWeeklyReport() {
   if (!report.recipients.length) throw new Error('No active Super Admin email was found');
 
   const subject = `Celestial Dental weekly website report · ${report.endDate}`;
-  const html = `<div style="font-family:Arial,sans-serif;max-width:680px;margin:auto;color:#153536;line-height:1.5">
-    <h1 style="font-size:24px;color:#087f78;margin-bottom:4px">Weekly website report</h1>
+  const html = emailShell('Weekly website report', `
     <p style="margin-top:0;color:#718080">${escapeHtml(report.startDate)} – ${escapeHtml(report.endDate)}</p>
     <div style="display:flex;flex-wrap:wrap;gap:12px;margin:24px 0">
       <div style="flex:1;min-width:130px;background:#eef9f7;border-radius:14px;padding:18px"><strong style="display:block;font-size:28px;color:#087f78">${report.views}</strong><span>Page views</span></div>
@@ -98,9 +99,9 @@ export async function sendWeeklyReport() {
       <div><h2 style="font-size:16px">Bookings by branch</h2><table style="width:100%;border-collapse:collapse">${tableRows(report.branches, 'No bookings this week')}</table></div>
       <div><h2 style="font-size:16px">Booking status</h2><table style="width:100%;border-collapse:collapse">${tableRows(report.statuses, 'No bookings this week')}</table></div>
     </div>
-    <p style="margin-top:28px"><a href="https://celestialdental.org/admin/" style="display:inline-block;background:#087f78;color:white;text-decoration:none;border-radius:999px;padding:12px 22px;font-weight:700">Open Admin Dashboard</a></p>
-    <p style="font-size:12px;color:#718080;margin-top:28px">Automatic confidential report for Celestial Dental Super Admins.</p>
-  </div>`;
+    <p style="font-size:12px;color:#718080;margin-top:28px">Automatic confidential report for Celestial Dental Super Admins.</p>`,
+    { label: 'Open Admin Dashboard', href: 'https://celestialdental.org/admin/' },
+  );
   const text = `Celestial Dental weekly website report (${report.startDate} – ${report.endDate})\n\nPage views: ${report.views}\nVisitors: ${report.visitors}\nAppointments: ${report.appointments}\n\nAdmin dashboard: https://celestialdental.org/admin/`;
 
   const response = await fetch('https://api.resend.com/emails', {
