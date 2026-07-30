@@ -86,8 +86,10 @@ function ApplicationModal({ openings, initialRoleId, onClose }: ApplicationModal
         throw new Error('This file does not appear to be a valid PDF.');
       }
       const filename = safeResumeName(resume.name);
+      // The shared blob store is public, so resumes get an unguessable URL
+      // (addRandomSuffix) rather than signed access.
       const blob = await upload(`career-resumes/${Date.now()}-${filename}`, resume, {
-        access: 'private',
+        access: 'public',
         handleUploadUrl: '/api/careers?section=resume',
         contentType: 'application/pdf',
       });

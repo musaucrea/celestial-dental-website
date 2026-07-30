@@ -145,7 +145,7 @@ async function verifyResume(resumeUrl: string, resumeName: string) {
     throw new Error('The uploaded resume is invalid');
   }
   const result = await get(resumeUrl, {
-    access: 'private',
+    access: 'public',
     token: process.env.BLOB_READ_WRITE_TOKEN,
   });
   if (!result || result.statusCode !== 200) throw new Error('Resume could not be read');
@@ -399,7 +399,7 @@ async function downloadResume(req: VercelRequest, res: VercelResponse) {
   const application = applications.find(item => item.id === id);
   if (!application) return res.status(404).json({ error: 'Application not found' });
   const result = await get(application.resumeUrl, {
-    access: 'private',
+    access: 'public',
     token: process.env.BLOB_READ_WRITE_TOKEN,
   });
   if (!result || result.statusCode !== 200) return res.status(404).json({ error: 'Resume not found' });
