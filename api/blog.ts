@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getUserContext, canManageBlog , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic} from './_utils.js';
+import { getUserContext, canManageBlog , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic, isSheetEnsured, markSheetEnsured} from './_utils.js';
 
 type BlogPost = {
   id: string;
@@ -99,6 +99,7 @@ async function getSheets() {
 
 async function ensureSheet() {
   const { sheets, spreadsheetId } = await getSheets();
+  if (isSheetEnsured(sheetTitle)) return { sheets, spreadsheetId };
   const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
   const exists = spreadsheet.data.sheets?.some(s => s.properties?.title === sheetTitle);
   if (!exists) {
@@ -111,6 +112,7 @@ async function ensureSheet() {
       valueInputOption: 'RAW', requestBody: { values: [header] },
     });
   }
+  markSheetEnsured(sheetTitle);
   return { sheets, spreadsheetId };
 }
 

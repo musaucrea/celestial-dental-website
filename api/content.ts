@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getRole, isAuthenticated , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic} from './_utils.js';
+import { getRole, isAuthenticated , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic, isSheetEnsured, markSheetEnsured} from './_utils.js';
 import { testimonials } from '../src/data/site.js';
 
 type ContentItem = {
@@ -53,6 +53,7 @@ async function getSheets() {
 
 async function ensureContentSheet() {
   const { sheets, spreadsheetId } = await getSheets();
+  if (isSheetEnsured(sheetTitle)) return { sheets, spreadsheetId };
   const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
   const exists = spreadsheet.data.sheets?.some((sheet) => sheet.properties?.title === sheetTitle);
 
@@ -71,6 +72,7 @@ async function ensureContentSheet() {
     });
   }
 
+  markSheetEnsured(sheetTitle);
   return { sheets, spreadsheetId };
 }
 

@@ -93,6 +93,22 @@ export function clearCachedPublic(key?: string) {
   if (key) publicCache.delete(key); else publicCache.clear();
 }
 
+/**
+ * Every ensure*Sheet() spends a spreadsheets.get confirming its tab exists, on
+ * every request. A tab is never removed once created, so the answer only has to
+ * be fetched once per warm instance — a cold start re-checks, and the flag is
+ * only set after the check (or creation) actually succeeded.
+ */
+const ensuredSheets = new Set<string>();
+
+export function isSheetEnsured(title: string) {
+  return ensuredSheets.has(title);
+}
+
+export function markSheetEnsured(title: string) {
+  ensuredSheets.add(title);
+}
+
 export async function getSheetsClient() {
   const { google } = await import('googleapis');
   applySheetsRetries(google);
