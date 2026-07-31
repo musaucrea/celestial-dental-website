@@ -1001,7 +1001,7 @@ Formatting you can use:
       <!-- ── RECENTLY DELETED ──────────────── -->
       <div class="page" id="page-trash">
         <div class="page-title">Recently Deleted</div>
-        <div class="page-sub">Blog posts, news, careers, branches, FAQs, staff and website items you've deleted. Click <strong>Restore</strong> to bring any of them back — nothing is permanently lost.</div>
+        <div class="page-sub">Blog posts, news, careers, job applications, branches, FAQs, staff and website items you've deleted. Click <strong>Restore</strong> to bring any of them back — nothing is permanently lost.</div>
         <div class="card" style="margin-top:16px;">
           <div class="card-title">Deleted items</div>
           <div id="trashList"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
@@ -2456,11 +2456,30 @@ function renderApplications(list = S.applications) {
             <a class="btn btn-ghost btn-xs" href="/api/careers?section=applications&action=resume&id=${encodeURIComponent(a.id)}" target="_blank" rel="noopener">View PDF</a>
             <button type="button" class="btn btn-primary btn-xs" onclick="openApplicationResponse('${esc(a.id)}','shortlist')">Shortlist</button>
             <button type="button" class="btn btn-danger btn-xs" onclick="openApplicationResponse('${esc(a.id)}','regret')">Regret</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="archiveApplication('${esc(a.id)}')">Archive</button>
           </div>
         </td>
       </tr>`).join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--ink-4);padding:40px;">No applications found.</td></tr>';
   el('applicationCount').textContent = `${list.length} of ${total} application${total === 1 ? '' : 's'}`;
+}
+
+// Soft delete: the row and the résumé are kept, and the application moves to
+// "Recently deleted" where it can be restored to whatever status it had.
+async function archiveApplication(id) {
+  const a = S.applications.find(x => x.id === id);
+  const who = a ? `${a.fullName} — ${a.roleTitle}` : 'this application';
+  if (!confirm(`Archive ${who}?\n\nIt moves to Recently deleted, where you can restore it. Nothing is permanently removed.`)) return;
+  try {
+    await api('/api/careers?section=applications', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'archive', id }),
+    });
+    await loadApplications();
+    toast('Archived — find it under Recently deleted');
+  } catch (e) {
+    toast(e.message || 'Could not archive the application', 'error');
+  }
 }
 
 async function loadApplications() {
@@ -3227,20 +3246,21 @@ async function saveUserBranches(id) {
 // ════════════════════════════════════════════════════
 //  Recently Deleted — undo accidental deletions
 // ════════════════════════════════════════════════════
-let trashPosts = [], trashItems = [], trashNews = [], trashCareers = [], trashBranches = [], trashFaqs = [];
+let trashPosts = [], trashItems = [], trashNews = [], trashCareers = [], trashBranches = [], trashFaqs = [], trashApplications = [];
 async function loadTrash() {
   const box = el('trashList');
   box.innerHTML = '<p style="color:var(--ink-4);font-size:14px;">Loading…</p>';
   try {
-    const [posts, items, news, careers, branches, faqs] = await Promise.all([
+    const [posts, items, news, careers, branches, faqs, applications] = await Promise.all([
       api('/api/blog?trash=1').then(d => d.posts || []).catch(() => []),
       api('/api/site-data?trash=1').then(d => d.items || []).catch(() => []),
       api('/api/content?trash=1').then(d => d.items || []).catch(() => []),
       api('/api/careers?trash=1').then(d => d.openings || []).catch(() => []),
       api('/api/branches?trash=1').then(d => d.branches || []).catch(() => []),
       api('/api/faqs?trash=1').then(d => d.faqs || []).catch(() => []),
+      api('/api/careers?section=applications&trash=1').then(d => d.applications || []).catch(() => []),
     ]);
-    trashPosts = posts; trashItems = items; trashNews = news; trashCareers = careers; trashBranches = branches; trashFaqs = faqs;
+    trashPosts = posts; trashItems = items; trashNews = news; trashCareers = careers; trashBranches = branches; trashFaqs = faqs; trashApplications = applications;
     const rows = [];
     posts.forEach(p => rows.push({ kind: 'Blog post', name: p.title || p.slug || p.id, when: p.updatedAt, act: `restoreTrash('blog','${esc(p.id)}')` }));
     items.forEach(it => {
@@ -3253,6 +3273,7 @@ async function loadTrash() {
     careers.forEach(item => rows.push({ kind: 'Career opening', name: item.title || item.id, when: item.updatedAt, act: `restoreTrash('career','${esc(item.id)}')` }));
     branches.forEach(item => rows.push({ kind: 'Branch', name: item.name || item.slug || item.id, when: item.updatedAt, act: `restoreTrash('branch','${esc(item.id)}')` }));
     faqs.forEach(item => rows.push({ kind: 'FAQ', name: item.question || item.id, when: item.updatedAt, act: `restoreTrash('faq','${esc(item.id)}')` }));
+    applications.forEach(item => rows.push({ kind: 'Job application', name: `${item.fullName || item.id} — ${item.roleTitle || ''}`.trim(), when: item.updatedAt, act: `restoreTrash('application','${esc(item.id)}')` }));
     if (!rows.length) { box.innerHTML = '<p style="color:var(--ink-4);font-size:14px;">Nothing has been deleted recently.</p>'; return; }
     rows.sort((a, b) => (b.when || '').localeCompare(a.when || ''));
     box.innerHTML = rows.map(r => `
@@ -3283,11 +3304,13 @@ async function restoreTrash(kind, id) {
     } else if (kind === 'branch') {
       const item = trashBranches.find(x => x.id === id) || {};
       await api('/api/branches', { method:'POST', body: JSON.stringify({ id, name: item.name || 'Untitled branch', status:'published' }) });
+    } else if (kind === 'application') {
+      await api('/api/careers?section=applications', { method:'POST', body: JSON.stringify({ action:'restore', id }) });
     } else if (kind === 'faq') {
       const item = trashFaqs.find(x => x.id === id) || {};
       await api('/api/faqs', { method:'POST', body: JSON.stringify({ id, question: item.question || 'Untitled question', status:'published' }) });
     }
-    toast('Restored — it\'s back on the website');
+    toast(kind === 'application' ? 'Restored — it\'s back in Applications' : 'Restored — it\'s back on the website');
     loadTrash();
   } catch (e) { toast(e.message || 'Failed to restore', 'error'); }
 }

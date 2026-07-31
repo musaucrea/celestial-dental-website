@@ -10,7 +10,7 @@ const emailShell = (title: string, body: string, action?: { label: string; href:
 
 // Routed through /api/careers to stay within Vercel Hobby's function limit.
 
-type ApplicationStatus = 'new' | 'shortlisted' | 'regretted';
+type ApplicationStatus = 'new' | 'shortlisted' | 'regretted' | 'archived';
 
 type CareerApplication = {
   id: string;
@@ -33,6 +33,8 @@ type CareerApplication = {
   /** Expected monthly gross in KES, digits only. */
   salaryExpectation: string;
   phone: string;
+  /** Status to put back on restore, so a regretted candidate doesn't return as new. */
+  archivedFrom: string;
 };
 
 const APPLICATIONS_SHEET = 'Career Applications';
@@ -42,7 +44,7 @@ const APPLICATIONS_HEADER = [
   'id', 'createdAt', 'fullName', 'email', 'roleId', 'roleTitle', 'noticePeriod',
   'coverLetter', 'resumeUrl', 'resumeName', 'status', 'termsAcceptedAt',
   'updatedAt', 'responseSubject', 'responseMessage', 'responseSentAt', 'source',
-  'salaryExpectation', 'phone',
+  'salaryExpectation', 'phone', 'archivedFrom',
 ] as const;
 const MAX_RESUME_BYTES = 4 * 1024 * 1024;
 const NOTICE_PERIODS = new Set([
@@ -97,7 +99,7 @@ async function ensureApplicationsSheet() {
     // every submission.
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `'${APPLICATIONS_SHEET}'!A1:S1`,
+      range: `'${APPLICATIONS_SHEET}'!A1:T1`,
       valueInputOption: 'RAW',
       requestBody: { values: [Array.from(APPLICATIONS_HEADER)] },
     });
@@ -109,7 +111,7 @@ async function readApplications() {
   const { sheets, spreadsheetId } = await ensureApplicationsSheet();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A:S`,
+    range: `'${APPLICATIONS_SHEET}'!A:T`,
   });
   const rows = (result.data.values || []) as string[][];
 
@@ -121,7 +123,7 @@ async function readApplications() {
   if (headerStale) {
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `'${APPLICATIONS_SHEET}'!A1:S1`,
+      range: `'${APPLICATIONS_SHEET}'!A1:T1`,
       valueInputOption: 'RAW',
       requestBody: { values: [Array.from(APPLICATIONS_HEADER)] },
     });
@@ -353,11 +355,12 @@ async function submitApplication(req: VercelRequest, res: VercelResponse) {
     source: clean(req.headers.referer, 500) || 'careers-page',
     salaryExpectation,
     phone,
+    archivedFrom: '',
   };
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A:S`,
+    range: `'${APPLICATIONS_SHEET}'!A:T`,
     valueInputOption: 'RAW',
     requestBody: { values: [applicationToRow(application)] },
   });
@@ -412,7 +415,64 @@ async function respondToApplication(req: VercelRequest, res: VercelResponse) {
   if (rowIndex < 1) return res.status(404).json({ error: 'Application row not found' });
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `'${APPLICATIONS_SHEET}'!A${rowIndex + 1}:S${rowIndex + 1}`,
+    range: `'${APPLICATIONS_SHEET}'!A${rowIndex + 1}:T${rowIndex + 1}`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [applicationToRow(updated)] },
+  });
+  return res.status(200).json({ ok: true, application: updated });
+}
+
+/**
+ * Archive removes an application from the table without deleting the row, so it
+ * can be restored from "Recently deleted" — the same soft-delete every other
+ * resource uses. The résumé blob is left untouched.
+ */
+async function setApplicationStatus(
+  req: VercelRequest,
+  res: VercelResponse,
+  mode: 'archive' | 'restore',
+) {
+  if (!await requireAdmin(req)) return res.status(403).json({ error: 'Admin access required' });
+  const id = clean((req.body || {}).id, 120);
+  if (!id) return res.status(400).json({ error: 'An application id is required' });
+
+  const { applications, sheets, spreadsheetId } = await readApplications();
+  const application = applications.find(item => item.id === id);
+  if (!application) return res.status(404).json({ error: 'Application not found' });
+
+  if (mode === 'archive' && application.status === 'archived') {
+    return res.status(400).json({ error: 'This application is already archived' });
+  }
+  if (mode === 'restore' && application.status !== 'archived') {
+    return res.status(400).json({ error: 'This application is not archived' });
+  }
+
+  const updated: CareerApplication = mode === 'archive'
+    ? {
+      ...application,
+      status: 'archived',
+      // Remember where it came from so a regretted candidate does not come
+      // back looking like a brand new application.
+      archivedFrom: application.status,
+      updatedAt: new Date().toISOString(),
+    }
+    : {
+      ...application,
+      status: (application.archivedFrom || 'new') as ApplicationStatus,
+      archivedFrom: '',
+      updatedAt: new Date().toISOString(),
+    };
+
+  const allRows = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `'${APPLICATIONS_SHEET}'!A:A`,
+  });
+  const idRows = (allRows.data.values || []) as string[][];
+  const rowIndex = idRows.findIndex((row, rowNumber) => rowNumber > 0 && row[0] === id);
+  if (rowIndex < 1) return res.status(404).json({ error: 'Application row not found' });
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: `'${APPLICATIONS_SHEET}'!A${rowIndex + 1}:T${rowIndex + 1}`,
     valueInputOption: 'RAW',
     requestBody: { values: [applicationToRow(updated)] },
   });
@@ -450,12 +510,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (req.query.action === 'resume') return downloadResume(req, res);
       if (!await requireAdmin(req)) return res.status(403).json({ error: 'Admin access required' });
       const { applications } = await readApplications();
-      return res.status(200).json({ applications });
+      // Archived applications live in the "Recently deleted" view, never the
+      // main table — same convention as blog posts, FAQs and branches.
+      if (req.query.trash === '1') {
+        return res.status(200).json({
+          applications: applications.filter(item => item.status === 'archived'),
+        });
+      }
+      return res.status(200).json({
+        applications: applications.filter(item => item.status !== 'archived'),
+      });
     }
     if (req.method === 'POST') {
       const action = clean(req.body?.action, 30);
       if (action === 'submit') return submitApplication(req, res);
       if (action === 'respond') return respondToApplication(req, res);
+      if (action === 'archive' || action === 'restore') {
+        return setApplicationStatus(req, res, action);
+      }
       return res.status(400).json({ error: 'Unknown action' });
     }
     return res.status(405).json({ error: 'Method not allowed' });
