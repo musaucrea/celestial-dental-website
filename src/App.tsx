@@ -406,7 +406,8 @@ function Blog() {
       .catch(() => setApiPosts([]));
   }, []);
 
-  const posts = apiPosts ?? [];
+  // Only the newest few belong on the landing page — the rest live on /blog.
+  const posts = (apiPosts ?? []).slice(0, 3);
 
   if (apiPosts !== null && posts.length === 0) return null;
 
