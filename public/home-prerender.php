@@ -114,6 +114,16 @@ $schemas = [
   ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $faqEntities],
 ];
 
+// One source of truth for the homepage's three core schemas. Vite injects the
+// same JSON into the SPA shell at build time, so every user agent receives it
+// in the initial HTML. Keep the generated arrays above as a safe fallback if a
+// partial deployment ever leaves the shared file unavailable or invalid.
+$sharedSchemaJson = @file_get_contents(__DIR__ . '/home-schema.json');
+$sharedSchemas = $sharedSchemaJson ? json_decode($sharedSchemaJson, true) : null;
+if (is_array($sharedSchemas) && count($sharedSchemas) === 3) {
+  $schemas = $sharedSchemas;
+}
+
 header('Content-Type: text/html; charset=utf-8');
 header('X-Robots-Tag: index, follow');
 

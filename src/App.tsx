@@ -7,7 +7,6 @@ import { Hero } from './components/Hero';
 import { Reveal } from './components/Reveal';
 import { BookingProvider, useBooking } from './components/booking';
 import { BookingModal } from './components/BookingModal';
-import { SchemaOrg } from './components/SchemaOrg';
 import { SEO } from './components/SEO';
 import { BranchPage } from './pages/BranchPage';
 import { BlogPostPage } from './pages/BlogPostPage';
@@ -692,7 +691,6 @@ function AppInner() {
         canonicalPath="/"
         keywords={['teeth cleaning Nairobi', 'root canal Nairobi', 'children dentist Kenya', 'cosmetic dentistry Kenya', 'dentist Ruiru', 'affordable dental clinic Nairobi', 'best dentist Kenya']}
       />
-      <SchemaOrg />
       <Header />
       <main>
         <Hero />

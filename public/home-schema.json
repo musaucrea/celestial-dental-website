@@ -1,0 +1,202 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Dentist",
+    "name": "Celestial Dental Centre",
+    "alternateName": "Celestial Dental & Orthodontic Centre",
+    "url": "https://celestialdental.org/",
+    "telephone": "+254 707 535 000",
+    "image": "https://celestialdental.org/facility/reception-lounge.jpg",
+    "priceRange": "KES",
+    "paymentAccepted": "Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA",
+    "areaServed": [
+      "Nairobi",
+      "Kasarani",
+      "Ruiru",
+      "Kamakis",
+      "Eldoret",
+      "Kenya"
+    ],
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "07:00",
+        "closes": "20:00"
+      }
+    ],
+    "description": "Affordable dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru) and Eldoret. Open every day 07:00-20:00.",
+    "department": [
+      {
+        "@type": "Dentist",
+        "name": "Celestial Dental Centre - Kasarani Branch",
+        "url": "https://celestialdental.org/branches/kasarani",
+        "telephone": "+254 707 535 000",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Total Petrol Station (Claycity) Building, 2nd Floor, Along Kasarani – Mwiki Road Kasarani, Nairobi County",
+          "addressLocality": "Kasarani",
+          "addressRegion": "Nairobi",
+          "addressCountry": "KE"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "07:00",
+            "closes": "20:00"
+          }
+        ],
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": -1.2197,
+          "longitude": 36.8979
+        }
+      },
+      {
+        "@type": "Dentist",
+        "name": "Celestial Dental Centre - Eldoret Branch",
+        "url": "https://celestialdental.org/branches/eldoret",
+        "telephone": "+254 794 585 217",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Champion Heights 1st floor, Along Banaptai Street, Eldoret Town -Uasin Gishu County",
+          "addressLocality": "Eldoret",
+          "addressRegion": "Uasin Gishu",
+          "addressCountry": "KE"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "07:00",
+            "closes": "20:00"
+          }
+        ],
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 0.5143,
+          "longitude": 35.2698
+        }
+      },
+      {
+        "@type": "Dentist",
+        "name": "Celestial Dental Centre - Kamakis Branch",
+        "url": "https://celestialdental.org/branches/kamakis",
+        "telephone": "+254 724 202 252",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Viashla Busines Centre, 2nd Floor, Above KFC, Opposite Naivas Supermarket Along Eastern Bypass",
+          "addressLocality": "Kamakis",
+          "addressRegion": "Kiambu",
+          "addressCountry": "KE"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "07:00",
+            "closes": "20:00"
+          }
+        ],
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": -1.1853,
+          "longitude": 36.9761
+        }
+      }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Celestial Dental Centre",
+    "url": "https://celestialdental.org/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What are your opening hours?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, and Eldoret. Walk-ins are welcome, but booking ahead helps us reserve time for you."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you accept insurance and medical schemes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. We work with a wide range of insurers and medical schemes including Jubilee, AAR, Madison, CIC, Britam, APA, SHA, NHIF and many more. Bring your insurance card and our team will handle pre-authorisation and billing."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you accept M-Pesa?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we accept M-Pesa, cash, and direct insurance billing. For M-Pesa payments, our team at each branch will provide the till number at reception."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a dentist open on Sunday in Nairobi?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all three branches (Kasarani, Kamakis, and Eldoret)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you handle dental emergencies?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Call or WhatsApp the nearest branch and we aim to see you the same day. For severe pain or swelling, come in directly and our team will prioritise you."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you treat children?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. We offer gentle children's dentistry in a calm, child-friendly setting. We recommend a first visit as soon as the first tooth appears, or by age one."
+        }
+      }
+    ]
+  }
+]
