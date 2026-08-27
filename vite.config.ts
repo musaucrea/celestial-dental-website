@@ -41,6 +41,16 @@ export default defineConfig({
     modulePreload: {
       polyfill: false,
     },
+    rollupOptions: {
+      output: {
+        // Split the framework out of the app chunk. It changes far less often
+        // than the site does, so returning visitors keep it from cache across
+        // content deploys instead of re-downloading it every time.
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
   },
   // Local preview only: proxy /api to production so pages that fetch
   // CMS content (blog, gallery, branches) render with real data.

@@ -1,4 +1,4 @@
-import { useState, useEffect, type ComponentType } from 'react';
+import { useState, useEffect, lazy, Suspense, type ComponentType } from 'react';
 import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { Phone, MapPin, MessageCircle, ChevronDown, Cpu, Gem, ShieldCheck, HeartHandshake, Clock, Facebook, Instagram, Linkedin, Twitter, Star } from 'lucide-react';
 import { WhatsAppIcon, TikTokIcon } from './components/icons';
@@ -8,17 +8,22 @@ import { Reveal } from './components/Reveal';
 import { BookingProvider, useBooking } from './components/booking';
 import { BookingModal } from './components/BookingModal';
 import { SEO } from './components/SEO';
-import { BranchPage } from './pages/BranchPage';
-import { BlogPostPage } from './pages/BlogPostPage';
-import { BlogPage } from './pages/BlogPage';
-import { CareersPage } from './pages/CareersPage';
-import { ServicePage } from './pages/ServicePage';
-import { ServicesPage } from './pages/ServicesPage';
-import { AboutPage } from './pages/AboutPage';
-import { BracesPage } from './pages/BracesPage';
+// Route-level code splitting. The homepage is the landing page for almost all
+// traffic and stays in the main bundle; every other page is fetched only when
+// someone navigates to it. Most visitors arrive on mobile data, where the
+// single 520KB bundle delayed first render on every one of these routes.
+const BranchPage = lazy(() => import('./pages/BranchPage').then(m => ({ default: m.BranchPage })));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage').then(m => ({ default: m.BlogPostPage })));
+const BlogPage = lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
+const CareersPage = lazy(() => import('./pages/CareersPage').then(m => ({ default: m.CareersPage })));
+const ServicePage = lazy(() => import('./pages/ServicePage').then(m => ({ default: m.ServicePage })));
+const ServicesPage = lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
+const AboutPage = lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
+const BracesPage = lazy(() => import('./pages/BracesPage').then(m => ({ default: m.BracesPage })));
 import { AccessibilityWidget } from './components/AccessibilityWidget';
 import { RetargetingConsent } from './components/RetargetingConsent';
 import { installContactClickTracking } from './lib/track';
+import { captureAttribution } from './lib/attribution';
 import { WhatsAppButton } from './components/WhatsAppButton';
 import {
   services as staticServices,
@@ -749,10 +754,18 @@ function ScrollToHash() {
 }
 
 export default function App() {
-  useEffect(() => installContactClickTracking(), []);
+  useEffect(() => {
+    installContactClickTracking();
+    // Read campaign parameters off the landing URL before any navigation can
+    // drop them, so a booking made days later is still credited.
+    captureAttribution();
+  }, []);
   return (
     <>
       <ScrollToHash />
+      {/* The fallback is deliberately empty: these chunks land in a few hundred
+          milliseconds and a flashed spinner reads as jank, not as progress. */}
+      <Suspense fallback={null}>
       <Routes>
         <Route
           path="/"
@@ -775,6 +788,7 @@ export default function App() {
         <Route path="/:slug" element={<BlogPostPage rootLevel />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </Suspense>
       <AccessibilityWidget />
       <RetargetingConsent />
       <WhatsAppButton />
