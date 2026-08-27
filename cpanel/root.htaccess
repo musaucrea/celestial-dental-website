@@ -41,11 +41,33 @@ RewriteRule ^services/gumdiseasetreatment/?$ /services/gum-disease-treatment [R=
 RewriteRule ^services/teethextraction/?$ /services/teeth-extraction [R=301,L]
 RewriteRule ^services/teethcleaning/?$ /services/teeth-cleaning [R=301,L]
 
+# ── WordPress leftovers from the pre-2026 site ─────────────────────
+# These all used to fall through to the SPA shell and answer 200, so Google saw
+# an unlimited supply of soft-404s (?p=N, /category/…, /tag/…, /feed/) on a
+# domain whose index history is still mostly old WP URLs. Send the ones with a
+# real equivalent to it, and gone the rest so they drop out of the index.
+RewriteCond %{QUERY_STRING} ^(p|page_id|cat|m|attachment_id)=
+RewriteRule ^$ /? [R=301,L]
+RewriteRule ^about-us/?$ /about [R=301,L]
+RewriteRule ^services-2/?$ /services [R=301,L]
+RewriteRule ^contact/?$ /#branches [R=301,L,NE]
+RewriteRule ^(index|wp-login|xmlrpc)\.php$ /? [R=301,L]
+RewriteRule ^(category|tag|author|feed|comments|wp-json|wp-includes|wp-admin)(/.*)?$ - [G]
+RewriteRule ^[0-9]{4}/[0-9]{2}/ - [G]
+
 # A missing static file must 404, not fall through to the app shell below.
 # Scrapers probe for image URLs this site never had; answering them with
 # index.html made the analytics beacon log each one as a pageview.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule \.(jpe?g|png|gif|webp|avif|bmp|svg|ico|css|js|mjs|map|woff2?|ttf|eot|mp4|webm|mp3|zip)$ - [R=404,L]
+
+# The homepage needs its own rule: for "/" REQUEST_FILENAME resolves to the
+# document root, so the !-d condition on the general rule below can never be
+# satisfied and the most important page on the site was the only one serving
+# crawlers the bare app shell. It points at its own renderer rather than
+# prerender.php, whose dispatch sends an empty slug to the shell.
+RewriteCond %{HTTP_USER_AGENT} (googlebot|bingbot|duckduckbot|slurp|yandex|baiduspider|gptbot|oai-searchbot|chatgpt|claudebot|claude-web|anthropic|perplexity|youbot|amazonbot|applebot|cohere|bytespider|duckassistbot|meta-externalagent|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot) [NC]
+RewriteRule ^$ /home-prerender.php [L]
 
 # Crawlers and AI assistants don't run the JavaScript app — serve them
 # pre-rendered article HTML instead (regular visitors never hit this).

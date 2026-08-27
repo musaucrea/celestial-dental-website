@@ -24,6 +24,14 @@ if (preg_match('#^branches/([a-z0-9-]+)$#', trim($path ?: '/', '/'), $bm)) {
   render_branch($bm[1]);
 }
 
+// Static marketing routes (/services, /services/{slug}, /about, /braces,
+// /careers). The SPA sets a correct per-route <title>/canonical client-side,
+// but crawlers get the pre-JS HTML. Without this, every one of these routes
+// fell through to index.html — whose canonical is the homepage — so Google
+// de-duplicated them all into "/" and dropped them from the index. Emit the
+// real per-route HTML here so each URL self-canonicalises.
+render_static(trim($path ?: '/', '/'));
+
 // Only the blog index and article-shaped paths (single segment) are prerendered
 if ($slug === '' || strpos($slug, '/') !== false) spa_shell();
 
@@ -74,6 +82,37 @@ function render_body($body) {
   return $out;
 }
 
+// Pull question-shaped headings and their answers out of an article body.
+// The articles are written as "## Why does X happen?" followed by the answer,
+// which is exactly the shape assistants quote — emitting it as FAQPage schema
+// makes each Q&A individually citable instead of buried in articleBody.
+function cd_extract_faqs($body) {
+  $faqs = [];
+  $q = null;
+  $answer = '';
+  foreach (preg_split('/\r?\n/', (string)$body) as $raw) {
+    $line = trim($raw);
+    if (preg_match('/^(#{2,4})\s+(.*)/', $line, $h)) {
+      if ($q !== null && trim($answer) !== '') $faqs[] = ['q' => $q, 'a' => trim($answer)];
+      $heading = trim($h[2]);
+      // Only headings that actually ask something become questions.
+      $q = (substr($heading, -1) === '?') ? $heading : null;
+      $answer = '';
+      continue;
+    }
+    if ($q === null || $line === '') continue;
+    // Skip images; keep prose and list items as answer text.
+    if (preg_match('/^!\[/', $line) || preg_match('#^https?://\S+$#i', $line)) continue;
+    $line = preg_replace('/^[-*•]\s+/', '', $line);
+    $line = preg_replace('/^\d+[.)]\s+/', '', $line);
+    $line = preg_replace('/\*\*([^*]+)\*\*/', '$1', $line);
+    $line = preg_replace('/\*([^*]+)\*/', '$1', $line);
+    $answer .= ($answer === '' ? '' : ' ') . $line;
+  }
+  if ($q !== null && trim($answer) !== '') $faqs[] = ['q' => $q, 'a' => trim($answer)];
+  return $faqs;
+}
+
 function about_section($SITE) {
   return <<<HTML
     <hr />
@@ -84,6 +123,256 @@ function about_section($SITE) {
       <p>Book an appointment: <a href="$SITE/?book=1">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>
     </section>
 HTML;
+}
+
+// ─────────── Static marketing routes (services / about / braces / careers) ───────────
+
+// Mirror src/data/site.ts slugify() so /services/<slug> matches the SPA.
+function cd_slugify($t) {
+  $t = mb_strtolower($t, 'UTF-8');
+  $t = preg_replace('/[\x{2019}\x{2018}\']/u', '', $t);
+  $t = str_replace('&', ' and ', $t);
+  $t = preg_replace('/[^a-z0-9]+/', '-', $t);
+  return trim($t, '-');
+}
+
+// The service catalogue, kept in sync with `services` in src/data/site.ts.
+function cd_services() {
+  return [
+    ['title' => 'Dental Checkup', 'description' => 'A thorough examination of your teeth, gums, and mouth to catch problems early — the simplest way to keep your smile healthy.', 'faqs' => [
+      ['q' => 'How often should I have a dental checkup?', 'a' => 'For most people, every 6 months — even when nothing hurts. Regular checkups catch small problems early, when they are simpler to treat.'],
+      ['q' => 'What happens during a dental checkup?', 'a' => 'We examine your teeth and gums, check for decay, gum disease, and other issues, and discuss anything we find. If needed, we may recommend a cleaning, x-rays, or treatment — always explained clearly first.'],
+    ]],
+    ['title' => 'General Dentistry', 'description' => 'Everyday dental care and diagnosis for the whole family — your first stop for a healthy smile.', 'faqs' => [
+      ['q' => 'How often should I visit the dentist?', 'a' => 'We recommend a checkup every 6 months, even when nothing hurts — small problems caught early are simpler to fix.'],
+    ]],
+    ['title' => 'Dental X-rays', 'description' => 'Safe, low-dose digital x-rays that reveal what the eye cannot see — hidden decay, bone health, and issues below the gumline.', 'faqs' => [
+      ['q' => 'Are dental x-rays safe?', 'a' => 'Yes. We use modern digital x-rays, which use a very low dose of radiation — far less than older film x-rays. We only take them when they will genuinely help your diagnosis.'],
+      ['q' => 'Why do I need a dental x-ray?', 'a' => 'X-rays let us see between and inside teeth, check the roots and jawbone, and spot problems like hidden decay or infection early — things a visual exam alone can miss.'],
+    ]],
+    ['title' => 'Dental Emergencies', 'description' => 'Same-day relief for severe tooth pain, swelling, knocked-out teeth, and urgent dental problems — 7 days a week.', 'faqs' => [
+      ['q' => 'Do you handle dental emergencies same day?', 'a' => 'Yes. We aim to see emergency patients the same day — call or WhatsApp the nearest branch and we\'ll fit you in as quickly as possible. We\'re open every day, 07:00–20:00.'],
+    ]],
+    ['title' => 'Cosmetic Dentistry', 'description' => 'Smile makeovers, veneers, and aesthetic treatments tailored to how you want to look and feel.', 'faqs' => []],
+    ['title' => 'Teeth Whitening', 'description' => 'Professional in-office whitening and take-home kits that safely lift your smile by several shades.', 'faqs' => [
+      ['q' => 'Are whitening results guaranteed?', 'a' => 'Whitening is designed to lighten natural tooth enamel by several shades. Individual results vary depending on the starting shade and tooth type. We assess your suitability at consultation to give you realistic expectations.'],
+    ]],
+    ['title' => 'Dental Bridges & Crowns', 'description' => 'Strong, natural-looking crowns and bridges that restore damaged or missing teeth to full function.', 'faqs' => []],
+    ['title' => 'Full & Partial Dentures', 'description' => 'Comfortable, well-fitted dentures — full or partial — that restore your smile, speech, and chewing.', 'faqs' => []],
+    ['title' => 'Dental Implants', 'description' => 'Durable titanium implants with natural-looking crowns — the closest thing to a real tooth.', 'faqs' => [
+      ['q' => 'Does the implant procedure hurt?', 'a' => 'The procedure is done under local anaesthesia so you should feel little to no pain during placement. Some soreness is normal for a few days after — we provide clear aftercare instructions and a review appointment.'],
+    ]],
+    ['title' => 'Orthodontics (Braces)', 'description' => 'Metal braces, ceramic braces, and clear aligners for children, teens, and adults — with clear timelines.', 'faqs' => [
+      ['q' => 'How long does orthodontic treatment take?', 'a' => 'Most cases take 12–24 months. Your dentist will give you a personalised timeline at your first consultation after assessing your teeth.'],
+      ['q' => 'What\'s the difference between metal braces, ceramic, and aligners?', 'a' => 'Metal braces are the most affordable and work for most cases. Ceramic braces are less visible. Clear aligners (like Invisalign-style) are removable and nearly invisible but suit simpler cases. We\'ll help you choose what\'s right for your teeth and lifestyle.'],
+    ]],
+    ['title' => 'Root Canal Therapy', 'description' => 'Pain-relieving root canal treatment that saves your natural tooth — done gently under local anaesthesia.', 'faqs' => [
+      ['q' => 'Is a root canal painful?', 'a' => 'Modern root canal treatment is done under local anaesthesia and is designed to relieve pain, not cause it. Most patients are surprised at how comfortable the procedure is. Mild soreness for 1–2 days afterward is normal.'],
+    ]],
+    ['title' => "Children's Dentistry", 'description' => 'Gentle, friendly care that helps young patients feel calm — from first visits to cavity care and prevention.', 'faqs' => [
+      ['q' => 'At what age should my child first see a dentist?', 'a' => 'We recommend bringing your child in as soon as their first tooth appears, or by age one — whichever comes first. Early visits help prevent problems and make dentistry feel normal.'],
+      ['q' => 'How do you keep children calm during treatment?', 'a' => 'Our child-friendly rooms, gentle approach, and patient explanations help kids feel safe. We never rush, and we involve children in what\'s happening at every step.'],
+    ]],
+    ['title' => 'Dental Fillings', 'description' => 'Tooth-coloured fillings that stop cavities in their tracks and blend invisibly with your natural teeth.', 'faqs' => []],
+    ['title' => 'Gum Disease Treatment', 'description' => 'Deep cleaning and gum therapy that treats bleeding gums, bad breath, and periodontal disease.', 'faqs' => []],
+    ['title' => 'Teeth Extraction', 'description' => 'Safe, comfortable removal of damaged teeth and wisdom teeth, with clear aftercare and healing support.', 'faqs' => []],
+    ['title' => 'Teeth Cleaning', 'description' => 'Professional scaling and polishing that removes plaque and stains, keeping your gums healthy and breath fresh.', 'faqs' => [
+      ['q' => 'How often should I get my teeth cleaned?', 'a' => 'We recommend a professional cleaning every 6 months for most adults. If you have gum disease or heavy tartar build-up, every 3–4 months is better — we\'ll advise you at your first visit.'],
+    ]],
+  ];
+}
+
+function cd_branch_links($SITE) {
+  $b = [
+    ['slug' => 'kasarani', 'label' => 'Kasarani (Nairobi)'],
+    ['slug' => 'kamakis',  'label' => 'Kamakis (Ruiru)'],
+    ['slug' => 'eldoret',  'label' => 'Eldoret'],
+  ];
+  $li = '';
+  foreach ($b as $x) $li .= "<li><a href=\"$SITE/branches/{$x['slug']}\">{$x['label']}</a></li>\n";
+  return "<h2>Our branches</h2>\n<ul>\n$li</ul>\n";
+}
+
+function cd_breadcrumb($SITE, $trail) {
+  $items = [];
+  $i = 1;
+  foreach ($trail as $name => $url) {
+    $items[] = ['@type' => 'ListItem', 'position' => $i++, 'name' => $name, 'item' => $url];
+  }
+  return ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $items];
+}
+
+// Emit a complete, self-canonical HTML document for a static route.
+function emit_page($title, $metaDesc, $canonicalPath, $mainHtml, $extraSchema = [], $appendAbout = true) {
+  $SITE = CD_SITE;
+  $canonical = $SITE . $canonicalPath;
+  $ogImage = $SITE . '/facility/reception-lounge.jpg';
+  $t = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+  $d = htmlspecialchars($metaDesc, ENT_QUOTES, 'UTF-8');
+
+  header('Content-Type: text/html; charset=utf-8');
+  header('X-Robots-Tag: index, follow');
+  echo "<!doctype html>\n<html lang=\"en\">\n<head>\n";
+  echo "<meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n";
+  echo "<title>$t</title>\n";
+  echo "<meta name=\"description\" content=\"$d\" />\n";
+  echo "<meta name=\"robots\" content=\"index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1\" />\n";
+  echo "<link rel=\"canonical\" href=\"$canonical\" />\n";
+  echo "<meta property=\"og:title\" content=\"$t\" /><meta property=\"og:description\" content=\"$d\" />\n";
+  echo "<meta property=\"og:type\" content=\"website\" /><meta property=\"og:url\" content=\"$canonical\" />\n";
+  echo "<meta property=\"og:site_name\" content=\"Celestial Dental Centre\" /><meta property=\"og:image\" content=\"$ogImage\" />\n";
+  foreach ($extraSchema as $s) {
+    echo "<script type=\"application/ld+json\">" . json_encode($s, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "</script>\n";
+  }
+  echo "</head>\n<body>\n<main>\n";
+  echo $mainHtml;
+  if ($appendAbout) echo about_section($SITE);
+  echo "</main>\n</body>\n</html>\n";
+  exit;
+}
+
+function render_static($staticPath) {
+  $SITE = CD_SITE;
+  $esc = fn($s) => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+
+  // ── /services index ──
+  if ($staticPath === 'services') {
+    $items = '';
+    foreach (cd_services() as $svc) {
+      $u = "$SITE/services/" . cd_slugify($svc['title']);
+      $items .= "<li><a href=\"$u\">{$esc($svc['title'])}</a> — {$esc($svc['description'])}</li>\n";
+    }
+    $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Services</p>\n"
+      . "<h1>Dental Services in Kasarani, Kamakis &amp; Eldoret</h1>\n"
+      . "<p>Explore the full range of dental care at Celestial Dental Centre — checkups, cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry, and same-day emergency care. Available at all three branches, open every day 07:00–20:00.</p>\n"
+      . "<ul>\n$items</ul>\n"
+      . "<p><a href=\"$SITE/?book=1\">Book an appointment</a> · Call +254 707 535 000</p>\n";
+    emit_page(
+      'Dental Services in Kasarani, Kamakis & Eldoret | Celestial Dental Centre',
+      "Explore dental checkups, teeth cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry and emergency care at Celestial Dental Centre.",
+      '/services', $main,
+      [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Services' => "$SITE/services"])]
+    );
+  }
+
+  // ── /services/{slug} detail ──
+  if (strpos($staticPath, 'services/') === 0) {
+    $sslug = substr($staticPath, strlen('services/'));
+    foreach (cd_services() as $svc) {
+      if (cd_slugify($svc['title']) !== $sslug) continue;
+      $title = $svc['title'];
+      $lc = mb_strtolower($title, 'UTF-8');
+      $canonicalPath = "/services/$sslug";
+      $canonical = $SITE . $canonicalPath;
+
+      $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › <a href=\"$SITE/services\">Services</a> › {$esc($title)}</p>\n"
+        . "<h1>{$esc($title)}</h1>\n"
+        . "<p>{$esc($svc['description'])}</p>\n"
+        . "<p>Available at all three Celestial Dental Centre branches — Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret — open every day, 07:00–20:00. <a href=\"$SITE/?book=1\">Book " . $esc($lc) . "</a> or call +254 707 535 000.</p>\n";
+
+      $schema = [
+        cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Services' => "$SITE/services", $title => $canonical]),
+        [
+          '@context' => 'https://schema.org', '@type' => 'Service',
+          'name' => $title, 'serviceType' => $title, 'description' => $svc['description'],
+          'url' => $canonical,
+          'provider' => ['@type' => 'Dentist', 'name' => 'Celestial Dental Centre', 'url' => "$SITE/"],
+          'areaServed' => ['Kasarani, Nairobi', 'Kamakis, Ruiru', 'Eldoret', 'Kenya'],
+        ],
+      ];
+
+      if (!empty($svc['faqs'])) {
+        $main .= "<h2>{$esc($title)} — common questions</h2>\n";
+        $faqEntities = [];
+        foreach ($svc['faqs'] as $f) {
+          $main .= "<h3>{$esc($f['q'])}</h3>\n<p>{$esc($f['a'])}</p>\n";
+          $faqEntities[] = ['@type' => 'Question', 'name' => $f['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']]];
+        }
+        $schema[] = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $faqEntities];
+      }
+
+      // Cross-links to the other services keep the detail page internally linked.
+      $others = '';
+      foreach (cd_services() as $o) {
+        if ($o['title'] === $title) continue;
+        $u = "$SITE/services/" . cd_slugify($o['title']);
+        $others .= "<li><a href=\"$u\">{$esc($o['title'])}</a></li>\n";
+      }
+      $main .= cd_branch_links($SITE);
+      $main .= "<h2>Other services</h2>\n<ul>\n$others</ul>\n";
+
+      emit_page(
+        "$title in Kasarani, Kamakis & Eldoret | Celestial Dental Centre",
+        $svc['description'] . " Book $lc at Celestial Dental Centre — open daily 07:00–20:00 across Kasarani, Kamakis, and Eldoret.",
+        $canonicalPath, $main, $schema
+      );
+    }
+    // Unknown service slug: fall through to the SPA shell via the caller.
+    return;
+  }
+
+  // ── /about ──
+  if ($staticPath === 'about') {
+    $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › About</p>\n"
+      . "<h1>About Celestial Dental Centre</h1>\n"
+      . "<p>Celestial Dental Centre is an affordable dental clinic group in Kenya, serving patients across three branches — Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret. We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
+      . "<p>Our team focuses on accurate diagnosis, clearly explained treatment planning, and quality materials and equipment. From routine checkups and cleaning to braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency care, we look after the whole family with calm, patient-friendly care.</p>\n"
+      . "<p>We accept M-Pesa, cash, SHA (Social Health Authority), and 20+ insurance schemes including Jubilee, AAR, Madison, CIC, Britam, and APA. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
+      . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"
+      . cd_branch_links($SITE);
+    emit_page(
+      'About Celestial Dental Centre | Dental Clinics in Kasarani, Kamakis & Eldoret',
+      'Learn about Celestial Dental Centre, a Kenyan dental clinic group serving Kasarani, Kamakis, and Eldoret with modern equipment, clear treatment planning, insurance support, and family-friendly care.',
+      '/about', $main,
+      [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'About' => "$SITE/about"])],
+      false
+    );
+  }
+
+  // ── /braces ──
+  if ($staticPath === 'braces') {
+    $faqs = [
+      ['q' => 'How long does orthodontic treatment take?', 'a' => 'Most cases take 12–24 months. Your dentist will give you a personalised timeline at your first consultation after assessing your teeth.'],
+      ['q' => "What's the difference between metal braces, ceramic, and aligners?", 'a' => 'Metal braces are the most affordable and work for most cases. Ceramic braces are less visible. Clear aligners are removable and nearly invisible but suit simpler cases. We\'ll help you choose what\'s right for your teeth and lifestyle.'],
+    ];
+    $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Braces</p>\n"
+      . "<h1>Dental Braces &amp; Orthodontics in Nairobi, Ruiru &amp; Eldoret</h1>\n"
+      . "<p>Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental Centre. We provide orthodontic care for children, teens, and adults in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret — open 7 days, with insurance and M-Pesa accepted.</p>\n"
+      . "<p>At your first consultation we assess your teeth, explain your options and timeline, and give you a clear treatment plan. <a href=\"$SITE/?book=1\">Book a braces consultation</a> or call +254 707 535 000.</p>\n";
+    $faqEntities = [];
+    $main .= "<h2>Braces — common questions</h2>\n";
+    foreach ($faqs as $f) {
+      $main .= "<h3>{$esc($f['q'])}</h3>\n<p>{$esc($f['a'])}</p>\n";
+      $faqEntities[] = ['@type' => 'Question', 'name' => $f['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']]];
+    }
+    $main .= cd_branch_links($SITE);
+    emit_page(
+      'Dental Braces in Nairobi, Ruiru & Eldoret | Orthodontist | Celestial Dental Centre',
+      'Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental — orthodontic care in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret. Open 7 days, insurance & M-Pesa accepted. Book a braces consultation today.',
+      '/braces', $main,
+      [
+        cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Braces' => "$SITE/braces"]),
+        ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $faqEntities],
+      ]
+    );
+  }
+
+  // ── /careers ──
+  if ($staticPath === 'careers') {
+    $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Careers</p>\n"
+      . "<h1>Dental Careers in Kenya</h1>\n"
+      . "<p>Explore dental career opportunities at Celestial Dental Centre across our Kasarani, Kamakis, and Eldoret branches. We hire for clinical, patient care, and support roles, and welcome dentists, dental therapists, hygienists, nurses, and front-desk staff.</p>\n"
+      . "<p>To apply, send your CV through our <a href=\"$SITE/careers\">careers page</a>, or call +254 707 535 000. Tell us the role you're interested in and your availability, and our team will be in touch.</p>\n"
+      . cd_branch_links($SITE);
+    emit_page(
+      'Dental Careers in Kenya | Celestial Dental Centre',
+      'Explore dental career opportunities at Celestial Dental Centre in Kasarani, Kamakis, and Eldoret. Send your CV for clinical, patient care, and support roles.',
+      '/careers', $main,
+      [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Careers' => "$SITE/careers"])]
+    );
+  }
+
+  // Not a static route — return so blog/SPA handling continues.
 }
 
 // ─────────────────────────── Branch pages ───────────────────────────
@@ -302,7 +591,49 @@ $schema = json_encode([
   'mainEntityOfPage'    => ['@type' => 'WebPage', '@id' => $canonical],
   'author'              => $publisher,
   'publisher'           => $publisher,
+  // Provenance an assistant can attribute: who stands behind the advice, when
+  // it was last checked, and what it is about.
+  'reviewedBy'          => $publisher,
+  'lastReviewed'        => $modified ?: $published,
+  'about'               => array_values(array_filter([
+    $post['tag'] ?? '',
+    'Dentistry',
+    'Oral health',
+  ])),
+  'isPartOf'            => [
+    '@type' => 'Blog',
+    'name'  => 'Celestial Dental Centre Blog',
+    'url'   => $SITE . '/blog',
+  ],
+  'encoding'            => [
+    '@type'             => 'MediaObject',
+    'encodingFormat'    => 'text/markdown',
+    'contentUrl'        => $canonical . '.md',
+  ],
+  'license'             => $SITE . '/blog',
+  'copyrightHolder'     => $publisher,
 ], JSON_UNESCAPED_SLASHES);
+
+// Each question in the article, exposed as its own answerable unit.
+$articleFaqs = cd_extract_faqs($bodyText);
+$faqSchema = '';
+if (count($articleFaqs) >= 2) {
+  $faqEntities = [];
+  foreach ($articleFaqs as $f) {
+    $faqEntities[] = [
+      '@type'          => 'Question',
+      'name'           => $f['q'],
+      'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']],
+    ];
+  }
+  $faqSchema = json_encode([
+    '@context'   => 'https://schema.org',
+    '@type'      => 'FAQPage',
+    'url'        => $canonical,
+    'inLanguage' => 'en',
+    'mainEntity' => $faqEntities,
+  ], JSON_UNESCAPED_SLASHES);
+}
 
 header('Content-Type: text/html; charset=utf-8');
 header('X-Robots-Tag: index, follow');
@@ -327,6 +658,8 @@ header('X-Robots-Tag: index, follow');
   <?php if ($tag): ?><meta property="article:tag" content="<?= $tag ?>" /><?php endif; ?>
   <?php if ($imageUrl): ?><meta property="og:image" content="<?= $imageUrl ?>" /><?php endif; ?>
   <script type="application/ld+json"><?= $schema ?></script>
+  <?php if ($faqSchema): ?><script type="application/ld+json"><?= $faqSchema ?></script>
+  <?php endif; ?>
 </head>
 <body>
   <main>
