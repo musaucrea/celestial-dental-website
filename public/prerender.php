@@ -182,6 +182,64 @@ function cd_services() {
   ];
 }
 
+// Blog posts related to a service, scored on shared words between the service
+// name and the post's title/tag/excerpt. Gives each service page real editorial
+// content and, just as usefully, gives the articles an internal link from a
+// page Google already crawls — most of them are otherwise reachable only from
+// /blog.
+function cd_related_posts($needle, $limit = 6) {
+  // 'dentistry' and 'dental' are excluded deliberately: nearly every post tag
+  // contains one, so they match everything and the list becomes noise. Short
+  // words are kept (3 chars) because 'gum' is the whole signal for gum disease.
+  $stop = ['and','the','for','with','your','are','of','in','to','our','you',
+           'dental','dentistry','teeth','tooth','care','treatment','general','full'];
+  $terms = [];
+  foreach (preg_split('/[^a-z]+/', mb_strtolower($needle, 'UTF-8')) as $w) {
+    if (strlen($w) < 3 || in_array($w, $stop, true)) continue;
+    // Match on a short stem so "fillings" finds "filling" and "children"
+    // finds "child". Five characters is long enough to stay specific.
+    $terms[] = strlen($w) > 5 ? substr($w, 0, 5) : $w;
+  }
+  $terms = array_unique($terms);
+  if (!$terms) return [];
+  $scored = [];
+  foreach (cd_posts() as $p) {
+    $hay = mb_strtolower(($p['title'] ?? '') . ' ' . ($p['tag'] ?? '') . ' ' . ($p['excerpt'] ?? ''), 'UTF-8');
+    $score = 0;
+    foreach ($terms as $t) if (strpos($hay, $t) !== false) $score++;
+    if ($score > 0) $scored[] = ['s' => $score, 'p' => $p];
+  }
+  usort($scored, fn($a, $b) => $b['s'] <=> $a['s']);
+  return array_slice(array_column($scored, 'p'), 0, $limit);
+}
+
+function cd_related_html($SITE, $needle, $heading = 'Related reading') {
+  $posts = cd_related_posts($needle);
+  if (!$posts) return '';
+  $li = '';
+  foreach ($posts as $p) {
+    $t = htmlspecialchars($p['title'] ?? '', ENT_QUOTES, 'UTF-8');
+    $li .= "<li><a href=\"" . cd_canonical($p) . "\">$t</a></li>\n";
+  }
+  return "<h2>$heading</h2>\n<ul>\n$li</ul>\n";
+}
+
+function cd_service_links($SITE) {
+  $li = '';
+  foreach (cd_services() as $svc) {
+    $u = "$SITE/services/" . cd_slugify($svc['title']);
+    $li .= "<li><a href=\"$u\">" . htmlspecialchars($svc['title'], ENT_QUOTES, 'UTF-8') . "</a></li>\n";
+  }
+  return "<h2>Our dental services</h2>\n<ul>\n$li</ul>\n";
+}
+
+// The insurance/SHA answer is the most common pre-booking question and was
+// previously only on branch pages, so crawlers never saw it on a service page.
+function cd_insurance_note($SITE) {
+  return "<h2>Insurance, SHA and payment</h2>\n"
+    . "<p>SHA (Social Health Authority) is accepted for eligible schemes and covered treatments, depending on your cover. Celestial Dental also bills more than 20 insurers directly, including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet and Equity Bank Insurance. M-Pesa and cash are accepted at every branch. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. See <a href=\"$SITE/dental-insurance-and-sha-coverage\">insurance and SHA coverage</a>.</p>\n";
+}
+
 function cd_branch_links($SITE) {
   $b = [
     ['slug' => 'kasarani', 'label' => 'Kasarani (Nairobi)'],
@@ -298,6 +356,8 @@ function render_static($staticPath) {
         $u = "$SITE/services/" . cd_slugify($o['title']);
         $others .= "<li><a href=\"$u\">{$esc($o['title'])}</a></li>\n";
       }
+      $main .= cd_related_html($SITE, $title, "More on {$esc($lc)}");
+      $main .= cd_insurance_note($SITE);
       $main .= cd_branch_links($SITE);
       $main .= "<h2>Other services</h2>\n<ul>\n$others</ul>\n";
 
@@ -319,6 +379,8 @@ function render_static($staticPath) {
       . "<p>Our team focuses on accurate diagnosis, clearly explained treatment planning, and quality materials and equipment. From routine checkups and cleaning to braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency care, we look after the whole family with calm, patient-friendly care.</p>\n"
       . "<p>We accept M-Pesa, cash, SHA (Social Health Authority), and 20+ insurance schemes including Jubilee, AAR, Madison, CIC, Britam, and APA. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
       . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"
+      . cd_service_links($SITE)
+      . cd_insurance_note($SITE)
       . cd_branch_links($SITE);
     emit_page(
       'About Celestial Dental Centre | Dental Clinics in Kasarani, Kamakis & Eldoret',
@@ -345,6 +407,8 @@ function render_static($staticPath) {
       $main .= "<h3>{$esc($f['q'])}</h3>\n<p>{$esc($f['a'])}</p>\n";
       $faqEntities[] = ['@type' => 'Question', 'name' => $f['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']]];
     }
+    $main .= cd_related_html($SITE, 'braces aligners orthodontics', 'More on braces and aligners');
+    $main .= cd_insurance_note($SITE);
     $main .= cd_branch_links($SITE);
     emit_page(
       'Dental Braces in Nairobi, Ruiru & Eldoret | Orthodontist | Celestial Dental Centre',

@@ -31,9 +31,11 @@ $static = [
   ['/services/gum-disease-treatment',       '2026-07-08', 'monthly', '0.9'],
   ['/services/teeth-extraction',            '2026-07-08', 'monthly', '0.9'],
   ['/services/teeth-cleaning',              '2026-07-08', 'monthly', '0.9'],
-  ['/llms.txt',                             '2026-07-16', 'weekly',  '0.5'],
-  ['/ai.txt',                               '2026-07-16', 'weekly',  '0.5'],
-  ['/crawl.html',                           '2026-07-08', 'weekly',  '0.5'],
+  // llms.txt, ai.txt and crawl.html are deliberately NOT listed. A sitemap is a
+  // list of pages you want indexed; those three are machine-readable assets that
+  // Google crawls and then declines to index, which parks them in the
+  // "not indexed" report and makes real coverage problems harder to see. AI
+  // crawlers still find them through robots.txt, which names all three.
 ];
 
 $posts = cd_posts();
