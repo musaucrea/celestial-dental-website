@@ -574,6 +574,33 @@ $publisher = [
   'logo'  => ['@type' => 'ImageObject', 'url' => $SITE . '/brand/celestial-logo.png'],
 ];
 
+// Named clinical reviewer, shared with the React page via one JSON file so the
+// byline cannot drift between what visitors read and what crawlers are told.
+// Blank name = attribute the clinical team, exactly as before.
+$reviewerRaw  = @file_get_contents(__DIR__ . '/medical-reviewer.json');
+$reviewerData = $reviewerRaw ? json_decode($reviewerRaw, true) : null;
+$reviewerName = is_array($reviewerData) ? trim($reviewerData['name'] ?? '') : '';
+$reviewerCred = is_array($reviewerData) ? trim($reviewerData['credentials'] ?? '') : '';
+$reviewerReg  = is_array($reviewerData) ? trim($reviewerData['registration'] ?? '') : '';
+$reviewerLine = '';
+$reviewerPerson = null;
+if ($reviewerName !== '') {
+  $reviewerLine = trim($reviewerName . ($reviewerCred !== '' ? ', ' . $reviewerCred : ''))
+    . ($reviewerReg !== '' ? ' · KMPDC ' . $reviewerReg : '');
+  $reviewerPerson = ['@type' => 'Person', 'name' => $reviewerName];
+  $jobTitle = trim($reviewerData['jobTitle'] ?? '');
+  $profile  = trim($reviewerData['url'] ?? '');
+  if ($jobTitle !== '') $reviewerPerson['jobTitle'] = $jobTitle;
+  if ($profile !== '')  $reviewerPerson['url'] = $profile;
+  if ($reviewerCred !== '') {
+    $reviewerPerson['hasCredential'] = ['@type' => 'EducationalOccupationalCredential', 'credentialCategory' => $reviewerCred];
+  }
+  if ($reviewerReg !== '') {
+    $reviewerPerson['identifier'] = ['@type' => 'PropertyValue', 'name' => 'KMPDC registration', 'value' => $reviewerReg];
+  }
+  $reviewerPerson['worksFor'] = ['@type' => 'Organization', 'name' => 'Celestial Dental Centre'];
+}
+
 $schema = json_encode([
   '@context'            => 'https://schema.org',
   '@type'               => 'BlogPosting',
@@ -589,11 +616,11 @@ $schema = json_encode([
   'keywords'            => $post['tag'] ?? '',
   'articleBody'         => $plain,
   'mainEntityOfPage'    => ['@type' => 'WebPage', '@id' => $canonical],
-  'author'              => $publisher,
+  'author'              => $reviewerPerson ?: $publisher,
   'publisher'           => $publisher,
   // Provenance an assistant can attribute: who stands behind the advice, when
   // it was last checked, and what it is about.
-  'reviewedBy'          => $publisher,
+  'reviewedBy'          => $reviewerPerson ?: $publisher,
   'lastReviewed'        => $modified ?: $published,
   'about'               => array_values(array_filter([
     $post['tag'] ?? '',
@@ -666,7 +693,7 @@ header('X-Robots-Tag: index, follow');
     <article>
       <p><a href="<?= $SITE ?>/">Celestial Dental Centre</a> › <a href="<?= $SITE ?>/blog">Blog</a><?= $tag ? " › $tag" : '' ?></p>
       <h1><?= $title ?></h1>
-      <p>By the Celestial Dental Centre clinical team · Published <time datetime="<?= $published ?>"><?= $published ?></time><?= $modified && $modified !== $published ? " · Updated <time datetime=\"$modified\">$modified</time>" : '' ?></p>
+      <p><?= $reviewerLine ? 'Medically reviewed by ' . htmlspecialchars($reviewerLine, ENT_QUOTES, 'UTF-8') : 'By the Celestial Dental Centre clinical team' ?> · Published <time datetime="<?= $published ?>"><?= $published ?></time><?= $modified && $modified !== $published ? " · Updated <time datetime=\"$modified\">$modified</time>" : '' ?></p>
       <?php if ($imageUrl): ?><figure><img src="<?= $imageUrl ?>" alt="<?= $title ?>" /></figure><?php endif; ?>
       <?= $bodyHtml ?>
     </article>

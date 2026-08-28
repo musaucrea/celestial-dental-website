@@ -10,6 +10,32 @@ import { pushEvent } from '../lib/track';
 import { describeNetworkError, describeResponseError } from '../lib/errors';
 import { Clock } from 'lucide-react';
 import { SchemaOrg } from '../components/SchemaOrg';
+import reviewer from '../../public/medical-reviewer.json';
+
+// Health content ranks and gets cited on who stands behind it. While the name
+// is blank the article reads exactly as it did before, attributed to the
+// clinical team; filling in public/medical-reviewer.json switches every post
+// to a named clinician, here and in the crawler prerender, in one edit.
+const reviewerName = reviewer.name.trim();
+const reviewerLine = reviewerName
+  ? [reviewerName, reviewer.credentials.trim()].filter(Boolean).join(', ')
+    + (reviewer.registration.trim() ? ` · KMPDC ${reviewer.registration.trim()}` : '')
+  : '';
+const reviewerPerson = reviewerName
+  ? {
+      '@type': 'Person',
+      name: reviewerName,
+      ...(reviewer.jobTitle.trim() ? { jobTitle: reviewer.jobTitle.trim() } : {}),
+      ...(reviewer.url.trim() ? { url: reviewer.url.trim() } : {}),
+      ...(reviewer.credentials.trim()
+        ? { hasCredential: { '@type': 'EducationalOccupationalCredential', credentialCategory: reviewer.credentials.trim() } }
+        : {}),
+      ...(reviewer.registration.trim()
+        ? { identifier: { '@type': 'PropertyValue', name: 'KMPDC registration', value: reviewer.registration.trim() } }
+        : {}),
+      worksFor: { '@type': 'Organization', name: 'Celestial Dental Centre' },
+    }
+  : null;
 import { SEO } from '../components/SEO';
 import { Loading } from '../components/Loading';
 
@@ -393,7 +419,8 @@ function BlogPostInner({ rootLevel = false }: { rootLevel?: boolean }) {
     ...(post.image ? { image: post.image } : {}),
     datePublished: post.date,
     mainEntityOfPage: `https://celestialdental.org/${post.slug}`,
-    author: { '@type': 'Organization', name: 'Celestial Dental Centre' },
+    author: reviewerPerson ?? { '@type': 'Organization', name: 'Celestial Dental Centre' },
+    ...(reviewerPerson ? { reviewedBy: reviewerPerson } : {}),
     publisher: {
       '@type': 'Organization',
       name: 'Celestial Dental Centre',
@@ -432,6 +459,11 @@ function BlogPostInner({ rootLevel = false }: { rootLevel?: boolean }) {
               <span>{post.date}</span>
               {post.readTime && <><span className="h-1 w-1 rounded-full bg-ink-500/40" /><span>{post.readTime}</span></>}
             </div>
+            {reviewerLine && (
+              <p className="mt-2 text-sm text-ink-500 font-medium">
+                Medically reviewed by <span className="text-ink-700 font-700">{reviewerLine}</span>
+              </p>
+            )}
           </Reveal>
           {post.image && !post.video && (
             <Reveal delay={180}>
