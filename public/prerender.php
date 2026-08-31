@@ -235,9 +235,18 @@ function cd_service_links($SITE) {
 
 // The insurance/SHA answer is the most common pre-booking question and was
 // previously only on branch pages, so crawlers never saw it on a service page.
-function cd_insurance_note($SITE) {
-  return "<h2>Insurance, SHA and payment</h2>\n"
+// $elective: pass true on pages for treatment that standard plans commonly
+// exclude. Without it this block sits under an "Insurance, SHA and payment"
+// heading on the whitening and braces pages and reads as a coverage promise,
+// which contradicts the clinic's own published position that braces, teeth
+// whitening, cosmetic masking and veneers may not be covered.
+function cd_insurance_note($SITE, $elective = false) {
+  $note = "<h2>Insurance, SHA and payment</h2>\n"
     . "<p>SHA (Social Health Authority) is accepted for eligible schemes and covered treatments, depending on your cover. Celestial Dental also bills more than 20 insurers directly, including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet and Equity Bank Insurance. M-Pesa and cash are accepted at every branch. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. See <a href=\"$SITE/dental-insurance-and-sha-coverage\">insurance and SHA coverage</a>.</p>\n";
+  if ($elective) {
+    $note .= "<p><strong>Cosmetic and orthodontic treatment is treated differently.</strong> Braces, teeth whitening, cosmetic masking and veneers are elective procedures and may not be covered under standard plans or by SHA. Most cover is limited to routine, preventive or medically necessary care. Confirm with your insurer or SHA scheme before treatment starts, and ask us for a written quote so you know the out-of-pocket cost.</p>\n";
+  }
+  return $note;
 }
 
 function cd_branch_links($SITE) {
@@ -357,7 +366,8 @@ function render_static($staticPath) {
         $others .= "<li><a href=\"$u\">{$esc($o['title'])}</a></li>\n";
       }
       $main .= cd_related_html($SITE, $title, "More on {$esc($lc)}");
-      $main .= cd_insurance_note($SITE);
+      // Elective treatment: standard plans and SHA commonly exclude these.
+      $main .= cd_insurance_note($SITE, in_array($sslug, ['cosmetic-dentistry', 'teeth-whitening', 'orthodontics-braces'], true));
       $main .= cd_branch_links($SITE);
       $main .= "<h2>Other services</h2>\n<ul>\n$others</ul>\n";
 
@@ -408,7 +418,7 @@ function render_static($staticPath) {
       $faqEntities[] = ['@type' => 'Question', 'name' => $f['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']]];
     }
     $main .= cd_related_html($SITE, 'braces aligners orthodontics', 'More on braces and aligners');
-    $main .= cd_insurance_note($SITE);
+    $main .= cd_insurance_note($SITE, true);
     $main .= cd_branch_links($SITE);
     emit_page(
       'Dental Braces in Nairobi, Ruiru & Eldoret | Orthodontist | Celestial Dental Centre',
