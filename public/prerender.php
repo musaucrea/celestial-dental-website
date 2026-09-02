@@ -660,7 +660,7 @@ $reviewerLine = '';
 $reviewerPerson = null;
 if ($reviewerName !== '') {
   $reviewerLine = trim($reviewerName . ($reviewerCred !== '' ? ', ' . $reviewerCred : ''))
-    . ($reviewerReg !== '' ? ' · KMPDC ' . $reviewerReg : '');
+    . ($reviewerReg !== '' ? ' · Reg. ' . $reviewerReg : '');
   $reviewerPerson = ['@type' => 'Person', 'name' => $reviewerName];
   $jobTitle = trim($reviewerData['jobTitle'] ?? '');
   $profile  = trim($reviewerData['url'] ?? '');
@@ -670,7 +670,7 @@ if ($reviewerName !== '') {
     $reviewerPerson['hasCredential'] = ['@type' => 'EducationalOccupationalCredential', 'credentialCategory' => $reviewerCred];
   }
   if ($reviewerReg !== '') {
-    $reviewerPerson['identifier'] = ['@type' => 'PropertyValue', 'name' => 'KMPDC registration', 'value' => $reviewerReg];
+    $reviewerPerson['identifier'] = ['@type' => 'PropertyValue', 'name' => 'Practitioner registration', 'value' => $reviewerReg];
   }
   $reviewerPerson['worksFor'] = ['@type' => 'Organization', 'name' => 'Celestial Dental Centre'];
 }

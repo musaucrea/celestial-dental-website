@@ -19,7 +19,7 @@ import reviewer from '../../public/medical-reviewer.json';
 const reviewerName = reviewer.name.trim();
 const reviewerLine = reviewerName
   ? [reviewerName, reviewer.credentials.trim()].filter(Boolean).join(', ')
-    + (reviewer.registration.trim() ? ` · KMPDC ${reviewer.registration.trim()}` : '')
+    + (reviewer.registration.trim() ? ` · Reg. ${reviewer.registration.trim()}` : '')
   : '';
 const reviewerPerson = reviewerName
   ? {
@@ -31,7 +31,7 @@ const reviewerPerson = reviewerName
         ? { hasCredential: { '@type': 'EducationalOccupationalCredential', credentialCategory: reviewer.credentials.trim() } }
         : {}),
       ...(reviewer.registration.trim()
-        ? { identifier: { '@type': 'PropertyValue', name: 'KMPDC registration', value: reviewer.registration.trim() } }
+        ? { identifier: { '@type': 'PropertyValue', name: 'Practitioner registration', value: reviewer.registration.trim() } }
         : {}),
       worksFor: { '@type': 'Organization', name: 'Celestial Dental Centre' },
     }

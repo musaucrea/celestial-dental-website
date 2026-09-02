@@ -162,16 +162,7 @@ function AboutPageInner() {
           </Reveal>
           <Reveal delay={120}>
             <p className="mt-3 text-ink-500 max-w-2xl leading-relaxed">
-              Our team supports calm, patient-first care across all our branches. For clinical treatment,
-              ask for your practitioner’s full name and verify their current registration through the{' '}
-              <a
-                href="https://registers.kmpdc.go.ke/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-800 text-brand-700 underline decoration-brand-300 underline-offset-4 hover:text-brand-900"
-              >
-                KMPDC public register
-              </a>.
+              Our team supports calm, patient-first care across all our branches.
             </p>
           </Reveal>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

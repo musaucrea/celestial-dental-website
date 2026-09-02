@@ -307,7 +307,7 @@ export const branches = [
     parking: 'Ample parking available on-site',
     phone: '+254 724 202 252',
     phoneHref: 'tel:+254724202252',
-    whatsapp: 'https://wa.me/254754400500',
+    whatsapp: 'https://wa.me/254724202252',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Kamakis',
     hours: 'Monday – Sunday · 07:00 – 20:00',
     image: '/facility/waiting-area.jpg',
@@ -561,14 +561,14 @@ export const careers = {
       type: 'Full-time',
       location: 'Kasarani · Kamakis · Eldoret',
       description:
-        'Provide general and restorative dental care, from check-ups and cleanings to fillings, extractions, and root canals. Registration with the Kenya Medical Practitioners and Dentists Council required.',
+        'Provide general and restorative dental care, from check-ups and cleanings to fillings, extractions, and root canals.',
     },
     {
       title: 'Orthodontist',
       type: 'Full-time / Sessional',
       location: 'Kasarani · Eldoret',
       description:
-        'Plan and deliver braces and aligner treatment for children, teens, and adults. Relevant postgraduate orthodontic qualification and KMPDC registration required.',
+        'Plan and deliver braces and aligner treatment for children, teens, and adults. Relevant postgraduate orthodontic qualification required.',
     },
     {
       title: 'Dental Hygienist',
