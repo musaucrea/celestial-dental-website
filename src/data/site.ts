@@ -335,13 +335,6 @@ export const branches = [
 export const testimonials = [
   {
     quote:
-      "Just had a root canal at this facility today, I was attended by Dr. Belinda, she was so kind. The place is cosy, comfortable waiting area, modern machines & before you realize it, you're done. They make a 'usually uncomfortable root canal procedure' so easy, painless and seamless.",
-    author: 'Brian Sure Obino',
-    branch: 'Kamakis',
-    stars: 5,
-  },
-  {
-    quote:
       'The staff are exceedingly friendly, the wait time is minimal and the centre is unmatched in its cleanliness.',
     author: 'Esther Aruka',
     branch: 'Kasarani',
