@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense, type ComponentType } from 'react';
 import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
-import { Phone, MapPin, MessageCircle, ChevronDown, Cpu, Gem, ShieldCheck, HeartHandshake, Clock, Facebook, Instagram, Linkedin, Twitter, Star } from 'lucide-react';
+import { Phone, MapPin, MessageCircle, ChevronDown, Cpu, Gem, ShieldCheck, HeartHandshake, Clock, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import { WhatsAppIcon, TikTokIcon } from './components/icons';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -42,18 +42,6 @@ export type ServiceItem = { title: string; description: string; image: string };
 type WhyItem = { tag: string; title: string; description: string };
 type GalleryItem = { src: string; caption: string };
 type InsurerItem = { name: string; logo: string };
-type GoogleReview = {
-  id: string;
-  author: string;
-  text: string;
-  rating: number;
-  branch: string;
-  relativeTime: string;
-  authorPhoto: string;
-  reviewUrl: string;
-  placeUrl: string;
-};
-
 const COUNT_WORDS = ['zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
 const countWord = (n: number) => COUNT_WORDS[n] ?? String(n);
 
@@ -251,7 +239,7 @@ function Branches() {
                       <Phone className="h-4 w-4" />{b.phone}
                     </a>
                     <button onClick={() => openBooking()} className="btn-primary text-sm !px-4 !py-2.5">
-                      <MessageCircle className="h-4 w-4" />Book
+                      <MessageCircle className="h-4 w-4" />Appointments
                     </button>
                   </div>
                   <Link to={`/branches/${b.slug}`} className="inline-flex items-center gap-1.5 text-sm font-800 text-brand-600 hover:text-brand-800 transition-colors">
@@ -304,88 +292,13 @@ function Insurers() {
   );
 }
 
-function Reviews() {
-  const [reviews, setReviews] = useState<GoogleReview[]>([]);
-
-  useEffect(() => {
-    fetch('/api/content?resource=google-reviews')
-      .then(response => response.ok ? response.json() : null)
-      .then(data => setReviews(
-        (data?.reviews || []).filter(
-          (review: GoogleReview) =>
-            Number(review.rating) >= 1 &&
-            Number(review.rating) <= 5 &&
-            review.text?.trim() &&
-            review.author?.trim(),
-        ),
-      ))
-      .catch(() => setReviews([]));
-  }, []);
-
-  if (!reviews.length) return null;
-
-  return (
-    <section className="bg-white py-20 lg:py-28" aria-labelledby="reviews-title">
-      <div className="container-page">
-        <Reveal>
-          <span className="eyebrow">
-            <span className="h-1.5 w-1.5 rounded-full bg-gold-500" />
-            Google Reviews
-          </span>
-        </Reveal>
-        <Reveal delay={80}>
-          <h2 id="reviews-title" className="mt-4 max-w-xl text-4xl font-900 text-ink-900">
-            Recent Google reviews from patients
-          </h2>
-        </Reveal>
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {reviews.map((review, index) => {
-            const href = review.reviewUrl || review.placeUrl || undefined;
-            return (
-              <Reveal key={review.id} delay={(index % 6) * 60}>
-                <article className="flex h-full min-h-72 flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-                  <div className="flex items-start gap-4">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-base font-900 text-ink-900">Verified Google review</h3>
-                      <p className="mt-0.5 text-sm text-ink-400">{review.relativeTime || review.branch}</p>
-                    </div>
-                    <img loading="lazy" decoding="async"
-                      src="/brand/google-g.png"
-                      alt="Google review"
-                      className="h-7 w-7 shrink-0 object-contain"
-                    />
-                  </div>
-                  <div className="mt-4 flex items-center gap-1" aria-label={`${review.rating} out of 5 stars`}>
-                    {Array.from({ length: 5 }).map((_, star) => (
-                      <Star
-                        key={star}
-                        className={`h-5 w-5 ${
-                          star < Math.round(review.rating)
-                            ? 'fill-[#FABB05] text-[#FABB05]'
-                            : 'fill-transparent text-neutral-300'
-                        }`}
-                        aria-hidden="true"
-                      />
-                    ))}
-                  </div>
-                  <p className="mt-4 line-clamp-6 flex-1 text-base leading-7 text-ink-800">{review.text}</p>
-                  <div className="mt-5 flex items-center justify-between gap-3">
-                    <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-800 text-brand-700">{review.branch}</span>
-                    {href ? (
-                      <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm font-800 text-brand-600 hover:text-brand-800">
-                        View on Google
-                      </a>
-                    ) : null}
-                  </div>
-                </article>
-              </Reveal>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
+/*
+ * The Google Reviews section was removed on 2026-09-19 under Rule 5(1)(a),(b).
+ * Reproducing patient reviews on the site is patient testimony in advertising
+ * whatever the source, and the live feed's top review named a practitioner as
+ * "Dr." without a stated cadre. The review CTA cards on the branch pages, which
+ * invite patients to leave a review on Google, are unaffected.
+ */
 
 type ApiBlogPost = {
   id: string; status: string; slug: string; tag: string;
@@ -695,7 +608,6 @@ function AppInner() {
         <WhyUs />
         <Gallery />
         <Branches />
-        <Reviews />
         <Blog />
         <FAQ />
       </main>
