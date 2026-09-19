@@ -50,17 +50,17 @@ function seedRows(): string[][] {
   team.forEach((member, i) => push('team', i, { name: member.name, role: (member as { role?: string }).role || '', image: member.image }));
   push('hero', 0, {
     eyebrow: 'Kasarani · Kamakis · Eldoret',
-    title: 'Trusted dental care,',
-    highlight: 'close to you.',
-    subtitle: 'Calm, modern dental care for every smile — children, adults, and families — in a welcoming clinic built around comfort and clarity.',
+    title: 'Celestial Dental Centre',
+    highlight: 'Kasarani · Kamakis · Eldoret',
+    subtitle: 'Dental care for children and adults at three branches. Open every day, 07:00 – 20:00.',
     pills: 'Checkups, Braces, Implants, Emergency care',
   });
   push('about', 0, {
     title: 'Caring for Kenyan smiles, one visit at a time',
-    intro: 'Celestial Dental Centre is a family of modern dental clinics in Kasarani, Kamakis, and Eldoret — built on calm, personalised care for children and adults alike.',
-    story: 'For over fifteen years, Celestial Dental Centre has earned the trust of Kenyan families through personalised dental care, honest guidance, and a genuine commitment to patient well-being.\nWhat began as a single clinic has grown into three accessible branches — Kasarani, Kamakis, and Eldoret — each offering the full range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\nWe are open every day of the week, work with more than twenty insurance and medical schemes, and treat every patient the way we would want our own family treated: with patience, clarity, and zero pressure.',
-    mission: 'To provide calm, modern, and affordable dental care that puts every patient — child or adult — completely at ease.',
-    vision: "To be Kenya's most trusted dental care family, with a healthy smile within reach of every community we serve.",
+    intro: 'Celestial Dental Centre is a group of dental clinics in Kasarani, Kamakis, and Eldoret, treating children and adults.',
+    story: 'Celestial Dental Centre is a group of dental clinics in Kenya, operating at three branches — Kasarani, Kamakis, and Eldoret.\nEach branch offers the same range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\nAll three branches are open every day of the week, 07:00 – 20:00. Findings and treatment options are explained at the assessment, with the cost, before any treatment begins.',
+    mission: 'To provide oral and dental healthcare across our branches, with treatment options explained before they begin.',
+    vision: '',
     image: '/team/clinical-team.jpg',
   });
   return rows;

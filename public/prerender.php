@@ -119,7 +119,7 @@ function about_section($SITE) {
     <section>
       <h2>About Celestial Dental Centre</h2>
       <p>Celestial Dental Centre is also known as Celestial Dental &amp; Orthodontic Centre. The Kasarani location's official Google Business Profile is named Celestial Dental Centre -Kasarani Branch.</p>
-      <p>Celestial Dental Centre is an affordable dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret — open every day, 07:00–20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
+      <p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret — open every day, 07:00–20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
       <p>Book an appointment: <a href="$SITE/?book=1">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>
     </section>
 HTML;
@@ -153,13 +153,13 @@ function cd_services() {
     ['title' => 'Dental Emergencies', 'description' => 'Same-day relief for severe tooth pain, swelling, knocked-out teeth, and urgent dental problems — 7 days a week.', 'faqs' => [
       ['q' => 'Do you handle dental emergencies same day?', 'a' => 'Yes. We aim to see emergency patients the same day — call or WhatsApp the nearest branch and we\'ll fit you in as quickly as possible. We\'re open every day, 07:00–20:00.'],
     ]],
-    ['title' => 'Cosmetic Dentistry', 'description' => 'Smile makeovers, veneers, and aesthetic treatments tailored to how you want to look and feel.', 'faqs' => []],
-    ['title' => 'Teeth Whitening', 'description' => 'Professional in-office whitening and take-home kits that safely lift your smile by several shades.', 'faqs' => [
-      ['q' => 'Are whitening results guaranteed?', 'a' => 'Whitening is designed to lighten natural tooth enamel by several shades. Individual results vary depending on the starting shade and tooth type. We assess your suitability at consultation to give you realistic expectations.'],
+    ['title' => 'Cosmetic Dentistry', 'description' => 'Veneers, bonding, and other appearance-related treatments. The options, and what each one involves, are explained at the assessment.', 'faqs' => []],
+    ['title' => 'Teeth Whitening', 'description' => 'In-office and take-home whitening, with the options explained at the assessment.', 'faqs' => [
+      ['q' => 'What does whitening involve?', 'a' => 'Whitening is carried out either in the clinic or with a take-home kit. Your suitability, what the treatment involves, and what to expect are discussed at the assessment before anything begins.'],
     ]],
     ['title' => 'Dental Bridges & Crowns', 'description' => 'Strong, natural-looking crowns and bridges that restore damaged or missing teeth to full function.', 'faqs' => []],
     ['title' => 'Full & Partial Dentures', 'description' => 'Comfortable, well-fitted dentures — full or partial — that restore your smile, speech, and chewing.', 'faqs' => []],
-    ['title' => 'Dental Implants', 'description' => 'Durable titanium implants with natural-looking crowns — the closest thing to a real tooth.', 'faqs' => [
+    ['title' => 'Dental Implants', 'description' => 'A titanium post placed in the jaw to support a crown, replacing a missing tooth. The stages and timeline are explained at the assessment.', 'faqs' => [
       ['q' => 'Does the implant procedure hurt?', 'a' => 'The procedure is done under local anaesthesia so you should feel little to no pain during placement. Some soreness is normal for a few days after — we provide clear aftercare instructions and a review appointment.'],
     ]],
     ['title' => 'Orthodontics (Braces)', 'description' => 'Metal braces, ceramic braces, and clear aligners for children, teens, and adults — with clear timelines.', 'faqs' => [
@@ -173,7 +173,7 @@ function cd_services() {
       ['q' => 'At what age should my child first see a dentist?', 'a' => 'We recommend bringing your child in as soon as their first tooth appears, or by age one — whichever comes first. Early visits help prevent problems and make dentistry feel normal.'],
       ['q' => 'How do you keep children calm during treatment?', 'a' => 'Our child-friendly rooms, gentle approach, and patient explanations help kids feel safe. We never rush, and we involve children in what\'s happening at every step.'],
     ]],
-    ['title' => 'Dental Fillings', 'description' => 'Tooth-coloured fillings that stop cavities in their tracks and blend invisibly with your natural teeth.', 'faqs' => []],
+    ['title' => 'Dental Fillings', 'description' => 'Tooth-coloured fillings used to restore a tooth affected by decay. Shade is matched to the surrounding teeth.', 'faqs' => []],
     ['title' => 'Gum Disease Treatment', 'description' => 'Deep cleaning and gum therapy that treats bleeding gums, bad breath, and periodontal disease.', 'faqs' => []],
     ['title' => 'Teeth Extraction', 'description' => 'Safe, comfortable removal of damaged teeth and wisdom teeth, with clear aftercare and healing support.', 'faqs' => []],
     ['title' => 'Teeth Cleaning', 'description' => 'Professional scaling and polishing that removes plaque and stains, keeping your gums healthy and breath fresh.', 'faqs' => [
@@ -385,9 +385,9 @@ function render_static($staticPath) {
   if ($staticPath === 'about') {
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › About</p>\n"
       . "<h1>About Celestial Dental Centre</h1>\n"
-      . "<p>Celestial Dental Centre is an affordable dental clinic group in Kenya, serving patients across three branches — Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret. We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
+      . "<p>Celestial Dental Centre is a dental clinic group in Kenya, serving patients across three branches — Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret. We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
       . "<p>Our team focuses on accurate diagnosis, clearly explained treatment planning, and quality materials and equipment. From routine checkups and cleaning to braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency care, we look after the whole family with calm, patient-friendly care.</p>\n"
-      . "<p>We accept M-Pesa, cash, SHA (Social Health Authority), and 20+ insurance schemes including Jubilee, AAR, Madison, CIC, Britam, and APA. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
+      . "<p>We accept M-Pesa, cash, SHA (Social Health Authority), and a number of insurance schemes. Confirm that your scheme is accepted, and what it covers, with the branch before treatment.</p>\n"
       . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"
       . cd_service_links($SITE)
       . cd_insurance_note($SITE)
@@ -508,7 +508,7 @@ function render_branch($branchSlug) {
   $schemaJson = json_encode($schema, JSON_UNESCAPED_SLASHES);
 
   $title = "Dentist in " . htmlspecialchars($locality, ENT_QUOTES, 'UTF-8') . " | Celestial Dental Centre";
-  $metaDesc = htmlspecialchars(($b['description'] ?? '') . ' Open daily 07:00-20:00. SHA and 20+ insurance schemes accepted.', ENT_QUOTES, 'UTF-8');
+  $metaDesc = htmlspecialchars(($b['description'] ?? '') . ' Open daily 07:00-20:00. SHA and insurance schemes accepted.', ENT_QUOTES, 'UTF-8');
 
   header('Content-Type: text/html; charset=utf-8');
   header('X-Robots-Tag: index, follow');

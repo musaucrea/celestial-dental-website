@@ -337,7 +337,7 @@ function ShareRow({ title }: { title: string }) {
 // WhatsApp chat with the clinic team.
 function ArticleCta({ postTitle }: { postTitle: string }) {
   const { openBooking } = useBooking();
-  const waText = encodeURIComponent(`Hi Celestial Dental! I just read "${postTitle}" on your website and I'd like to talk to a dentist.`);
+  const waText = encodeURIComponent(`Hi Celestial Dental! I just read "${postTitle}" on your website and I'd like to contact the practice.`);
   return (
     <div className="mt-12 rounded-3xl bg-brand-700 p-8 text-center">
       <h2 className="text-2xl font-900 text-white">Have questions about your smile?</h2>
@@ -359,7 +359,7 @@ function ArticleCta({ postTitle }: { postTitle: string }) {
           className="btn-ghost !text-white !border-white/30 !bg-white/10"
         >
           <MessageCircle className="h-4 w-4" />
-          Talk to a dentist
+          Contact us
         </a>
       </div>
     </div>

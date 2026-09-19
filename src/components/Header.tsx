@@ -123,7 +123,7 @@ export function Header() {
           >
             <WhatsAppIcon className="h-4 w-4" />
             <span className="sm:hidden">WhatsApp</span>
-            <span className="hidden sm:inline">Book via WhatsApp</span>
+            <span className="hidden sm:inline">WhatsApp</span>
           </a>
           <button
             onClick={() => setMenuOpen((v) => !v)}

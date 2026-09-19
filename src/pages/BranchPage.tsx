@@ -86,7 +86,7 @@ function BranchPageInner() {
                   <div className="mt-8 flex flex-wrap gap-3">
                     <button onClick={() => openBooking()} className="btn-primary">
                       <MessageCircle className="h-4 w-4" />
-                      Book Appointment
+                      Appointments
                     </button>
                     <a href={branch.phoneHref} className="btn-ghost">
                       <Phone className="h-4 w-4" />
@@ -257,7 +257,7 @@ function BranchPageInner() {
                     <div className="p-6">
                       <h3 className="text-lg font-800 text-ink-900">{s.title}</h3>
                       <p className="mt-2 text-sm leading-relaxed text-ink-500">{s.description}</p>
-                      <button onClick={() => openBooking(s.title)} className="mt-4 text-sm font-800 text-brand-600 hover:text-brand-800 transition-colors">Book this →</button>
+                      <button onClick={() => openBooking(s.title)} className="mt-4 text-sm font-800 text-brand-600 hover:text-brand-800 transition-colors">What this involves →</button>
                     </div>
                   </div>
                 </Reveal>
@@ -272,11 +272,11 @@ function BranchPageInner() {
             <Reveal>
               <div className="rounded-3xl bg-brand-700 p-8 lg:p-12 text-center">
                 <h3 className="text-2xl lg:text-3xl font-900 text-white">Book at our {branch.name} branch</h3>
-                <p className="mt-2 text-sm text-brand-200">Open 7 days a week · 07:00 – 20:00 · Fast response guaranteed</p>
+                <p className="mt-2 text-sm text-brand-200">Open 7 days a week · 07:00 – 20:00</p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <button onClick={() => openBooking()} className="btn-primary bg-white !text-brand-800 !shadow-none hover:!shadow-none">
                     <MessageCircle className="h-4 w-4" />
-                    Book Appointment
+                    Appointments
                   </button>
                   <a href={branch.phoneHref} className="btn-ghost !text-white !border-white/30 !bg-white/10">
                     <Phone className="h-4 w-4" />{branch.phone}

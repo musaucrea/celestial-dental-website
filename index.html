@@ -7,10 +7,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/brand/celestial-icon-180.png?v=20260720" />
     <link rel="shortcut icon" href="/favicon.ico?v=20260720" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Best Dentist in Nairobi (Kasarani), Kamakis–Ruiru & Eldoret | Braces, Implants & Emergency Care | Celestial Dental Centre</title>
+    <title>Dentist in Nairobi (Kasarani), Kamakis–Ruiru & Eldoret | Braces, Implants & Emergency Care | Celestial Dental Centre</title>
     <meta
       name="description"
-      content="Affordable dental clinic open 7 days (07:00–20:00) in Kasarani Nairobi, Kamakis–Ruiru & Eldoret. Checkups · Teeth cleaning · Braces · Implants · Root canal · Same-day emergency dentist. Insurance & M-Pesa accepted."
+      content="Dental clinic open 7 days (07:00–20:00) in Kasarani Nairobi, Kamakis–Ruiru & Eldoret. Checkups · Teeth cleaning · Braces · Implants · Root canal · Same-day emergency dentist. Insurance & M-Pesa accepted."
     />
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
     <meta
@@ -44,7 +44,7 @@
 
     <!-- AI citation & discoverability -->
     <meta name="author" content="Celestial Dental Centre" />
-    <meta name="keywords" content="dentist Kasarani, dentist Kamakis, dentist Eldoret, dentist Ruiru, dentist Nairobi, dental clinic Nairobi, affordable dental clinic Nairobi, braces Kenya, dental braces Nairobi, dental braces Eldoret, orthodontist Kasarani, dental implants Kenya, dental implants Eldoret, teeth cleaning Nairobi, teeth cleaning Kasarani, dental checkup Nairobi, children dentist Kenya, root canal Nairobi, cosmetic dentistry Kenya, emergency dentist Nairobi, emergency dentist Kasarani, emergency dentist Eldoret, best dentist Kenya" />
+    <meta name="keywords" content="dentist Kasarani, dentist Kamakis, dentist Eldoret, dentist Ruiru, dentist Nairobi, dental clinic Nairobi, braces Kenya, dental braces Nairobi, dental braces Eldoret, orthodontist Kasarani, dental implants Kenya, dental implants Eldoret, teeth cleaning Nairobi, teeth cleaning Kasarani, dental checkup Nairobi, children dentist Kenya, root canal Nairobi, cosmetic dentistry Kenya, emergency dentist Nairobi, emergency dentist Kasarani, emergency dentist Eldoret, dental clinic Kenya" />
     <meta name="language" content="en" />
     <meta name="revisit-after" content="7 days" />
     <meta name="rating" content="general" />
@@ -58,7 +58,7 @@
     <meta name="DC.title" content="Celestial Dental Centre — Dental Clinic in Kasarani, Kamakis &amp; Eldoret" />
     <meta name="DC.creator" content="Celestial Dental Centre" />
     <meta name="DC.subject" content="Dentistry, Dental Care, Orthodontics, Implants, Kasarani, Nairobi, Eldoret" />
-    <meta name="DC.description" content="Trusted dental care in Kenya with branches in Kasarani, Kamakis, and Eldoret. Services include braces, implants, root canal, cosmetic dentistry, and emergency care. Open 7 days, 07:00–20:00." />
+    <meta name="DC.description" content="Dental care in Kenya with branches in Kasarani, Kamakis, and Eldoret. Services include braces, implants, root canal, cosmetic dentistry, and emergency care. Open 7 days, 07:00–20:00." />
     <meta name="DC.publisher" content="Celestial Dental Centre" />
     <meta name="DC.language" content="en" />
     <meta name="DC.type" content="Service" />
@@ -199,13 +199,19 @@
 
           // AI assistants (ChatGPT, Perplexity…) usually strip the referrer
           // but tag links with ?utm_source= — capture it for attribution.
-          var utm = '';
+          var utm = '', medium = '', campaign = '', content = '';
           try {
             var params = new URLSearchParams(location.search);
             utm = params.get('utm_source') || params.get('source') || params.get('ref') || '';
+            medium = params.get('utm_medium') || '';
+            campaign = params.get('utm_campaign') || '';
+            // utm_content carries the individual creator/placement; `via` is
+            // the short hand-typed form (celestialdental.org/braces?via=nasra).
+            content = params.get('utm_content') || params.get('via') || '';
           } catch (e) {}
           var data = JSON.stringify({
             path: location.pathname, ref: document.referrer, utm: utm,
+            medium: medium, campaign: campaign, content: content,
             sid: sid, vid: vid, returning: returning,
           });
           if (navigator.sendBeacon) {

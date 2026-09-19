@@ -119,7 +119,7 @@ function ServicePageInner() {
                   <div className="mt-8 flex flex-wrap gap-3">
                     <button onClick={() => openBooking(service.title)} className="btn-primary">
                       <Clock className="h-4 w-4" />
-                      Book this service
+                      What this involves
                     </button>
                     <a href={site.primaryPhone.href} className="btn-ghost">
                       <Phone className="h-4 w-4" />
@@ -226,7 +226,7 @@ function ServicePageInner() {
           <div className="container-page max-w-3xl">
             <Reveal>
               <div className="rounded-3xl bg-brand-700 p-8 lg:p-12 text-center">
-                <h2 className="text-2xl lg:text-3xl font-900 text-white">Ready to book {service.title.toLowerCase()}?</h2>
+                <h2 className="text-2xl lg:text-3xl font-900 text-white">Contact Celestial Dental Centre</h2>
                 <p className="mt-2 text-sm text-brand-200">
                   Open every day, 07:00–20:00, across Kasarani, Kamakis, and Eldoret. Walk-ins welcome — booking ahead saves you time.
                 </p>

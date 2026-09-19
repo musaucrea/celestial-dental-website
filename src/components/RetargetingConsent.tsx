@@ -167,9 +167,9 @@ export function RetargetingConsent() {
             <Cookie className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-900 text-ink-900">Cookies for better follow-up</p>
+            <p className="text-sm font-900 text-ink-900">Cookies on this site</p>
             <p className="mt-1 text-xs leading-relaxed text-ink-500">
-              We use cookies to understand visits and, with your permission, show helpful dental care reminders after you leave this site.
+              We use cookies to understand how this site is used and, with your permission, to show you our advertising on other websites after you leave.
             </p>
           </div>
         </div>

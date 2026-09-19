@@ -24,7 +24,7 @@ type BlogPost = {
 
 function BlogCardCta({ postTitle }: { postTitle: string }) {
   const { openBooking } = useBooking();
-  const waText = encodeURIComponent(`Hi Celestial Dental! I saw "${postTitle}" on your blog and I'd like to talk to a dentist.`);
+  const waText = encodeURIComponent(`Hi Celestial Dental! I saw "${postTitle}" on your blog and I'd like to contact the practice.`);
   return (
     <div className="mt-5 flex flex-wrap gap-2">
       <button
@@ -32,7 +32,7 @@ function BlogCardCta({ postTitle }: { postTitle: string }) {
         className="btn-primary !px-4 !py-2 text-xs"
       >
         <Clock className="h-3.5 w-3.5" />
-        Book Appointment
+        Appointments
       </button>
       <a
         href={`${site.whatsappHref}?text=${waText}`}
@@ -41,7 +41,7 @@ function BlogCardCta({ postTitle }: { postTitle: string }) {
         className="btn-ghost !px-4 !py-2 text-xs"
       >
         <MessageCircle className="h-3.5 w-3.5" />
-        Talk to a dentist
+        Contact us
       </a>
     </div>
   );

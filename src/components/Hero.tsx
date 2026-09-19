@@ -1,5 +1,5 @@
-import { ArrowRight, Star, Clock, ShieldCheck } from 'lucide-react';
-import { heroPills, site, stats as staticStats, testimonials as staticTestimonials, gallery as staticGallery } from '../data/site';
+import { ArrowRight, Clock, ShieldCheck } from 'lucide-react';
+import { heroPills, site, stats as staticStats, gallery as staticGallery } from '../data/site';
 import { useBooking } from './booking';
 import { useSection } from '../data/siteData';
 import { Reveal } from './Reveal';
@@ -18,10 +18,10 @@ type HeroContent = {
 
 const defaultHero: HeroContent = {
   eyebrow: 'Kasarani · Kamakis · Eldoret',
-  title: 'Trusted dental care,',
-  highlight: 'close to you.',
+  title: 'Celestial Dental Centre',
+  highlight: 'Kasarani · Kamakis · Eldoret',
   subtitle:
-    'Calm, modern dental care for every smile — children, adults, and families — in a welcoming clinic built around comfort and clarity.',
+    'Dental care for children and adults at three branches. Open every day, 07:00 – 20:00.',
   pills: heroPills.join(', '),
   slides: '/facility/reception-lounge.jpg\n/team/clinical-team.jpg\n/facility/waiting-area.jpg\n/team/patient-care-team.jpg\n/facility/childrens-treatment-room.jpg\n/facility/clinic-hallway.jpg',
 };
@@ -50,24 +50,8 @@ export function Hero() {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  // Patient stories rotate one at a time: pop in, hold ~7s, fade out.
-  const managedStories = useSection<{ quote: string; author: string; stars?: number | string }>(
-    'testimonials',
-    staticTestimonials,
-  );
-  // Admin-managed sheet values can arrive as strings. Only rotate complete,
-  // explicitly five-star patient stories; fall back to the verified local set.
-  const stories = managedStories.filter(
-    story => Number(story.stars) === 5 && story.quote?.trim() && story.author?.trim(),
-  );
-  const [storyIdx, setStoryIdx] = useState(0);
-  useEffect(() => {
-    if (stories.length < 2) return;
-    const timer = setInterval(() => setStoryIdx(i => (i + 1) % stories.length), 7000);
-    return () => clearInterval(timer);
-  }, [stories.length]);
-  const story = stories[storyIdx % Math.max(stories.length, 1)];
-  const storyQuote = story && story.quote.length > 130 ? `${story.quote.slice(0, 127)}…` : story?.quote;
+  // Patient stories were removed on 2026-09-19 under Rule 5(1)(a),(b): patient
+  // testimony is not permitted advertising content, and consent does not cure it.
 
   return (
     <section
@@ -140,17 +124,17 @@ export function Hero() {
             <Reveal delay={280}>
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <button onClick={() => openBooking()} className="btn-primary text-base">
-                  Book Appointment
+                  Appointments
                   <ArrowRight className="h-5 w-5" strokeWidth={2.4} />
                 </button>
                 <a
-                  href={`${site.whatsappHref}?text=${encodeURIComponent("Hi, I'd like to talk to a dentist at Celestial Dental Centre.")}`}
+                  href={`${site.whatsappHref}?text=${encodeURIComponent("Hi, I'd like to contact Celestial Dental Centre.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-3.5 text-base font-800 text-white backdrop-blur-sm transition hover:bg-white/20"
                 >
                   <WhatsAppIcon className="h-5 w-5" />
-                  Talk to a dentist
+                  Contact us
                 </a>
               </div>
             </Reveal>
@@ -172,25 +156,6 @@ export function Hero() {
               </div>
             </Reveal>
 
-            {/* Rotating patient story — mobile/tablet only (desktop shows it in the right rail) */}
-            {story && (
-              <Reveal delay={400} className="mt-8 lg:hidden">
-                <div className="rounded-2xl border border-white/20 bg-ink-900/70 p-4 shadow-float backdrop-blur-xl">
-                  <div className="flex items-center gap-2">
-                    <div className="flex gap-0.5 text-gold-400">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className="h-3.5 w-3.5 fill-current" />
-                      ))}
-                    </div>
-                    <span className="text-xs font-semibold text-white/70">Loved by patients</span>
-                  </div>
-                  <div key={storyIdx} className="story-pop mt-3 border-t border-white/10 pt-3">
-                    <p className="text-sm font-600 italic leading-relaxed text-white">"{storyQuote}"</p>
-                    <p className="mt-1.5 text-xs font-800 text-brand-300">— {story.author}</p>
-                  </div>
-                </div>
-              </Reveal>
-            )}
           </div>
 
           {/* Floating info cards (replaces the static photo on video hero) */}
@@ -216,31 +181,9 @@ export function Hero() {
               style={{ animationDelay: '3s' }}
             >
               <ShieldCheck className="h-4.5 w-4.5 text-brand-300" />
-              <span className="text-sm font-bold text-white/80">Trusted sterilization standards</span>
+              <span className="text-sm font-bold text-white/80">Instruments sterilised between patients</span>
             </div>
 
-            {/* Rating + rotating patient story — one card */}
-            <div className="w-80 rounded-2xl border border-white/20 bg-ink-900/80 p-4 shadow-float backdrop-blur-xl animate-float-slow">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-400/20 text-gold-400">
-                  <Star className="h-5 w-5 fill-current" />
-                </div>
-                <div>
-                  <div className="flex gap-0.5 text-gold-400">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="h-3.5 w-3.5 fill-current" />
-                    ))}
-                  </div>
-                  <div className="text-xs font-semibold text-white/70">Loved by patients</div>
-                </div>
-              </div>
-              {story && (
-                <div key={storyIdx} className="story-pop mt-3 border-t border-white/10 pt-3 min-h-[4.5rem]">
-                  <p className="text-[13px] font-600 italic leading-relaxed text-white">"{storyQuote}"</p>
-                  <p className="mt-1.5 text-xs font-800 text-brand-300">— {story.author}</p>
-                </div>
-              )}
-            </div>
 
           </Reveal>
         </div>

@@ -121,7 +121,7 @@ function Services() {
                       <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
                     </Link>
                     <button onClick={() => openBooking(s.title)} className="text-sm font-800 text-ink-400 hover:text-brand-700 transition-colors">
-                      Book this
+                      What this involves
                     </button>
                   </div>
                 </div>
@@ -274,16 +274,16 @@ function Insurers() {
     <section className="py-16 border-y border-brand-100 overflow-hidden">
       <div className="container-page mb-10 text-center">
         <Reveal>
-          <span className="eyebrow justify-center"><span className="h-1.5 w-1.5 rounded-full bg-gold-500" />Insurance Partners</span>
+          <span className="eyebrow justify-center"><span className="h-1.5 w-1.5 rounded-full bg-gold-500" />Payment</span>
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-3 text-3xl lg:text-4xl font-900 text-ink-900">
-            Your insurance is <span className="text-brand-600">welcome here</span>
+            Insurance and <span className="text-brand-600">SHA</span>
           </h2>
         </Reveal>
         <Reveal delay={140}>
           <p className="mt-3 text-sm lg:text-base text-ink-500 max-w-xl mx-auto">
-            We bill 20+ major insurance &amp; medical schemes directly — just bring your card and we'll handle the paperwork.
+            Bring your insurance or SHA details to your appointment. Confirm that your scheme is accepted, and what it covers, with the branch before treatment.
           </p>
         </Reveal>
       </div>
@@ -340,21 +340,13 @@ function Reviews() {
         </Reveal>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {reviews.map((review, index) => {
-            const initials = review.author.split(/\s+/).map(part => part[0]).join('').slice(0, 2).toUpperCase();
             const href = review.reviewUrl || review.placeUrl || undefined;
             return (
               <Reveal key={review.id} delay={(index % 6) * 60}>
                 <article className="flex h-full min-h-72 flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
                   <div className="flex items-start gap-4">
-                    {review.authorPhoto ? (
-                      <img loading="lazy" decoding="async" src={review.authorPhoto} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
-                    ) : (
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-700 text-sm font-900 text-white">
-                        {initials}
-                      </div>
-                    )}
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-base font-900 text-ink-900">{review.author}</h3>
+                      <h3 className="truncate text-base font-900 text-ink-900">Verified Google review</h3>
                       <p className="mt-0.5 text-sm text-ink-400">{review.relativeTime || review.branch}</p>
                     </div>
                     <img loading="lazy" decoding="async"
@@ -518,11 +510,11 @@ function FAQ() {
         </div>
         <Reveal delay={200}>
           <div className="mt-12 rounded-3xl bg-gradient-to-br from-gold-400 to-gold-600 p-8 text-center">
-            <h3 className="text-2xl font-900 text-ink-900">Ready to book?</h3>
-            <p className="mt-2 text-sm font-600 text-ink-900/70">Open 7 days a week · 07:00 – 20:00 · Fast response guaranteed</p>
+            <h3 className="text-2xl font-900 text-ink-900">Contact Celestial Dental Centre</h3>
+            <p className="mt-2 text-sm font-600 text-ink-900/70">Open 7 days a week · 07:00 – 20:00</p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <button onClick={() => openBooking()} className="btn-primary !bg-none !bg-ink-900 !text-white !shadow-none hover:!shadow-none">
-                <MessageCircle className="h-4 w-4" />Book Appointment
+                <MessageCircle className="h-4 w-4" />Appointments
               </button>
               <a href={site.primaryPhone.href} className="btn-ghost !text-ink-900 !border-ink-900/25 !bg-white/25 hover:!bg-white/40">
                 <Phone className="h-4 w-4" />{site.primaryPhone.label}
@@ -662,7 +654,7 @@ function Footer() {
               className="mt-6 btn-primary text-sm !px-5 !py-2.5 w-full justify-center"
             >
               <MessageCircle className="h-4 w-4" />
-              Book Appointment
+              Appointments
             </button>
           </div>
 
@@ -672,7 +664,6 @@ function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/10">
         <div className="container-page py-5 flex flex-col items-center justify-center gap-1 text-center text-xs text-white/35">
-          <p>{(fc.tagline || '').trim() || site.tagline}</p>
           <p>&copy; {new Date().getFullYear()} {site.name}. Built by MusauCreative.</p>
         </div>
       </div>
@@ -692,9 +683,9 @@ function AppInner() {
     <>
       <SEO
         title="Dentist in Nairobi (Kasarani), Kamakis–Ruiru & Eldoret | Celestial Dental Centre"
-        description="Affordable dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open daily 07:00-20:00. Insurance & M-Pesa accepted."
+        description="Dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open daily 07:00-20:00. Insurance & M-Pesa accepted."
         canonicalPath="/"
-        keywords={['teeth cleaning Nairobi', 'root canal Nairobi', 'children dentist Kenya', 'cosmetic dentistry Kenya', 'dentist Ruiru', 'affordable dental clinic Nairobi', 'best dentist Kenya']}
+        keywords={['teeth cleaning Nairobi', 'root canal Nairobi', 'children dentist Kenya', 'cosmetic dentistry Kenya', 'dentist Ruiru', 'dental clinic Kenya']}
       />
       <Header />
       <main>

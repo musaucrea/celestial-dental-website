@@ -21,7 +21,7 @@ const seed: Array<{ question: string; answer: string }> = [
   { question: 'Is there a dentist open on Sunday in Nairobi?', answer: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all three branches (Kasarani, Kamakis, and Eldoret).' },
   { question: 'Do you handle dental emergencies?', answer: 'Yes. Call or WhatsApp the nearest branch and we\'ll aim to see you the same day. We\'re open 7 days a week, 07:00–20:00. For severe pain or swelling, come in directly and our team will prioritise you.' },
   { question: 'Do you treat children?', answer: 'Absolutely. We offer gentle children\'s dentistry in a calm, child-friendly setting. We recommend bringing children for their first visit as soon as the first tooth appears, or by age one. Early visits build good habits and prevent anxiety.' },
-  { question: 'How do I book an appointment?', answer: 'Use the "Book Appointment" button on this page, message us on WhatsApp, or call the branch nearest to you. We aim to respond within about 5 minutes during opening hours.' },
+  { question: 'How do I book an appointment?', answer: 'Use the "Appointments" button on this page, message us on WhatsApp, or call the branch nearest to you during opening hours.' },
   { question: 'What should I expect on my first visit?', answer: 'A warm welcome, a thorough examination, X-rays if needed, and a clear explanation of any treatment required — with a plan tailored to your priorities and budget. No pressure, no surprises.' },
 ];
 

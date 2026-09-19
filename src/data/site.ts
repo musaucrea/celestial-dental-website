@@ -101,10 +101,19 @@ export const nav = [
 
 export const heroPills = ['Checkups', 'Braces', 'Implants', 'Emergency care'];
 
+/**
+ * Homepage/About stat tiles. Regulated content: every value here must be a plain
+ * verifiable fact, never a promise, a duration claim or a superiority claim.
+ * The branch count is derived from `branches` below so the tile can never
+ * disagree with the branch cards on the same page.
+ *
+ * Deliberately absent, pending the signed fact sheet:
+ *   - "20+ Years of service"    (no evidenced registration year)
+ *   - "5 min Target response time" (a commitment the practice cannot guarantee)
+ */
 export const stats = [
-  { value: '20+', label: 'Years of service' },
-  { value: '3', label: 'Accessible branches' },
-  { value: '5 min', label: 'Target response time' },
+  { value: '07:00–20:00', label: 'Open every day' },
+  { value: 'Mon–Sun', label: 'Including weekends' },
 ];
 
 export const services = [
@@ -149,16 +158,16 @@ export const services = [
   {
     title: 'Cosmetic Dentistry',
     description:
-      'Smile makeovers, veneers, and aesthetic treatments tailored to how you want to look and feel.',
+      'Veneers, bonding, and other appearance-related treatments. The options, and what each one involves, are explained at the assessment.',
     image: '/facility/waiting-area.jpg',
   },
   {
     title: 'Teeth Whitening',
     description:
-      'Professional in-office whitening and take-home kits that safely lift your smile by several shades.',
+      'In-office and take-home whitening, with the options explained at the assessment.',
     image: '/team/patient-care-team.jpg',
     faqs: [
-      { q: 'Are whitening results guaranteed?', a: 'Whitening is designed to lighten natural tooth enamel by several shades. Individual results vary depending on the starting shade and tooth type. We assess your suitability at consultation to give you realistic expectations.' },
+      { q: 'What does whitening involve?', a: 'Whitening is carried out either in the clinic or with a take-home kit. Your suitability, what the treatment involves, and what to expect are discussed at the assessment before anything begins.' },
     ],
   },
   {
@@ -176,7 +185,7 @@ export const services = [
   {
     title: 'Dental Implants',
     description:
-      'Durable titanium implants with natural-looking crowns — the closest thing to a real tooth.',
+      'A titanium post placed in the jaw to support a crown, replacing a missing tooth. The stages and timeline are explained at the assessment.',
     image: '/facility/clinic-hallway.jpg',
     faqs: [
       { q: 'Does the implant procedure hurt?', a: 'The procedure is done under local anaesthesia so you should feel little to no pain during placement. Some soreness is normal for a few days after — we provide clear aftercare instructions and a review appointment.' },
@@ -214,7 +223,7 @@ export const services = [
   {
     title: 'Dental Fillings',
     description:
-      'Tooth-coloured fillings that stop cavities in their tracks and blend invisibly with your natural teeth.',
+      'Tooth-coloured fillings used to restore a tooth affected by decay. Shade is matched to the surrounding teeth.',
     image: '/team/clinical-team.jpg',
   },
   {
@@ -242,28 +251,28 @@ export const services = [
 
 export const whyChooseUs = [
   {
-    tag: 'Technology',
-    title: 'Modern dentistry, clear treatment planning',
+    tag: 'Treatment planning',
+    title: 'Written treatment plans',
     description:
-      'From digital workflows to advanced restorative and cosmetic procedures, the team focuses on accurate diagnosis and clearly explained care.',
+      'Findings and treatment options are explained at the assessment and set out in writing, with the cost, before any treatment begins.',
   },
   {
-    tag: 'Materials',
-    title: 'Quality materials and equipment',
+    tag: 'Equipment',
+    title: 'Instruments and materials',
     description:
-      'Treatments use carefully selected instruments and materials from trusted manufacturers for durable, natural-looking results.',
+      'Treatments use instruments and materials from established manufacturers, chosen for the procedure being carried out.',
   },
   {
-    tag: 'Safety',
-    title: 'Sterilization you can trust',
+    tag: 'Infection control',
+    title: 'Instrument sterilisation',
     description:
-      'Every appointment is backed by strong sterilization protocols, clean clinical spaces, and consistent infection-control standards.',
+      'Instruments are sterilised between patients and clinical areas are cleaned to documented infection-control procedures.',
   },
   {
-    tag: 'Experience',
-    title: 'Friendly care for children and adults',
+    tag: 'Appointments',
+    title: 'Care for children and adults',
     description:
-      'Patients value calm communication, transparent guidance, and support that helps every visit feel manageable.',
+      'Appointments allow time to explain what is being done, for both adults and children, at all three branches.',
   },
 ];
 
@@ -285,7 +294,7 @@ export const branches = [
     tagline: 'Your smile, close to home in Kasarani',
     description:
       'Our Kasarani branch is conveniently located on the Kasarani–Mwiki Road, just minutes from Thika Road Mall. We offer the full range of Celestial Dental services in a calm, modern setting — from children\'s dentistry and routine check-ups to orthodontics, implants, and emergency care.',
-    address: ['Total Petrol Station Building, 2nd Floor', 'Along Kasarani – Mwiki Road', 'Kasarani, Nairobi'],
+    address: ['Total Petrol Station (Claycity) Building, 2nd Floor', 'Along Kasarani – Mwiki Road', 'Kasarani, Nairobi County'],
     landmark: '5 minutes from Thika Road Mall',
     parking: 'Parking available at the Total Petrol Station',
     phone: '+254 707 535 000',
@@ -302,7 +311,7 @@ export const branches = [
     tagline: 'Quality dental care along the Eastern Bypass',
     description:
       'The Kamakis branch serves Ruiru and surrounding areas with the same high standard of care as our flagship clinic. Easily accessible off the Eastern Bypass, the branch offers ample parking and the full range of dental services for the whole family.',
-    address: ['Along Eastern Bypass', 'Kamakis, Ruiru', 'Kiambu County'],
+    address: ['Viashla Business Centre, 2nd Floor, Above KFC', 'Opposite Naivas Supermarket, Along Eastern Bypass', 'Kamakis, Ruiru, Kiambu County'],
     landmark: 'Easy access from the Eastern Bypass',
     parking: 'Ample parking available on-site',
     phone: '+254 724 202 252',
@@ -316,10 +325,10 @@ export const branches = [
     name: 'Eldoret',
     slug: 'eldoret',
     badge: 'Eldoret Branch',
-    tagline: 'Trusted dental care in the heart of Eldoret',
+    tagline: 'Celestial Dental Centre — Eldoret',
     description:
       'Celestial Dental Eldoret brings the same warm, professional care to the Rift Valley region. Located centrally along Banaptai Street, our Eldoret branch is easily accessible and offers all services — from preventive care and braces to implants and emergency treatment.',
-    address: ['Along Banaptai Street', 'Eldoret Town', 'Uasin Gishu County'],
+    address: ['Champion Heights, 1st Floor', 'Along Banaptai Street', 'Eldoret Town, Uasin Gishu County'],
     landmark: 'Central Eldoret — easily accessible from all directions',
     parking: 'Street parking available nearby',
     phone: '+254 794 585 217',
@@ -331,44 +340,13 @@ export const branches = [
   },
 ];
 
-// Real Google reviews from the Kasarani & Kamakis Google Business profiles.
-export const testimonials = [
-  {
-    quote:
-      'The staff are exceedingly friendly, the wait time is minimal and the centre is unmatched in its cleanliness.',
-    author: 'Esther Aruka',
-    branch: 'Kasarani',
-    stars: 5,
-  },
-  {
-    quote:
-      'Excellent. Its clean, classy and has the best professional team. All your dental care needs under one roof.',
-    author: 'Ann Mwaniki',
-    branch: 'Kamakis',
-    stars: 5,
-  },
-  {
-    quote:
-      'Perfect experience all through, talked me through my course of treatment, a very warm, and professional dental practice this one.',
-    author: 'Mike Muthomi',
-    branch: 'Kamakis',
-    stars: 5,
-  },
-  {
-    quote:
-      'The best facility ever, from the reception to the dentist — keep it up.',
-    author: 'Janet Kamau',
-    branch: 'Kamakis',
-    stars: 5,
-  },
-  {
-    quote:
-      'Clean, warm and efficient reception. Great customer service and service delivery by the medical team.',
-    author: 'Noreen Kombo',
-    branch: 'Kasarani',
-    stars: 4,
-  },
-];
+/**
+ * Patient testimonials were removed on 2026-09-19 under Rule 5(1)(a),(b):
+ * patient identity and patient testimony are not permitted advertising content,
+ * and consent under Rule 5(2) does not make them permitted. The export is kept
+ * as an empty list so the admin content store has nothing to fall back to.
+ */
+export const testimonials: { quote: string; author: string; branch: string; stars: number }[] = [];
 
 export const insurers = [
   { name: 'Jubilee Insurance', logo: '/insurance/jubilee.png' },
@@ -454,7 +432,7 @@ export const faqs = [
   },
   {
     q: 'How do I book an appointment?',
-    a: 'Use the "Book Appointment" button on this page, message us on WhatsApp, or call the branch nearest to you. We aim to respond within about 5 minutes during opening hours.',
+    a: 'Use the "Appointments" button on this page, message us on WhatsApp, or call the branch nearest to you during opening hours.',
   },
   {
     q: 'What should I expect on my first visit?',
@@ -477,8 +455,8 @@ export const faqs = [
     a: 'Yes — professional teeth cleaning (scaling and polishing) and comprehensive dental check-ups are available daily at our Kasarani, Kamakis (Ruiru), and Eldoret branches. We recommend a check-up and cleaning every six months to keep your smile healthy.',
   },
   {
-    q: 'Are you an affordable dental clinic in Nairobi?',
-    a: 'We work hard to keep quality dental care accessible. Every treatment starts with a clear, personalised plan agreed with you upfront, and you can pay via M-Pesa, cash, or direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison.',
+    q: 'How do I pay, and do you bill insurance directly?',
+    a: 'Every treatment starts with a clear, personalised plan agreed with you upfront, including the cost, before any work begins. You can pay via M-Pesa, cash, or direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison.',
   },
   {
     q: 'Which areas do you serve?',

@@ -24,13 +24,15 @@ const defaultAbout: AboutContent = {
   intro:
     'Celestial Dental Centre is a family of modern dental clinics in Kasarani, Kamakis, and Eldoret — built on calm, personalised care for children and adults alike.',
   story:
-    'For over twenty years, Celestial Dental Centre has earned the trust of Kenyan families through personalised dental care, honest guidance, and a genuine commitment to patient well-being.\n' +
-    'What began as a single clinic has grown into three accessible branches — Kasarani, Kamakis, and Eldoret — each offering the full range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\n' +
-    'We are open every day of the week, work with more than twenty insurance and medical schemes, and treat every patient the way we would want our own family treated: with patience, clarity, and zero pressure.',
+    'Celestial Dental Centre is a group of dental clinics in Kenya, operating at three branches — Kasarani, Kamakis, and Eldoret.\n' +
+    'Each branch offers the same range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\n' +
+    'All three branches are open every day of the week, 07:00 – 20:00. Findings and treatment options are explained at the assessment, with the cost, before any treatment begins.',
+  // Rule 3(4)(a): advertising must be objective, true and dignified. The previous
+  // mission ("highest quality", "state-of-the-art") and vision ("centre of
+  // excellence", "regional leader") were superiority claims.
   mission:
-    'To offer the highest quality of oral and dental healthcare services to our patients in all areas of dentistry using the latest state-of-the-art technology.',
-  vision:
-    'To become a centre of excellence and a regional leader in the dental profession.',
+    'To provide oral and dental healthcare across our branches, with treatment options explained before they begin.',
+  vision: '',
   image: '/team/clinical-team.jpg',
 };
 
@@ -42,6 +44,14 @@ function AboutPageInner() {
   const gallery = useSection<{ src: string; caption: string }>('gallery', staticGallery);
   const stats = useSection<{ value: string; label: string }>('stats', staticStats);
   const staff = useSection<{ name: string; role?: string; image: string }>('team', team);
+  /**
+   * Set to true only when every person in `team` has a completed register row on
+   * the verified fact sheet (name, cadre, title, position, qualifications and
+   * registration number) and their card renders those fields. Until then the
+   * individual cards stay hidden; the group photographs below carry no claim
+   * about any named individual.
+   */
+  const practitionersVerified = false;
   const storyParagraphs = (about.story || '')
     .replace(/honest pricing/gi, 'honest guidance')
     .split('\n')
@@ -89,7 +99,7 @@ function AboutPageInner() {
               </div>
               <div className="mt-7 flex flex-wrap gap-3">
                 <button onClick={() => openBooking()} className="btn-primary">
-                  <MessageCircle className="h-4 w-4" />Book Appointment
+                  <MessageCircle className="h-4 w-4" />Appointments
                 </button>
                 <a href={site.primaryPhone.href} className="btn-ghost">
                   <Phone className="h-4 w-4" />{site.primaryPhone.label}
@@ -115,7 +125,7 @@ function AboutPageInner() {
 
       {/* ── Mission & Vision ──────────────────────────── */}
       <section className="py-16 lg:py-20 bg-mint">
-        <div className="container-page grid gap-6 sm:grid-cols-2">
+        <div className={`container-page grid gap-6 ${about.vision ? 'sm:grid-cols-2' : ''}`}>
           <Reveal>
             <div className="h-full rounded-3xl bg-white border border-brand-100 p-8 shadow-card">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
@@ -125,21 +135,23 @@ function AboutPageInner() {
               <p className="mt-2 text-ink-500 leading-relaxed">{about.mission}</p>
             </div>
           </Reveal>
-          <Reveal delay={100}>
-            <div className="h-full rounded-3xl bg-white border border-brand-100 p-8 shadow-card">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-300/30 text-gold-600">
-                <Eye className="h-6 w-6" />
+          {about.vision && (
+            <Reveal delay={100}>
+              <div className="h-full rounded-3xl bg-white border border-brand-100 p-8 shadow-card">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-300/30 text-gold-600">
+                  <Eye className="h-6 w-6" />
+                </div>
+                <h3 className="mt-4 text-xl font-800 text-ink-900">Our Vision</h3>
+                <p className="mt-2 text-ink-500 leading-relaxed">{about.vision}</p>
               </div>
-              <h3 className="mt-4 text-xl font-800 text-ink-900">Our Vision</h3>
-              <p className="mt-2 text-ink-500 leading-relaxed">{about.vision}</p>
-            </div>
-          </Reveal>
+            </Reveal>
+          )}
         </div>
       </section>
 
       {/* ── Stats band ────────────────────────────────── */}
       <section className="py-14">
-        <div className="container-page grid gap-6 sm:grid-cols-3 text-center">
+        <div className="container-page grid gap-6 sm:grid-cols-2 text-center">
           {stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 80}>
               <div>
@@ -158,33 +170,44 @@ function AboutPageInner() {
             <span className="eyebrow"><span className="h-1.5 w-1.5 rounded-full bg-gold-500" />Our Team</span>
           </Reveal>
           <Reveal delay={80}>
-            <h2 className="mt-4 text-3xl font-900 text-ink-900 max-w-xl">Our dedicated staff</h2>
+            <h2 className="mt-4 text-3xl font-900 text-ink-900 max-w-xl">Our team</h2>
           </Reveal>
           <Reveal delay={120}>
             <p className="mt-3 text-ink-500 max-w-2xl leading-relaxed">
               Our team supports calm, patient-first care across all our branches.
             </p>
           </Reveal>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {staff.map((member, i) => (
-              <Reveal key={member.name} delay={i * 80}>
-                <div className="group h-full overflow-hidden rounded-3xl bg-white border border-brand-100 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-float">
-                  <div className="aspect-[4/5] overflow-hidden bg-brand-50">
-                    <img decoding="async"
-                      src={member.image}
-                      alt={`${member.name}, Celestial Dental Centre team member`}
-                      loading="lazy"
-                      className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                    />
+          {/*
+            Individual practitioner cards are withheld pending the verified fact
+            sheet. Publishing a name requires the title and cadre as registered,
+            the position held, the qualifications and the registration number, in
+            that order; a bare name alongside advertised procedures is the gap the
+            10 September 2026 ruling turned on. Each card must be built from a
+            completed register row, never from the admin sheet's free-text fields.
+            Restore this block once the fact sheet is signed.
+          */}
+          {staff.length > 0 && practitionersVerified && (
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {staff.map((member, i) => (
+                <Reveal key={member.name} delay={i * 80}>
+                  <div className="group h-full overflow-hidden rounded-3xl bg-white border border-brand-100 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-float">
+                    <div className="aspect-[4/5] overflow-hidden bg-brand-50">
+                      <img decoding="async"
+                        src={member.image}
+                        alt={`${member.name}, Celestial Dental Centre team member`}
+                        loading="lazy"
+                        className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-5">
+                      <h3 className="text-lg font-800 text-ink-900">{member.name}</h3>
+                      {member.role && <p className="mt-1 text-sm font-600 text-brand-600">{member.role}</p>}
+                    </div>
                   </div>
-                  <div className="p-5">
-                    <h3 className="text-lg font-800 text-ink-900">{member.name}</h3>
-                    {member.role && <p className="mt-1 text-sm font-600 text-brand-600">{member.role}</p>}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+                </Reveal>
+              ))}
+            </div>
+          )}
 
           {/* Group photos of the full team */}
           <div className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -278,7 +301,7 @@ function AboutPageInner() {
               <p className="mt-2 text-sm font-600 text-ink-900/70">Open 7 days a week · 07:00 – 20:00 · Walk-ins welcome</p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <button onClick={() => openBooking()} className="btn-primary !bg-none !bg-ink-900 !text-white !shadow-none hover:!shadow-none">
-                  <MessageCircle className="h-4 w-4" />Book Appointment
+                  <MessageCircle className="h-4 w-4" />Appointments
                 </button>
                 <a href={site.primaryPhone.href} className="btn-ghost !text-ink-900 !border-ink-900/25 !bg-white/25 hover:!bg-white/40">
                   <Phone className="h-4 w-4" />{site.primaryPhone.label}
