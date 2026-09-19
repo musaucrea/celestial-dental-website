@@ -12,12 +12,16 @@ type Visit = {
   device: string;
   sid: string;
   vid: string;
+  medium: string;
+  campaign: string;
+  content: string;
 };
 
 const sheetTitle = 'Visits';
-// 'vid' (persistent retargeting cookie id) is appended after 'sid' so rows
-// written before the column existed still map correctly.
-const header = ['ts', 'path', 'referrer', 'country', 'city', 'device', 'sid', 'vid'];
+// Columns are only ever appended, never reordered, so rows written before a
+// column existed still map correctly. 'vid' followed 'sid'; the three campaign
+// columns followed 'vid' when influencer tracking was added.
+const header = ['ts', 'path', 'referrer', 'country', 'city', 'device', 'sid', 'vid', 'medium', 'campaign', 'content'];
 
 const BOT_RE = /bot|crawl|spider|preview|lighthouse|pingdom|uptime|curl|wget|python|headless/i;
 
@@ -25,6 +29,8 @@ const BOT_RE = /bot|crawl|spider|preview|lighthouse|pingdom|uptime|curl|wget|pyt
 // fallback answers them with index.html, so the beacon fires and logs the
 // bogus path as a pageview. No real route ends in a file extension.
 const ASSET_RE = /\.(jpe?g|png|gif|webp|avif|bmp|svg|ico|css|js|mjs|map|woff2?|ttf|eot|mp4|webm|mp3|zip|env|asp|aspx|jsp|cgi)$/i;
+
+const HEADER_RANGE = `${sheetTitle}!A1:${String.fromCharCode(64 + header.length)}1`;
 
 async function ensureSheet() {
   const { sheets, spreadsheetId } = await getSheetsClient();
@@ -36,10 +42,26 @@ async function ensureSheet() {
       requestBody: { requests: [{ addSheet: { properties: { title: sheetTitle } } }] },
     });
     await sheets.spreadsheets.values.update({
-      spreadsheetId, range: `${sheetTitle}!A1:H1`,
+      spreadsheetId, range: HEADER_RANGE,
       valueInputOption: 'RAW', requestBody: { values: [header] },
     });
+    return { sheets, spreadsheetId };
   }
+
+  // The sheet predates the campaign columns — widen the header row so the new
+  // data lands under a label instead of in nameless columns. Row data itself
+  // needs no migration: absent cells read back as ''.
+  try {
+    const current = await sheets.spreadsheets.values.get({ spreadsheetId, range: HEADER_RANGE });
+    const labels = (current.data.values?.[0] || []) as string[];
+    if (labels.length < header.length) {
+      await sheets.spreadsheets.values.update({
+        spreadsheetId, range: HEADER_RANGE,
+        valueInputOption: 'RAW', requestBody: { values: [header] },
+      });
+    }
+  } catch { /* a stale header never breaks tracking — keep going */ }
+
   return { sheets, spreadsheetId };
 }
 
@@ -57,6 +79,15 @@ const AI_NAMES = ['chatgpt', 'openai', 'perplexity', 'gemini', 'bard', 'copilot'
 function isAiReferrer(referrer: string): boolean {
   if (AI_HOSTS.some(h => referrer === h || referrer.endsWith('.' + h))) return true;
   return AI_NAMES.some(n => referrer === n || referrer.startsWith(n + '.'));
+}
+
+/**
+ * Campaign fields are typed by hand into captions and bio links, so `@Nasra`,
+ * `nasra ` and `NASRA` all arrive for one creator. Fold them together here or
+ * the report shows the same person three times.
+ */
+function campaignValue(value: unknown): string {
+  return String(value || '').trim().toLowerCase().replace(/^@/, '').replace(/[^a-z0-9._-]/g, '').slice(0, 60);
 }
 
 function normalizeCampaignSource(value: string): string {
@@ -149,11 +180,14 @@ async function recordVisit(req: VercelRequest) {
     /mobile|android|iphone|ipad/i.test(ua) ? 'mobile' : 'desktop',
     String(body.sid || '').slice(0, 48),
     String(body.vid || '').slice(0, 48),
+    campaignValue(body.medium),
+    campaignValue(body.campaign),
+    campaignValue(body.content),
   ];
 
   const { sheets, spreadsheetId } = await ensureSheet();
   await sheets.spreadsheets.values.append({
-    spreadsheetId, range: `${sheetTitle}!A:H`,
+    spreadsheetId, range: `${sheetTitle}!A:K`,
     valueInputOption: 'RAW', requestBody: { values: [row] },
   });
 }
@@ -166,6 +200,17 @@ function top(counter: Map<string, number>, limit = 8) {
 function bump(counter: Map<string, number>, key: string) {
   if (!key) return;
   counter.set(key, (counter.get(key) || 0) + 1);
+}
+
+function bumpUnique(counter: Map<string, Set<string>>, key: string, member: string) {
+  if (!key) return;
+  if (!counter.has(key)) counter.set(key, new Set());
+  counter.get(key)!.add(member);
+}
+
+function topUnique(counter: Map<string, Set<string>>, limit = 25) {
+  return [...counter.entries()].sort((a, b) => b[1].size - a[1].size).slice(0, limit)
+    .map(([name, members]) => ({ name, count: members.size }));
 }
 
 // Blog posts live at root-level slugs (/my-article) as well as legacy /blog/
@@ -188,12 +233,13 @@ async function readStats() {
   const { sheets, spreadsheetId } = await ensureSheet();
   const blogSlugs = await readBlogSlugs(sheets, spreadsheetId);
   const result = await sheets.spreadsheets.values.get({
-    spreadsheetId, range: `${sheetTitle}!A:H`,
+    spreadsheetId, range: `${sheetTitle}!A:K`,
   });
   const rows = ((result.data.values || []) as string[][]).slice(1).filter(r => r[0]);
   const visits: Visit[] = rows.map(r => ({
     ts: r[0] || '', path: r[1] || '', referrer: r[2] || '',
     country: r[3] || '', city: r[4] || '', device: r[5] || '', sid: r[6] || '', vid: r[7] || '',
+    medium: r[8] || '', campaign: r[9] || '', content: r[10] || '',
   }));
 
   const now = Date.now();
@@ -219,6 +265,10 @@ async function readStats() {
   const todayReferrers = new Map<string, number>();
   const todaySids = new Set<string>();
   const aiSources = new Map<string, number>();       // AI-assistant referrers → visit count
+  // Campaign attribution is counted in people, not pageloads: a creator whose
+  // audience opens the page twice each hasn't sent twice the traffic.
+  const creatorVisitors = new Map<string, Set<string>>();  // utm_content  → distinct sids
+  const campaignVisitors = new Map<string, Set<string>>(); // utm_campaign → distinct sids
   const blogViews = new Map<string, number>();        // /blog/<slug> → view count
   const sids7 = new Set<string>();
   const sids30 = new Set<string>();
@@ -270,6 +320,11 @@ async function readStats() {
       bump(pages, v.path);
       bump(devices, v.device);
       if (isAiReferrer(v.referrer)) { aiVisits++; bump(aiSources, v.referrer); }
+      // Rows predating the campaign columns, and untagged traffic, have none
+      // of these — skip rather than inventing an "(unknown)" bucket.
+      const visitorKey = v.sid || `anon-${i}`;
+      if (v.content) bumpUnique(creatorVisitors, v.content, visitorKey);
+      if (v.campaign) bumpUnique(campaignVisitors, v.campaign, visitorKey);
       if (v.path.startsWith('/blog/')) bump(blogViews, v.path.slice('/blog/'.length).split(/[?#]/)[0]);
       else {
         const rootSlug = v.path.replace(/^\//, '').split(/[?#/]/)[0];
@@ -325,6 +380,8 @@ async function readStats() {
     referrers: top(referrers),
     todayReferrers: top(todayReferrers),
     aiSources: top(aiSources),
+    creators: topUnique(creatorVisitors),
+    campaigns: topUnique(campaignVisitors),
     countries: top(countries),
     cities: top(cities),
     pages: top(pages),

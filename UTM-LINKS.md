@@ -40,6 +40,48 @@ being grouped under **Direct** in Google Analytics.
 - Appointment: https://celestialdental.org/?book=1&utm_source=sms&utm_medium=messaging&utm_campaign=appointment
 - Reminder: https://celestialdental.org/?utm_source=sms&utm_medium=messaging&utm_campaign=appointment_reminder
 
+## Influencer campaign (braces)
+
+Don't hand-write these — one typo and a creator's traffic splits into two rows
+that never add up:
+
+```
+node influencer-links.mjs nasra brenda kevo
+node influencer-links.mjs nasra brenda --csv > campaign-links.csv
+```
+
+The convention it emits, and the reason for each part:
+
+- `utm_medium=influencer` — deliberately **not** `social`, so partner traffic
+  reports separately from organic Instagram/TikTok.
+- `utm_campaign=braces_2026` — one value for the whole campaign.
+- `utm_content=<handle>` — the individual creator. Lowercase, no `@`. This is
+  the field every per-creator report groups by.
+- `?via=<handle>` — short form for anywhere a full UTM string is impractical
+  (print, chair-side cards, a spoken URL). Equivalent to `utm_content`.
+
+The same handle must appear in all three places or a creator gets counted
+twice under different names:
+
+| Where | Form | Example |
+|---|---|---|
+| Link | `utm_content` | `utm_content=nasra` |
+| WhatsApp prefill | `Code: NAME` | `Code: NASRA` |
+| Spoken / walk-in | `mention NAME` | "mention NASRA at reception" |
+
+What each one feeds:
+
+- **Clicks** → admin Analytics → "Campaign performance — by creator" (distinct
+  visitors, last 30 days), and GA4 under source/medium `instagram / influencer`.
+- **Online bookings** → Appointments sheet: `Source` column gets
+  `instagram/influencer/braces_2026/nasra`, `Referral` gets `Influencer: NASRA`.
+  Attribution is **first touch**, remembered for 90 days, so the creator who
+  introduced the patient keeps the credit.
+- **WhatsApp chats** → the code is appended to the prefilled message
+  automatically on any wa.me link once the visitor arrived on a tagged link.
+- **Walk-ins** → reception writes the code on the patient file. This is the
+  only path with no automatic capture, and for braces it's the biggest one.
+
 ## Reporting convention
 
 - `utm_source`: platform sending the visitor, such as `whatsapp`, `instagram`, `facebook`, `google`, `email`, or `sms`.

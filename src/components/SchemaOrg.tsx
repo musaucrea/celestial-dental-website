@@ -237,9 +237,12 @@ function blogPostingSchema(post: (typeof blogPosts)[0]) {
         url: 'https://celestialdental.org/brand/celestial-logo.png',
       },
     },
+    // Articles are canonical at the root (`/{slug}`), not under `/blog/` — see
+    // BlogPostPage's canonicalPath. Pointing the schema at a URL that only
+    // redirects made each article look like two competing resources.
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://celestialdental.org/blog/${post.slug}`,
+      '@id': `https://celestialdental.org/${post.slug}`,
     },
   };
 }

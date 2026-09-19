@@ -39,8 +39,8 @@ $faqs = [
   ['q' => 'Do you treat children?', 'a' => 'Yes. We offer gentle children\'s dentistry in a calm, child-friendly setting. We recommend a first visit as soon as the first tooth appears, or by age one.'],
 ];
 
-$title = 'Best Dentist in Nairobi (Kasarani), Kamakis-Ruiru & Eldoret | Braces, Implants & Emergency Care | Celestial Dental Centre';
-$desc  = 'Affordable dental clinic open 7 days (07:00-20:00) in Kasarani Nairobi, Kamakis-Ruiru & Eldoret. Checkups, teeth cleaning, braces, implants, root canal and same-day emergency dentist. Insurance & M-Pesa accepted.';
+$title = 'Dentist in Nairobi (Kasarani), Kamakis-Ruiru & Eldoret | Braces, Implants & Emergency Care | Celestial Dental Centre';
+$desc  = 'Dental clinic open 7 days (07:00-20:00) in Kasarani Nairobi, Kamakis-Ruiru & Eldoret. Checkups, teeth cleaning, braces, implants, root canal and same-day emergency dentist. Insurance & M-Pesa accepted.';
 
 // ── Branch blocks + per-branch schema ──
 $branchHtml = '';
@@ -99,7 +99,7 @@ $dentist = [
     'opens'     => '07:00',
     'closes'    => '20:00',
   ]],
-  'description'     => 'Affordable dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru) and Eldoret. Open every day 07:00-20:00.',
+  'description'     => 'Dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru) and Eldoret. Open every day 07:00-20:00.',
 ];
 if ($branchSchema) $dentist['department'] = $branchSchema;
 
@@ -142,7 +142,7 @@ foreach ($schemas as $s) {
 echo "</head>\n<body>\n<main>\n";
 
 echo "<h1>Dentist in Kasarani (Nairobi), Kamakis-Ruiru and Eldoret</h1>\n";
-echo "<p>Celestial Dental Centre is an affordable dental clinic group in Kenya with three branches, open every day from 07:00 to 20:00 including Sundays and public holidays. We provide checkups, teeth cleaning, braces and orthodontics, implants, root canal treatment, children's dentistry, cosmetic dentistry and same-day emergency dental care. SHA, 20+ private insurers, M-Pesa and cash are accepted.</p>\n";
+echo "<p>Celestial Dental Centre is a dental clinic group in Kenya with three branches, open every day from 07:00 to 20:00 including Sundays and public holidays. We provide checkups, teeth cleaning, braces and orthodontics, implants, root canal treatment, children's dentistry, cosmetic dentistry and same-day emergency dental care. SHA, 20+ private insurers, M-Pesa and cash are accepted.</p>\n";
 echo "<p><a href=\"$SITE/?book=1\">Book an appointment</a> &middot; Call or WhatsApp +254 707 535 000</p>\n";
 
 echo "<h2>Dental services we offer</h2>\n<ul>\n";
@@ -178,6 +178,6 @@ echo "</main>\n</body>\n</html>\n";
 function about_home_section($SITE) {
   return "<hr />\n<section>\n<h2>About Celestial Dental Centre</h2>\n"
     . "<p>Celestial Dental Centre is also known as Celestial Dental &amp; Orthodontic Centre. The Kasarani location's official Google Business Profile is named Celestial Dental Centre -Kasarani Branch.</p>\n"
-    . "<p>Celestial Dental Centre is an affordable dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret, open every day, 07:00-20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>\n"
+    . "<p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret, open every day, 07:00-20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>\n"
     . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> &middot; Call: +254 707 535 000 &middot; WhatsApp: https://wa.me/254707535000</p>\n</section>\n";
 }

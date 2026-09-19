@@ -76,10 +76,15 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ /prerender.php [L]
 
-# SPA fallback — serve index.html for client-side routes
+# SPA fallback — serve the app, but through shell.php so the first response
+# carries the requested route's own title/canonical/OG/JSON-LD instead of the
+# homepage's. The bot rules above still win, so crawlers keep the full static
+# body; everything else gets the same SPA it always did, correctly labelled.
+# ("/" never reaches here — REQUEST_FILENAME resolves to the docroot, so !-d
+# fails — and it needs no rewrite: index.html's own head is the homepage's.)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ /index.html [L]
+RewriteRule ^ /shell.php [L]
 
 # Never cache the HTML shell; long-cache hashed/static assets
 <IfModule mod_headers.c>
@@ -95,3 +100,10 @@ RewriteRule ^ /index.html [L]
 # Sensible MIME types
 AddType image/webp .webp
 AddType application/manifest+json .webmanifest
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php83” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

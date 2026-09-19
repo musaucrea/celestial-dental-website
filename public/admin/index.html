@@ -626,6 +626,15 @@
           </div>
         </div>
         <div class="card" style="margin-top:20px;">
+          <div class="card-title">Campaign performance — by creator</div>
+          <div class="page-sub" style="margin-top:-4px;margin-bottom:12px;">Distinct visitors from each creator's tagged links over the last 30 days. This is clicks only — leads who walked in or messaged WhatsApp show up in Appointments under their code.</div>
+          <div id="anCreators"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
+          <div id="anCampaignsWrap" style="display:none;">
+            <div class="card-title" style="margin-top:16px;">By campaign</div>
+            <div id="anCampaigns"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:20px;">
           <div class="card-title">Blog post performance</div>
           <div class="page-sub" style="margin-top:-4px;margin-bottom:12px;">Views for each blog article over the last 30 days.</div>
           <div id="anBlogPerf"><p style="color:var(--ink-4);font-size:14px;">Loading…</p></div>
@@ -2120,6 +2129,15 @@ async function loadAnalytics() {
       ((d.todayCities || []).length ? `<div class="card-title" style="margin-top:16px;">Today's cities</div>${statList(d.todayCities)}` : '');
     el('anPages').innerHTML = statList(d.todayPages);
     el('anDevices').innerHTML = statList(d.todayDevices, n => n === 'mobile' ? '📱 Mobile' : '💻 Desktop');
+
+    // Campaign performance — creators first, since that's the payout question
+    el('anCreators').innerHTML = (d.creators || []).length
+      ? statList(d.creators, n => n.toUpperCase())
+      : '<p style="color:var(--ink-4);font-size:14px;">No tagged campaign visits yet — this fills in once creators post their links.</p>';
+    if ((d.campaigns || []).length) {
+      el('anCampaignsWrap').style.display = '';
+      el('anCampaigns').innerHTML = statList(d.campaigns);
+    }
 
     // Blog post performance — map slug → post title where we can
     try { if (!S.posts || !S.posts.length) { const bd = await api('/api/blog'); S.posts = bd.posts || []; } } catch {}
