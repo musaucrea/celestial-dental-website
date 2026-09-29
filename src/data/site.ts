@@ -286,6 +286,13 @@ export const gallery = [
   { src: '/facility/clinic-hallway.jpg', caption: 'Bright, private treatment corridors' },
 ];
 
+/**
+ * Branches where SHA (Social Health Authority) is accepted. SHA approval is
+ * per facility, so a branch is only described as accepting SHA when listed
+ * here. Kiambu Road is deliberately absent.
+ */
+export const shaBranchSlugs = ['kasarani', 'kamakis', 'eldoret'];
+
 export const branches = [
   {
     name: 'Kasarani',

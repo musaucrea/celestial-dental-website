@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
-import { googleBusinessProfiles, services as staticServices, site } from '../data/site';
+import { googleBusinessProfiles, services as staticServices, shaBranchSlugs, site } from '../data/site';
 import { useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
 import { Header } from '../components/Header';
@@ -31,6 +31,7 @@ function BranchPageInner() {
   const otherBranches = branches.filter(b => b.slug !== slug);
   const googleProfile = googleBusinessProfiles[branch.slug];
   const mapUrl = googleProfile?.profileUrl || branch.map;
+  const acceptsSha = shaBranchSlugs.includes(branch.slug);
 
   // Search phrasing includes the wider locality, not just the branch name
   // (e.g. people search "dentist in ruiru" for Kamakis, "nairobi" for Kasarani).
@@ -40,7 +41,7 @@ function BranchPageInner() {
     <>
       <SEO
         title={`Dentist in ${locality} | ${site.name}`}
-        description={`${branch.description} Open daily 07:00-20:00. SHA and 20+ insurance schemes accepted. Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
+        description={`${branch.description} Open daily 07:00-20:00. ${acceptsSha ? 'SHA and 20+ insurance schemes' : '20+ insurance schemes'} accepted. Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
         image={branch.image}
         canonicalPath={`/branches/${branch.slug}`}
         keywords={[
@@ -174,12 +175,20 @@ function BranchPageInner() {
               <div className="mt-6 rounded-3xl bg-white p-6 shadow-card flex items-start gap-4">
                 <ShieldCheck className="h-6 w-6 shrink-0 text-brand-500" />
                 <div>
-                  <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">Insurance &amp; SHA</p>
-                  <p className="text-sm text-ink-700 leading-relaxed">
-                    We accept SHA (Social Health Authority) for eligible schemes and covered treatments at our {branch.name} branch,
-                    plus direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance.
-                    Bring your insurance card or SHA details and our front desk will handle pre-authorisation. M-Pesa and cash also accepted.
-                  </p>
+                  <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">{acceptsSha ? <>Insurance &amp; SHA</> : 'Insurance'}</p>
+                  {acceptsSha ? (
+                    <p className="text-sm text-ink-700 leading-relaxed">
+                      We accept SHA (Social Health Authority) for eligible schemes and covered treatments at our {branch.name} branch,
+                      plus direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance.
+                      Bring your insurance card or SHA details and our front desk will handle pre-authorisation. M-Pesa and cash also accepted.
+                    </p>
+                  ) : (
+                    <p className="text-sm text-ink-700 leading-relaxed">
+                      Direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance.
+                      Bring your insurance card and our front desk will handle pre-authorisation. M-Pesa and cash also accepted.
+                      Confirm that your scheme is accepted at the {branch.name} branch before treatment.
+                    </p>
+                  )}
                 </div>
               </div>
             </Reveal>

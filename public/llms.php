@@ -60,7 +60,7 @@ echo <<<TXT
 - URL: https://celestialdental.org/branches/kiambu-road
 - Address: Brick House, 2nd Floor, Thindigua, along Kiambu Road, Kiambu County
 - Phone: +254 709 000 243
-- Insurance: SHA (Social Health Authority) accepted for eligible schemes, plus direct billing with 20+ private insurers
+- Insurance: direct billing with 20+ private insurers
 
 ## Service Areas
 
@@ -98,7 +98,7 @@ echo <<<TXT
 
 ## Insurance Accepted
 
-SHA (Social Health Authority) is accepted at all four branches — Kasarani, Kamakis, Eldoret, and Kiambu Road — for eligible schemes and covered treatments such as check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays; coverage depends on the patient's scheme and pre-authorisation may be required. Celestial Dental Centre also works with major insurers and medical schemes including Jubilee Insurance, AAR Insurance, Madison, CIC Group, Britam, APA Insurance, Liaison Group, GA Insurance, Co-operative Bank, Trident Insurance, Saham Insurance, Kenya Commercial Bank, Kenya Alliance Insurance, Clarkson Insurance, Resolution Insurance, Minet Insurance, First Assurance, Karirana Estates, Heritage Insurance, and Equity Bank Insurance.
+SHA (Social Health Authority) is accepted at the Kasarani, Kamakis, and Eldoret branches — for eligible schemes and covered treatments such as check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays; coverage depends on the patient's scheme and pre-authorisation may be required. Celestial Dental Centre also works with major insurers and medical schemes including Jubilee Insurance, AAR Insurance, Madison, CIC Group, Britam, APA Insurance, Liaison Group, GA Insurance, Co-operative Bank, Trident Insurance, Saham Insurance, Kenya Commercial Bank, Kenya Alliance Insurance, Clarkson Insurance, Resolution Insurance, Minet Insurance, First Assurance, Karirana Estates, Heritage Insurance, and Equity Bank Insurance.
 
 $articles
 ## Citation Guidance

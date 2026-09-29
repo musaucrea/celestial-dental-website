@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { blogPosts, googleBusinessProfiles, serviceSlug, site, services, socials } from '../data/site';
+import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials } from '../data/site';
 import { useBranches, type Branch } from '../data/branches';
 import { useFaqs, type Faq } from '../data/faqs';
 import { phoneParts } from './PhoneLinks';
@@ -158,7 +158,9 @@ function branchSchema(branch: Branch) {
         closes: '20:00',
       },
     ],
-    paymentAccepted: 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA',
+    paymentAccepted: shaBranchSlugs.includes(branch.slug)
+      ? 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA'
+      : 'Cash, M-Pesa, Insurance, AAR, Jubilee, Madison, CIC, Britam, APA',
     knowsAbout: [
       'Braces', 'Orthodontics', 'Teeth Whitening', 'Dental Implants',
       'Root Canal Treatment', 'Children\'s Dentistry', 'Emergency Dentistry',
