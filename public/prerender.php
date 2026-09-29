@@ -120,7 +120,7 @@ function about_section($SITE) {
       <h2>About Celestial Dental Centre</h2>
       <p>Celestial Dental Centre is also known as Celestial Dental &amp; Orthodontic Centre. The Kasarani location's official Google Business Profile is named Celestial Dental Centre -Kasarani Branch.</p>
       <p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day, 07:00–20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
-      <p>Book an appointment: <a href="$SITE/?book=1">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>
+      <p>Book an appointment: <a href="$SITE/?book=1">$SITE/?book=1</a> · Call: +254 709 000 240 / +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>
     </section>
 HTML;
 }
@@ -314,7 +314,7 @@ function render_static($staticPath) {
       . "<h1>Dental Services in Kasarani, Kamakis, Eldoret &amp; Kiambu Road</h1>\n"
       . "<p>Explore the full range of dental care at Celestial Dental Centre — checkups, cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry, and same-day emergency care. Available at all four branches, open every day 07:00–20:00.</p>\n"
       . "<ul>\n$items</ul>\n"
-      . "<p><a href=\"$SITE/?book=1\">Book an appointment</a> · Call +254 707 535 000</p>\n";
+      . "<p><a href=\"$SITE/?book=1\">Book an appointment</a> · Call +254 709 000 240 / +254 707 535 000</p>\n";
     emit_page(
       'Dental Services in Kasarani, Kamakis, Eldoret & Kiambu Road | Celestial Dental Centre',
       "Explore dental checkups, teeth cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry and emergency care at Celestial Dental Centre.",
@@ -336,7 +336,7 @@ function render_static($staticPath) {
       $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › <a href=\"$SITE/services\">Services</a> › {$esc($title)}</p>\n"
         . "<h1>{$esc($title)}</h1>\n"
         . "<p>{$esc($svc['description'])}</p>\n"
-        . "<p>Available at all four Celestial Dental Centre branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day, 07:00–20:00. <a href=\"$SITE/?book=1\">Book " . $esc($lc) . "</a> or call +254 707 535 000.</p>\n";
+        . "<p>Available at all four Celestial Dental Centre branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day, 07:00–20:00. <a href=\"$SITE/?book=1\">Book " . $esc($lc) . "</a> or call +254 709 000 240 / +254 707 535 000.</p>\n";
 
       $schema = [
         cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Services' => "$SITE/services", $title => $canonical]),
@@ -389,7 +389,7 @@ function render_static($staticPath) {
       . "<p>Celestial Dental Centre is a dental clinic group in Kenya, serving patients across four branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua). We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
       . "<p>Our team focuses on accurate diagnosis, clearly explained treatment planning, and quality materials and equipment. From routine checkups and cleaning to braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency care, we look after the whole family with calm, patient-friendly care.</p>\n"
       . "<p>We accept M-Pesa, cash, SHA (Social Health Authority), and 20+ insurance schemes including Jubilee, AAR, Madison, CIC, Britam, and APA. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
-      . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"
+      . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 709 000 240 / +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"
       . cd_service_links($SITE)
       . cd_insurance_note($SITE)
       . cd_branch_links($SITE);
@@ -411,7 +411,7 @@ function render_static($staticPath) {
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Braces</p>\n"
       . "<h1>Dental Braces &amp; Orthodontics in Nairobi, Ruiru, Eldoret &amp; Kiambu Road</h1>\n"
       . "<p>Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental Centre. We provide orthodontic care for children, teens, and adults in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road — open 7 days, with insurance and M-Pesa accepted.</p>\n"
-      . "<p>At your first consultation we assess your teeth, explain your options and timeline, and give you a clear treatment plan. <a href=\"$SITE/?book=1\">Book a braces consultation</a> or call +254 707 535 000.</p>\n";
+      . "<p>At your first consultation we assess your teeth, explain your options and timeline, and give you a clear treatment plan. <a href=\"$SITE/?book=1\">Book a braces consultation</a> or call +254 709 000 240 / +254 707 535 000.</p>\n";
     $faqEntities = [];
     $main .= "<h2>Braces — common questions</h2>\n";
     foreach ($faqs as $f) {
@@ -437,7 +437,7 @@ function render_static($staticPath) {
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Careers</p>\n"
       . "<h1>Dental Careers in Kenya</h1>\n"
       . "<p>Explore dental career opportunities at Celestial Dental Centre across our Kasarani, Kamakis, Eldoret, and Kiambu Road branches. We hire for clinical, patient care, and support roles, and welcome dentists, dental therapists, hygienists, nurses, and front-desk staff.</p>\n"
-      . "<p>To apply, send your CV through our <a href=\"$SITE/careers\">careers page</a>, or call +254 707 535 000. Tell us the role you're interested in and your availability, and our team will be in touch.</p>\n"
+      . "<p>To apply, send your CV through our <a href=\"$SITE/careers\">careers page</a>, or call +254 709 000 240 / +254 707 535 000. Tell us the role you're interested in and your availability, and our team will be in touch.</p>\n"
       . cd_branch_links($SITE);
     emit_page(
       'Dental Careers in Kenya | Celestial Dental Centre',
@@ -480,7 +480,7 @@ function render_branch($branchSlug) {
     '@type'     => 'Dentist',
     'name'      => $schemaName,
     'url'       => $canonical,
-    'telephone' => $b['phone'] ?? '',
+    'telephone' => trim(explode('/', $b['phone'] ?? '')[0]),
     'address'   => [
       '@type'           => 'PostalAddress',
       'streetAddress'   => implode(', ', $addrLines),
@@ -527,7 +527,11 @@ function render_branch($branchSlug) {
   echo "<h2>Visit us</h2>\n<p>$addrHtml</p>\n";
   if ($landmark) echo "<p>Landmark: $landmark</p>\n";
   if ($parking) echo "<p>Parking: $parking</p>\n";
-  echo "<p>Phone: <a href=\"tel:" . preg_replace('/\s+/', '', $phone) . "\">$phone</a>" . ($whatsapp ? " · WhatsApp: <a href=\"$whatsapp\">$whatsapp</a>" : '') . "</p>\n";
+  $phoneLinks = implode(' / ', array_map(function ($p) {
+    $p = trim($p);
+    return "<a href=\"tel:" . preg_replace('/[^+\d]/', '', $p) . "\">$p</a>";
+  }, explode('/', $phone)));
+  echo "<p>Phone: $phoneLinks" . ($whatsapp ? " · WhatsApp: <a href=\"$whatsapp\">$whatsapp</a>" : '') . "</p>\n";
   echo "<p>Opening hours: $hours (open every day)</p>\n";
   if ($googleProfile) {
     echo "<p>Official Google Business Profile: <a href=\"$googleProfile\">Celestial Dental Centre -Kasarani Branch</a>. Use the live profile for current reviews, rating, and directions.</p>\n";

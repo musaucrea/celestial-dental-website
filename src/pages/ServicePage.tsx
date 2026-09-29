@@ -9,6 +9,7 @@ import { BookingModal } from '../components/BookingModal';
 import { SchemaOrg } from '../components/SchemaOrg';
 import { SEO } from '../components/SEO';
 import { SiteFooter } from '../components/SiteFooter';
+import { PhoneLinks } from '../components/PhoneLinks';
 
 type ServiceFaq = { q: string; a: string };
 type Service = {
@@ -122,10 +123,10 @@ function ServicePageInner() {
                       <Clock className="h-4 w-4" />
                       Book this service
                     </button>
-                    <a href={site.primaryPhone.href} className="btn-ghost">
+                    <span className="btn-ghost">
                       <Phone className="h-4 w-4" />
-                      Call {site.primaryPhone.label}
-                    </a>
+                      <span>Call <PhoneLinks phone={site.primaryPhone.label} className="hover:underline" /></span>
+                    </span>
                     <a href={site.whatsappHref} target="_blank" rel="noopener noreferrer" className="btn-ghost">
                       <MessageCircle className="h-4 w-4" />
                       WhatsApp us

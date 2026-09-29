@@ -10,6 +10,7 @@ import { BookingModal } from '../components/BookingModal';
 import { SchemaOrg } from '../components/SchemaOrg';
 import { SEO } from '../components/SEO';
 import { SiteFooter } from '../components/SiteFooter';
+import { PhoneLinks } from '../components/PhoneLinks';
 
 function BranchPageInner() {
   const { slug } = useParams<{ slug: string }>();
@@ -89,10 +90,10 @@ function BranchPageInner() {
                       <MessageCircle className="h-4 w-4" />
                       Book Appointment
                     </button>
-                    <a href={branch.phoneHref} className="btn-ghost">
+                    <span className="btn-ghost">
                       <Phone className="h-4 w-4" />
-                      {branch.phone}
-                    </a>
+                      <span><PhoneLinks phone={branch.phone} className="hover:underline" /></span>
+                    </span>
                   </div>
                 </Reveal>
               </div>
@@ -149,7 +150,7 @@ function BranchPageInner() {
                   <Phone className="h-6 w-6 text-brand-500" />
                   <div>
                     <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">Contact</p>
-                    <a href={branch.phoneHref} className="block text-sm font-bold text-ink-700 hover:text-brand-700 transition-colors">{branch.phone}</a>
+                    <p className="text-sm font-bold text-ink-700"><PhoneLinks phone={branch.phone} className="hover:text-brand-700 transition-colors" /></p>
                     <a href={branch.whatsapp} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-800 text-brand-600 hover:text-brand-800 transition-colors">
                       WhatsApp us <ChevronRight className="h-3 w-3" />
                     </a>
@@ -279,9 +280,9 @@ function BranchPageInner() {
                     <MessageCircle className="h-4 w-4" />
                     Book Appointment
                   </button>
-                  <a href={branch.phoneHref} className="btn-ghost !text-white !border-white/30 !bg-white/10">
-                    <Phone className="h-4 w-4" />{branch.phone}
-                  </a>
+                  <span className="btn-ghost !text-white !border-white/30 !bg-white/10">
+                    <Phone className="h-4 w-4" /><span><PhoneLinks phone={branch.phone} className="hover:underline" /></span>
+                  </span>
                 </div>
               </div>
             </Reveal>

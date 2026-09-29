@@ -52,16 +52,21 @@ foreach (cd_branches() as $b) {
   $canonical = "$SITE/branches/" . rawurlencode($bslug);
   // The address is stored as free text with line breaks; flatten to one line.
   $addr = trim(preg_replace('/\s+/', ' ', (string)($b['address'] ?? '')), " ,.");
-  $phone = $b['phone'] ?? '+254 707 535 000';
+  $phone = $b['phone'] ?? '+254 709 000 240 / +254 707 535 000';
+  // A phone field may hold several numbers separated by "/"; link each one.
+  $phoneLinks = implode(' / ', array_map(function ($p) use ($esc) {
+    $p = trim($p);
+    return "<a href=\"tel:" . preg_replace('/[^+\d]/', '', $p) . "\">{$esc($p)}</a>";
+  }, explode('/', $phone)));
   $branchHtml .= "<h3><a href=\"$canonical\">Celestial Dental Centre - {$esc($name)}</a></h3>\n"
     . ($addr !== '' ? "<p>{$esc($addr)}</p>\n" : '')
-    . "<p>Phone: <a href=\"tel:" . preg_replace('/\s+/', '', $phone) . "\">{$esc($phone)}</a> &middot; Open every day 07:00-20:00</p>\n";
+    . "<p>Phone: $phoneLinks &middot; Open every day 07:00-20:00</p>\n";
 
   $entry = [
     '@type'     => 'Dentist',
     'name'      => "Celestial Dental Centre - $name Branch",
     'url'       => $canonical,
-    'telephone' => $phone,
+    'telephone' => trim(explode('/', $phone)[0]),
     'address'   => [
       '@type'           => 'PostalAddress',
       'streetAddress'   => $addr,
@@ -88,7 +93,7 @@ $dentist = [
   'name'            => 'Celestial Dental Centre',
   'alternateName'   => 'Celestial Dental & Orthodontic Centre',
   'url'             => "$SITE/",
-  'telephone'       => '+254 707 535 000',
+  'telephone'       => '+254 709 000 240',
   'image'           => "$SITE/facility/reception-lounge.jpg",
   'priceRange'      => 'KES',
   'paymentAccepted' => 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA',
@@ -143,7 +148,7 @@ echo "</head>\n<body>\n<main>\n";
 
 echo "<h1>Dentist in Kasarani (Nairobi), Kamakis-Ruiru, Eldoret and Kiambu Road</h1>\n";
 echo "<p>Celestial Dental Centre is a dental clinic group in Kenya with four branches, open every day from 07:00 to 20:00 including Sundays and public holidays. We provide checkups, teeth cleaning, braces and orthodontics, implants, root canal treatment, children's dentistry, cosmetic dentistry and same-day emergency dental care. SHA, 20+ private insurers, M-Pesa and cash are accepted.</p>\n";
-echo "<p><a href=\"$SITE/?book=1\">Book an appointment</a> &middot; Call or WhatsApp +254 707 535 000</p>\n";
+echo "<p><a href=\"$SITE/?book=1\">Book an appointment</a> &middot; Call +254 709 000 240 / +254 707 535 000</p>\n";
 
 echo "<h2>Dental services we offer</h2>\n<ul>\n";
 foreach ($services as $sSlug => $sName) {
@@ -179,5 +184,5 @@ function about_home_section($SITE) {
   return "<hr />\n<section>\n<h2>About Celestial Dental Centre</h2>\n"
     . "<p>Celestial Dental Centre is also known as Celestial Dental &amp; Orthodontic Centre. The Kasarani location's official Google Business Profile is named Celestial Dental Centre -Kasarani Branch.</p>\n"
     . "<p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua), open every day, 07:00-20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>\n"
-    . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> &middot; Call: +254 707 535 000 &middot; WhatsApp: https://wa.me/254707535000</p>\n</section>\n";
+    . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> &middot; Call: +254 709 000 240 / +254 707 535 000 &middot; WhatsApp: https://wa.me/254707535000</p>\n</section>\n";
 }

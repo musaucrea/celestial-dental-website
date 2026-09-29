@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { blogPosts, googleBusinessProfiles, serviceSlug, site, services, socials } from '../data/site';
 import { useBranches, type Branch } from '../data/branches';
 import { useFaqs, type Faq } from '../data/faqs';
+import { phoneParts } from './PhoneLinks';
 
 /** Injects JSON-LD <script> tags into <head>. Rebuilds when branches/FAQs load. */
 export function SchemaOrg() {
@@ -80,7 +81,7 @@ function organizationSchema(branches: Branch[]) {
     contactPoint: [
       {
         '@type': 'ContactPoint',
-        telephone: site.primaryPhone.label,
+        telephone: phoneParts(site.primaryPhone.label)[0]?.label,
         contactType: 'customer service',
         areaServed: 'KE',
         availableLanguage: ['English', 'Swahili'],
@@ -130,7 +131,7 @@ function branchSchema(branch: Branch) {
       ? ['Celestial Dental & Orthodontic Centre Nairobi', 'Celestial Dental Centre Kasarani']
       : [`Celestial Dental Centre ${branch.name}`],
     url: `https://celestialdental.org/branches/${branch.slug}`,
-    telephone: branch.phone,
+    telephone: phoneParts(branch.phone)[0]?.label,
     email: site.email,
     image: 'https://celestialdental.org/facility/reception-lounge.jpg',
     address: {
@@ -210,7 +211,7 @@ function medicalServiceSchema(service: (typeof services)[0], branches: Branch[])
     provider: branches.map(b => ({
       '@type': 'Dentist',
       name: `${site.name} – ${b.name}`,
-      telephone: b.phone,
+      telephone: phoneParts(b.phone)[0]?.label,
     })),
   };
 }
