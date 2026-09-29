@@ -4,12 +4,15 @@ import { Header } from '../components/Header';
 import { Reveal } from '../components/Reveal';
 import { SchemaOrg } from '../components/SchemaOrg';
 import { SEO } from '../components/SEO';
+import { BookingProvider } from '../components/booking';
+import { BookingModal } from '../components/BookingModal';
+import { SiteFooter } from '../components/SiteFooter';
 import { serviceSlug, services as staticServices, site } from '../data/site';
 import { useSection } from '../data/siteData';
 
 type Service = { title: string; description: string; image: string };
 
-export function ServicesPage() {
+function ServicesPageInner() {
   const services = useSection<Service>('services', staticServices);
 
   return (
@@ -62,6 +65,16 @@ export function ServicesPage() {
           </div>
         </div>
       </main>
+      <SiteFooter />
+      <BookingModal />
     </>
+  );
+}
+
+export function ServicesPage() {
+  return (
+    <BookingProvider>
+      <ServicesPageInner />
+    </BookingProvider>
   );
 }

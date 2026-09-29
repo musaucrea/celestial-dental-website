@@ -8,6 +8,7 @@ import { BookingProvider, useBooking } from '../components/booking';
 import { BookingModal } from '../components/BookingModal';
 import { SchemaOrg } from '../components/SchemaOrg';
 import { SEO } from '../components/SEO';
+import { SiteFooter } from '../components/SiteFooter';
 import { pushEvent } from '../lib/track';
 
 const BRACE_TYPES = [
@@ -289,22 +290,7 @@ function BracesPageInner() {
 
       </main>
 
-      {/* Footer */}
-      <footer className="bg-ink-900 text-white py-12">
-        <div className="container-page">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <img src={site.logo} alt={site.name} className="h-10 w-auto brightness-0 invert" />
-              <p className="mt-2 text-sm text-white/50">{site.tagline}</p>
-            </div>
-            <div className="text-sm text-white/50 text-center sm:text-right">
-              <p>{site.hours}</p>
-              <p className="mt-1">{site.email}</p>
-              <p className="mt-1">&copy; {new Date().getFullYear()} {site.name}. Built by MusauCreative.</p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <BookingModal />
     </>
