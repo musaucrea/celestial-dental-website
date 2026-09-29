@@ -44,7 +44,7 @@ const seed: Array<Partial<Branch>> = [
     description: "Our Kasarani branch is conveniently located on the Kasarani–Mwiki Road, just minutes from Thika Road Mall. We offer the full range of Celestial Dental services in a calm, modern setting — from children's dentistry and routine check-ups to orthodontics, implants, and emergency care.",
     address: 'Total Petrol Station Building, 2nd Floor\nAlong Kasarani – Mwiki Road\nKasarani, Nairobi',
     landmark: '5 minutes from Thika Road Mall', parking: 'Parking available at the Total Petrol Station',
-    phone: '+254 707 535 000', phoneHref: 'tel:+254707535000', whatsapp: 'https://wa.me/254707535000',
+    phone: '+254 709 000 241 / +254 707 535 000', phoneHref: 'tel:+254709000241', whatsapp: 'https://wa.me/254707535000',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Kasarani',
     hours: 'Monday – Sunday · 07:00 – 20:00', image: '/facility/reception-lounge.jpg',
     region: 'Nairobi', lat: '-1.2197', lng: '36.8979',
@@ -55,7 +55,7 @@ const seed: Array<Partial<Branch>> = [
     description: 'The Kamakis branch serves Ruiru and surrounding areas with the same high standard of care as our flagship clinic. Easily accessible off the Eastern Bypass, the branch offers ample parking and the full range of dental services for the whole family.',
     address: 'Along Eastern Bypass\nKamakis, Ruiru\nKiambu County',
     landmark: 'Easy access from the Eastern Bypass', parking: 'Ample parking available on-site',
-    phone: '+254 724 202 252', phoneHref: 'tel:+254724202252', whatsapp: 'https://wa.me/254724202252',
+    phone: '+254 709 000 242 / +254 724 202 252', phoneHref: 'tel:+254709000242', whatsapp: 'https://wa.me/254724202252',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Kamakis',
     hours: 'Monday – Sunday · 07:00 – 20:00', image: '/facility/waiting-area.jpg',
     region: 'Kiambu', lat: '-1.1853', lng: '36.9761',
@@ -66,7 +66,7 @@ const seed: Array<Partial<Branch>> = [
     description: 'Celestial Dental Eldoret brings the same warm, professional care to the Rift Valley region. Located centrally along Banaptai Street, our Eldoret branch is easily accessible and offers all services — from preventive care and braces to implants and emergency treatment.',
     address: 'Along Banaptai Street\nEldoret Town\nUasin Gishu County',
     landmark: 'Central Eldoret — easily accessible from all directions', parking: 'Street parking available nearby',
-    phone: '+254 794 585 217', phoneHref: 'tel:+254794585217', whatsapp: 'https://wa.me/254794585217',
+    phone: '+254 709 000 244 / +254 794 585 217', phoneHref: 'tel:+254709000244', whatsapp: 'https://wa.me/254794585217',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Eldoret',
     hours: 'Monday – Sunday · 07:00 – 20:00', image: '/facility/childrens-treatment-room.jpg',
     region: 'Uasin Gishu', lat: '0.5143', lng: '35.2698',
@@ -77,7 +77,7 @@ const seed: Array<Partial<Branch>> = [
     description: 'Our Kiambu Road branch is at Brick House in Thindigua, along Kiambu Road. It offers the Celestial Dental range of services for children and adults — from routine check-ups and cleaning to orthodontics, implants, and emergency care.',
     address: 'Brick House, 2nd Floor\nThindigua, along Kiambu Road\nKiambu County',
     landmark: 'Thindigua, along Kiambu Road', parking: 'Call ahead to ask about parking',
-    phone: '+254 709 000 240', phoneHref: 'tel:+254709000240', whatsapp: 'https://wa.me/254767207000',
+    phone: '+254 709 000 243', phoneHref: 'tel:+254709000243', whatsapp: 'https://wa.me/254767207000',
     map: 'https://maps.google.com/?q=Brick+House+Thindigua+Kiambu+Road',
     hours: 'Monday – Sunday · 07:00 – 20:00', image: '/facility/reception-lounge.jpg',
     region: 'Kiambu',
@@ -195,8 +195,10 @@ async function saveBranch(input: Partial<Branch>) {
   const name = clean(input.name) || existing.name || '';
   const phone = clean(input.phone) || existing.phone || '';
   const slug = clean(input.slug) || existing.slug || slugify(name);
-  const phoneHref = clean(input.phoneHref) || existing.phoneHref || (phone ? `tel:+${digitsOnly(phone)}` : '');
-  const whatsapp = clean(input.whatsapp) || existing.whatsapp || (phone ? `https://wa.me/${digitsOnly(phone)}` : '');
+  // phone may list several numbers ("A / B"); links are built from the first.
+  const firstPhone = phone.split('/')[0];
+  const phoneHref = clean(input.phoneHref) || existing.phoneHref || (phone ? `tel:+${digitsOnly(firstPhone)}` : '');
+  const whatsapp = clean(input.whatsapp) || existing.whatsapp || (phone ? `https://wa.me/${digitsOnly(firstPhone)}` : '');
   const map = clean(input.map) || existing.map || (name ? `https://maps.google.com/?q=Celestial+Dental+Centre+${encodeURIComponent(name)}` : '');
 
   const merged: Branch = {

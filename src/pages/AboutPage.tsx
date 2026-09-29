@@ -10,6 +10,7 @@ import { BookingModal } from '../components/BookingModal';
 import { SchemaOrg } from '../components/SchemaOrg';
 import { SEO } from '../components/SEO';
 import { SiteFooter } from '../components/SiteFooter';
+import { PhoneLinks } from '../components/PhoneLinks';
 
 type AboutContent = {
   title: string;
@@ -102,9 +103,9 @@ function AboutPageInner() {
                 <button onClick={() => openBooking()} className="btn-primary">
                   <MessageCircle className="h-4 w-4" />Appointments
                 </button>
-                <a href={site.primaryPhone.href} className="btn-ghost">
-                  <Phone className="h-4 w-4" />{site.primaryPhone.label}
-                </a>
+                <span className="btn-ghost">
+                  <Phone className="h-4 w-4" /><span><PhoneLinks phone={site.primaryPhone.label} className="hover:underline" /></span>
+                </span>
               </div>
             </div>
           </Reveal>
@@ -304,9 +305,9 @@ function AboutPageInner() {
                 <button onClick={() => openBooking()} className="btn-primary !bg-none !bg-ink-900 !text-white !shadow-none hover:!shadow-none">
                   <MessageCircle className="h-4 w-4" />Appointments
                 </button>
-                <a href={site.primaryPhone.href} className="btn-ghost !text-ink-900 !border-ink-900/25 !bg-white/25 hover:!bg-white/40">
-                  <Phone className="h-4 w-4" />{site.primaryPhone.label}
-                </a>
+                <span className="btn-ghost !text-ink-900 !border-ink-900/25 !bg-white/25 hover:!bg-white/40">
+                  <Phone className="h-4 w-4" /><span><PhoneLinks phone={site.primaryPhone.label} className="hover:underline" /></span>
+                </span>
               </div>
             </div>
           </Reveal>

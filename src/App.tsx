@@ -36,6 +36,7 @@ import {
 import { useBranches } from './data/branches';
 import { useFaqs } from './data/faqs';
 import { useSection } from './data/siteData';
+import { PhoneLinks } from './components/PhoneLinks';
 
 export type ServiceItem = { title: string; description: string; image: string };
 type WhyItem = { tag: string; title: string; description: string };
@@ -206,9 +207,9 @@ function Branches() {
                     </address>
                   </div>
                   <div className="flex gap-3 mt-auto flex-wrap">
-                    <a href={b.phoneHref} className="btn-ghost text-sm !px-4 !py-2.5">
-                      <Phone className="h-4 w-4" />{b.phone}
-                    </a>
+                    <span className="btn-ghost text-sm !px-4 !py-2.5">
+                      <Phone className="h-4 w-4" /><span><PhoneLinks phone={b.phone} className="hover:underline" /></span>
+                    </span>
                     <button onClick={() => openBooking()} className="btn-primary text-sm !px-4 !py-2.5">
                       <MessageCircle className="h-4 w-4" />Appointments
                     </button>
@@ -400,9 +401,9 @@ function FAQ() {
               <button onClick={() => openBooking()} className="btn-primary !bg-none !bg-ink-900 !text-white !shadow-none hover:!shadow-none">
                 <MessageCircle className="h-4 w-4" />Appointments
               </button>
-              <a href={site.primaryPhone.href} className="btn-ghost !text-ink-900 !border-ink-900/25 !bg-white/25 hover:!bg-white/40">
-                <Phone className="h-4 w-4" />{site.primaryPhone.label}
-              </a>
+              <span className="btn-ghost !text-ink-900 !border-ink-900/25 !bg-white/25 hover:!bg-white/40">
+                <Phone className="h-4 w-4" /><span><PhoneLinks phone={site.primaryPhone.label} className="hover:underline" /></span>
+              </span>
             </div>
           </div>
         </Reveal>

@@ -5,6 +5,7 @@ import { useBooking } from './booking';
 import { site, socials } from '../data/site';
 import { useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
+import { PhoneLinks, phoneParts } from './PhoneLinks';
 
 const SOCIAL_ICONS: Record<string, ComponentType<{ className?: string }>> = {
   Facebook, Instagram, X: Twitter, LinkedIn: Linkedin, WhatsApp: WhatsAppIcon, TikTok: TikTokIcon,
@@ -50,7 +51,7 @@ export function SiteFooter() {
   const email = (fc.email || '').trim() || site.email;
   const phone = (fc.phone || '').trim() || site.primaryPhone.label;
   const phoneHref = (fc.phone || '').trim()
-    ? `tel:${fc.phone!.replace(/[^+\d]/g, '')}`
+    ? phoneParts(fc.phone!)[0].href
     : site.primaryPhone.href;
   const whatsappHref = (fc.whatsapp || '').trim() || site.whatsappHref;
   return (
@@ -135,7 +136,7 @@ export function SiteFooter() {
                 <li key={b.name}>
                   <p className="text-sm font-800 text-white">{b.name}</p>
                   <p className="text-xs text-white/50 mt-0.5 leading-relaxed">{b.address[0]}</p>
-                  <a href={b.phoneHref} className="text-xs text-brand-300 hover:text-brand-200 transition-colors mt-0.5 block">{b.phone}</a>
+                  <p className="text-xs text-brand-300 mt-0.5"><PhoneLinks phone={b.phone} className="hover:text-brand-200 transition-colors" /></p>
                 </li>
               ))}
             </ul>
@@ -157,7 +158,7 @@ export function SiteFooter() {
               </div>
               <div>
                 <p className="font-800 text-white text-xs uppercase tracking-wide mb-1">Phone</p>
-                <a href={phoneHref} className="hover:text-white transition-colors">{phone}</a>
+                <p><PhoneLinks phone={phone} className="hover:text-white transition-colors" /></p>
               </div>
             </div>
             <button

@@ -5,7 +5,7 @@
     "name": "Celestial Dental Centre",
     "alternateName": "Celestial Dental & Orthodontic Centre",
     "url": "https://celestialdental.org/",
-    "telephone": "+254 707 535 000",
+    "telephone": "+254 709 000 240",
     "image": "https://celestialdental.org/facility/reception-lounge.jpg",
     "priceRange": "KES",
     "paymentAccepted": "Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA",
@@ -40,7 +40,7 @@
         "@type": "Dentist",
         "name": "Celestial Dental Centre - Kasarani Branch",
         "url": "https://celestialdental.org/branches/kasarani",
-        "telephone": "+254 707 535 000",
+        "telephone": "+254 709 000 241",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Total Petrol Station (Claycity) Building, 2nd Floor, Along Kasarani – Mwiki Road Kasarani, Nairobi County",
@@ -74,7 +74,7 @@
         "@type": "Dentist",
         "name": "Celestial Dental Centre - Eldoret Branch",
         "url": "https://celestialdental.org/branches/eldoret",
-        "telephone": "+254 794 585 217",
+        "telephone": "+254 709 000 244",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Champion Heights 1st floor, Along Banaptai Street, Eldoret Town -Uasin Gishu County",
@@ -108,7 +108,7 @@
         "@type": "Dentist",
         "name": "Celestial Dental Centre - Kamakis Branch",
         "url": "https://celestialdental.org/branches/kamakis",
-        "telephone": "+254 724 202 252",
+        "telephone": "+254 709 000 242",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Viashla Busines Centre, 2nd Floor, Above KFC, Opposite Naivas Supermarket Along Eastern Bypass",
@@ -142,7 +142,7 @@
         "@type": "Dentist",
         "name": "Celestial Dental Centre - Kiambu Road Branch",
         "url": "https://celestialdental.org/branches/kiambu-road",
-        "telephone": "+254 709 000 240",
+        "telephone": "+254 709 000 243",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Brick House, 2nd Floor, Thindigua, along Kiambu Road, Kiambu County",
