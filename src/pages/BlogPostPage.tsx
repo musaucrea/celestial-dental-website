@@ -37,6 +37,7 @@ const reviewerPerson = reviewerName
     }
   : null;
 import { SEO } from '../components/SEO';
+import { SiteFooter } from '../components/SiteFooter';
 import { Loading } from '../components/Loading';
 
 type Post = {
@@ -505,6 +506,7 @@ function BlogPostInner({ rootLevel = false }: { rootLevel?: boolean }) {
           </Reveal>
         </article>
       </main>
+      <SiteFooter />
       <BookingModal />
     </div>
   );

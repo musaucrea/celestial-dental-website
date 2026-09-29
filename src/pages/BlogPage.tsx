@@ -8,6 +8,7 @@ import { BookingModal } from '../components/BookingModal';
 import { site } from '../data/site';
 import { pushEvent } from '../lib/track';
 import { SEO } from '../components/SEO';
+import { SiteFooter } from '../components/SiteFooter';
 import { Loading } from '../components/Loading';
 
 type BlogPost = {
@@ -133,6 +134,7 @@ function BlogPageInner() {
           )}
         </section>
       </main>
+      <SiteFooter />
       <BookingModal />
     </div>
   );
