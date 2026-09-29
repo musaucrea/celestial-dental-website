@@ -1,6 +1,6 @@
 # Celestial Dental Centre
 
-> Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani, Kamakis, and Eldoret. The practice offers general dentistry, dental emergencies, cosmetic dentistry, teeth whitening, crowns and bridges, dentures, dental implants, braces and orthodontics, root canal therapy, children's dentistry, fillings, gum disease treatment, extractions, and teeth cleaning. Branches are open Monday to Sunday, 07:00-20:00.
+> Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani, Kamakis, Eldoret, and Kiambu Road. The practice offers general dentistry, dental emergencies, cosmetic dentistry, teeth whitening, crowns and bridges, dentures, dental implants, braces and orthodontics, root canal therapy, children's dentistry, fillings, gum disease treatment, extractions, and teeth cleaning. Branches are open Monday to Sunday, 07:00-20:00.
 
 Known name variants used for the same clinic group include "Celestial Dental Centre" and "Celestial Dental & Orthodontic Centre." The Kasarani location's official Google Business Profile is named "Celestial Dental Centre -Kasarani Branch."
 
@@ -36,11 +36,17 @@ Known name variants used for the same clinic group include "Celestial Dental Cen
 - Phone: +254 794 585 217
 - WhatsApp: https://wa.me/254794585217
 
+### Kiambu Road
+- URL: https://celestialdental.org/branches/kiambu-road
+- Address: Brick House, 2nd Floor, Thindigua, along Kiambu Road, Kiambu County
+- Phone: +254 709 000 240
+
 ## Service Areas
 
 - Nairobi: Kasarani, Mwiki, Roysambu, Zimmerman, and the Thika Road corridor (Kasarani branch)
 - Kiambu County: Ruiru, Kamakis, Kahawa Sukari, and the Eastern Bypass corridor (Kamakis branch)
 - Uasin Gishu and the Rift Valley: Eldoret town and surrounding areas (Eldoret branch)
+- Kiambu County: Thindigua and the Kiambu Road corridor (Kiambu Road branch)
 
 ## Services
 

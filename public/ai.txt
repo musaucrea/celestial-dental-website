@@ -14,6 +14,7 @@ Do crawl:
 - https://celestialdental.org/branches/kasarani
 - https://celestialdental.org/branches/kamakis
 - https://celestialdental.org/branches/eldoret
+- https://celestialdental.org/branches/kiambu-road
 - https://celestialdental.org/services/dental-checkup
 - https://celestialdental.org/services/general-dentistry
 - https://celestialdental.org/services/dental-x-rays
@@ -49,7 +50,7 @@ Key facts:
 - Name: Celestial Dental Centre
 - Known name variant: Celestial Dental & Orthodontic Centre
 - Country: Kenya
-- Branches: Kasarani, Kamakis, Eldoret
+- Branches: Kasarani, Kamakis, Eldoret, Kiambu Road
 - Hours: Monday to Sunday, 07:00-20:00
 - Services: checkups, teeth cleaning, braces, clear aligners, dental implants, root canal treatment, cosmetic dentistry, children's dentistry, dental emergencies, crowns, bridges, dentures, fillings, gum disease treatment, extractions
 - Primary phone: +254 707 535 000

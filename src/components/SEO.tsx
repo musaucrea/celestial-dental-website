@@ -50,16 +50,18 @@ export function SEO({
   const location = useLocation();
 
   useEffect(() => {
-    const pageTitle = title || `Dentist in Nairobi (Kasarani), Kamakis–Ruiru & Eldoret | ${site.name}`;
+    const pageTitle = title || `Dentist in Nairobi (Kasarani), Kamakis–Ruiru, Eldoret & Kiambu Road | ${site.name}`;
     const pageDescription =
       description ||
-      'Dental clinic open 7 days in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Insurance & M-Pesa accepted.';
+      'Dental clinic open 7 days in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Insurance & M-Pesa accepted.';
     const canonical = `${SITE_URL}${canonicalPath || location.pathname}`;
     const shareImage = absoluteUrl(image);
     const keywordValue = [
       'dentist Kasarani',
       'dentist Kamakis',
       'dentist Eldoret',
+      'dentist Kiambu Road',
+      'dentist Thindigua',
       'dentist Ruiru',
       'dentist Nairobi',
       'dental clinic Nairobi',

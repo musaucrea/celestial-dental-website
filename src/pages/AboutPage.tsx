@@ -22,10 +22,10 @@ type AboutContent = {
 const defaultAbout: AboutContent = {
   title: 'Caring for Kenyan smiles, one visit at a time',
   intro:
-    'Celestial Dental Centre is a family of modern dental clinics in Kasarani, Kamakis, and Eldoret — built on calm, personalised care for children and adults alike.',
+    'Celestial Dental Centre is a family of modern dental clinics in Kasarani, Kamakis, Eldoret, and Kiambu Road — built on calm, personalised care for children and adults alike.',
   story:
     'For over twenty years, Celestial Dental Centre has earned the trust of Kenyan families through personalised dental care, honest guidance, and a genuine commitment to patient well-being.\n' +
-    'What began as a single clinic has grown into three accessible branches — Kasarani, Kamakis, and Eldoret — each offering the full range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\n' +
+    'What began as a single clinic has grown into four accessible branches — Kasarani, Kamakis, Eldoret, and Kiambu Road — each offering the full range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\n' +
     'We are open every day of the week, work with more than twenty insurance and medical schemes, and treat every patient the way we would want our own family treated: with patience, clarity, and zero pressure.',
   mission:
     'To offer the highest quality of oral and dental healthcare services to our patients in all areas of dentistry using the latest state-of-the-art technology.',
@@ -51,8 +51,8 @@ function AboutPageInner() {
   return (
     <>
       <SEO
-        title={`About ${site.name} | Dental Clinics in Kasarani, Kamakis & Eldoret`}
-        description="Learn about Celestial Dental Centre, a Kenyan dental clinic group serving Kasarani, Kamakis, and Eldoret with modern equipment, clear treatment planning, insurance support, and family-friendly care."
+        title={`About ${site.name} | Dental Clinics in Kasarani, Kamakis, Eldoret & Kiambu Road`}
+        description="Learn about Celestial Dental Centre, a Kenyan dental clinic group serving Kasarani, Kamakis, Eldoret, and Kiambu Road with modern equipment, clear treatment planning, insurance support, and family-friendly care."
         image={about.image || defaultAbout.image}
         canonicalPath="/about"
         keywords={['about Celestial Dental Centre', 'dental clinic Kenya', 'family dentist Kenya']}

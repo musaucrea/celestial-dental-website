@@ -119,7 +119,7 @@ function about_section($SITE) {
     <section>
       <h2>About Celestial Dental Centre</h2>
       <p>Celestial Dental Centre is also known as Celestial Dental &amp; Orthodontic Centre. The Kasarani location's official Google Business Profile is named Celestial Dental Centre -Kasarani Branch.</p>
-      <p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret — open every day, 07:00–20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
+      <p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day, 07:00–20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
       <p>Book an appointment: <a href="$SITE/?book=1">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>
     </section>
 HTML;
@@ -254,6 +254,7 @@ function cd_branch_links($SITE) {
     ['slug' => 'kasarani', 'label' => 'Kasarani (Nairobi)'],
     ['slug' => 'kamakis',  'label' => 'Kamakis (Ruiru)'],
     ['slug' => 'eldoret',  'label' => 'Eldoret'],
+    ['slug' => 'kiambu-road', 'label' => 'Kiambu Road (Thindigua)'],
   ];
   $li = '';
   foreach ($b as $x) $li .= "<li><a href=\"$SITE/branches/{$x['slug']}\">{$x['label']}</a></li>\n";
@@ -310,12 +311,12 @@ function render_static($staticPath) {
       $items .= "<li><a href=\"$u\">{$esc($svc['title'])}</a> — {$esc($svc['description'])}</li>\n";
     }
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Services</p>\n"
-      . "<h1>Dental Services in Kasarani, Kamakis &amp; Eldoret</h1>\n"
-      . "<p>Explore the full range of dental care at Celestial Dental Centre — checkups, cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry, and same-day emergency care. Available at all three branches, open every day 07:00–20:00.</p>\n"
+      . "<h1>Dental Services in Kasarani, Kamakis, Eldoret &amp; Kiambu Road</h1>\n"
+      . "<p>Explore the full range of dental care at Celestial Dental Centre — checkups, cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry, and same-day emergency care. Available at all four branches, open every day 07:00–20:00.</p>\n"
       . "<ul>\n$items</ul>\n"
       . "<p><a href=\"$SITE/?book=1\">Book an appointment</a> · Call +254 707 535 000</p>\n";
     emit_page(
-      'Dental Services in Kasarani, Kamakis & Eldoret | Celestial Dental Centre',
+      'Dental Services in Kasarani, Kamakis, Eldoret & Kiambu Road | Celestial Dental Centre',
       "Explore dental checkups, teeth cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry and emergency care at Celestial Dental Centre.",
       '/services', $main,
       [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Services' => "$SITE/services"])]
@@ -335,7 +336,7 @@ function render_static($staticPath) {
       $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › <a href=\"$SITE/services\">Services</a> › {$esc($title)}</p>\n"
         . "<h1>{$esc($title)}</h1>\n"
         . "<p>{$esc($svc['description'])}</p>\n"
-        . "<p>Available at all three Celestial Dental Centre branches — Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret — open every day, 07:00–20:00. <a href=\"$SITE/?book=1\">Book " . $esc($lc) . "</a> or call +254 707 535 000.</p>\n";
+        . "<p>Available at all four Celestial Dental Centre branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day, 07:00–20:00. <a href=\"$SITE/?book=1\">Book " . $esc($lc) . "</a> or call +254 707 535 000.</p>\n";
 
       $schema = [
         cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Services' => "$SITE/services", $title => $canonical]),
@@ -344,7 +345,7 @@ function render_static($staticPath) {
           'name' => $title, 'serviceType' => $title, 'description' => $svc['description'],
           'url' => $canonical,
           'provider' => ['@type' => 'Dentist', 'name' => 'Celestial Dental Centre', 'url' => "$SITE/"],
-          'areaServed' => ['Kasarani, Nairobi', 'Kamakis, Ruiru', 'Eldoret', 'Kenya'],
+          'areaServed' => ['Kasarani, Nairobi', 'Kamakis, Ruiru', 'Eldoret', 'Kiambu Road, Thindigua', 'Kenya'],
         ],
       ];
 
@@ -372,8 +373,8 @@ function render_static($staticPath) {
       $main .= "<h2>Other services</h2>\n<ul>\n$others</ul>\n";
 
       emit_page(
-        "$title in Kasarani, Kamakis & Eldoret | Celestial Dental Centre",
-        $svc['description'] . " Book $lc at Celestial Dental Centre — open daily 07:00–20:00 across Kasarani, Kamakis, and Eldoret.",
+        "$title in Kasarani, Kamakis, Eldoret & Kiambu Road | Celestial Dental Centre",
+        $svc['description'] . " Book $lc at Celestial Dental Centre — open daily 07:00–20:00 across Kasarani, Kamakis, Eldoret, and Kiambu Road.",
         $canonicalPath, $main, $schema
       );
     }
@@ -385,7 +386,7 @@ function render_static($staticPath) {
   if ($staticPath === 'about') {
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › About</p>\n"
       . "<h1>About Celestial Dental Centre</h1>\n"
-      . "<p>Celestial Dental Centre is a dental clinic group in Kenya, serving patients across three branches — Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret. We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
+      . "<p>Celestial Dental Centre is a dental clinic group in Kenya, serving patients across four branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua). We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
       . "<p>Our team focuses on accurate diagnosis, clearly explained treatment planning, and quality materials and equipment. From routine checkups and cleaning to braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency care, we look after the whole family with calm, patient-friendly care.</p>\n"
       . "<p>We accept M-Pesa, cash, SHA (Social Health Authority), and 20+ insurance schemes including Jubilee, AAR, Madison, CIC, Britam, and APA. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
       . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"
@@ -393,8 +394,8 @@ function render_static($staticPath) {
       . cd_insurance_note($SITE)
       . cd_branch_links($SITE);
     emit_page(
-      'About Celestial Dental Centre | Dental Clinics in Kasarani, Kamakis & Eldoret',
-      'Learn about Celestial Dental Centre, a Kenyan dental clinic group serving Kasarani, Kamakis, and Eldoret with modern equipment, clear treatment planning, insurance support, and family-friendly care.',
+      'About Celestial Dental Centre | Dental Clinics in Kasarani, Kamakis, Eldoret & Kiambu Road',
+      'Learn about Celestial Dental Centre, a Kenyan dental clinic group serving Kasarani, Kamakis, Eldoret, and Kiambu Road with modern equipment, clear treatment planning, insurance support, and family-friendly care.',
       '/about', $main,
       [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'About' => "$SITE/about"])],
       false
@@ -408,8 +409,8 @@ function render_static($staticPath) {
       ['q' => "What's the difference between metal braces, ceramic, and aligners?", 'a' => 'Metal braces are the most affordable and work for most cases. Ceramic braces are less visible. Clear aligners are removable and nearly invisible but suit simpler cases. We\'ll help you choose what\'s right for your teeth and lifestyle.'],
     ];
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Braces</p>\n"
-      . "<h1>Dental Braces &amp; Orthodontics in Nairobi, Ruiru &amp; Eldoret</h1>\n"
-      . "<p>Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental Centre. We provide orthodontic care for children, teens, and adults in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret — open 7 days, with insurance and M-Pesa accepted.</p>\n"
+      . "<h1>Dental Braces &amp; Orthodontics in Nairobi, Ruiru, Eldoret &amp; Kiambu Road</h1>\n"
+      . "<p>Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental Centre. We provide orthodontic care for children, teens, and adults in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road — open 7 days, with insurance and M-Pesa accepted.</p>\n"
       . "<p>At your first consultation we assess your teeth, explain your options and timeline, and give you a clear treatment plan. <a href=\"$SITE/?book=1\">Book a braces consultation</a> or call +254 707 535 000.</p>\n";
     $faqEntities = [];
     $main .= "<h2>Braces — common questions</h2>\n";
@@ -421,8 +422,8 @@ function render_static($staticPath) {
     $main .= cd_insurance_note($SITE, true);
     $main .= cd_branch_links($SITE);
     emit_page(
-      'Dental Braces in Nairobi, Ruiru & Eldoret | Orthodontist | Celestial Dental Centre',
-      'Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental — orthodontic care in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret. Open 7 days, insurance & M-Pesa accepted. Book a braces consultation today.',
+      'Dental Braces in Nairobi, Ruiru, Eldoret & Kiambu Road | Orthodontist | Celestial Dental Centre',
+      'Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental — orthodontic care in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road. Open 7 days, insurance & M-Pesa accepted. Book a braces consultation today.',
       '/braces', $main,
       [
         cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Braces' => "$SITE/braces"]),
@@ -435,12 +436,12 @@ function render_static($staticPath) {
   if ($staticPath === 'careers') {
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Careers</p>\n"
       . "<h1>Dental Careers in Kenya</h1>\n"
-      . "<p>Explore dental career opportunities at Celestial Dental Centre across our Kasarani, Kamakis, and Eldoret branches. We hire for clinical, patient care, and support roles, and welcome dentists, dental therapists, hygienists, nurses, and front-desk staff.</p>\n"
+      . "<p>Explore dental career opportunities at Celestial Dental Centre across our Kasarani, Kamakis, Eldoret, and Kiambu Road branches. We hire for clinical, patient care, and support roles, and welcome dentists, dental therapists, hygienists, nurses, and front-desk staff.</p>\n"
       . "<p>To apply, send your CV through our <a href=\"$SITE/careers\">careers page</a>, or call +254 707 535 000. Tell us the role you're interested in and your availability, and our team will be in touch.</p>\n"
       . cd_branch_links($SITE);
     emit_page(
       'Dental Careers in Kenya | Celestial Dental Centre',
-      'Explore dental career opportunities at Celestial Dental Centre in Kasarani, Kamakis, and Eldoret. Send your CV for clinical, patient care, and support roles.',
+      'Explore dental career opportunities at Celestial Dental Centre in Kasarani, Kamakis, Eldoret, and Kiambu Road. Send your CV for clinical, patient care, and support roles.',
       '/careers', $main,
       [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Careers' => "$SITE/careers"])]
     );
@@ -602,7 +603,7 @@ if ($slug === 'blog') {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dental Health Blog | Celestial Dental Centre</title>
-  <meta name="description" content="Patient education articles on dental health, braces, implants, and oral care from Celestial Dental Centre — dental clinics in Kasarani, Kamakis, and Eldoret, Kenya." />
+  <meta name="description" content="Patient education articles on dental health, braces, implants, and oral care from Celestial Dental Centre — dental clinics in Kasarani, Kamakis, Eldoret, and Kiambu Road, Kenya." />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
   <link rel="canonical" href="<?= $SITE ?>/blog" />
   <link rel="alternate" type="text/markdown" href="<?= $SITE ?>/blog.md" title="Markdown version" />

@@ -49,7 +49,7 @@ function seedRows(): string[][] {
   stats.forEach((s, i) => push('stats', i, { value: s.value, label: s.label }));
   team.forEach((member, i) => push('team', i, { name: member.name, role: (member as { role?: string }).role || '', image: member.image }));
   push('hero', 0, {
-    eyebrow: 'Kasarani · Kamakis · Eldoret',
+    eyebrow: 'Kasarani · Kamakis · Eldoret · Kiambu Road',
     title: 'Trusted dental care,',
     highlight: 'close to you.',
     subtitle: 'Calm, modern dental care for every smile — children, adults, and families — in a welcoming clinic built around comfort and clarity.',
@@ -57,8 +57,8 @@ function seedRows(): string[][] {
   });
   push('about', 0, {
     title: 'Caring for Kenyan smiles, one visit at a time',
-    intro: 'Celestial Dental Centre is a family of modern dental clinics in Kasarani, Kamakis, and Eldoret — built on calm, personalised care for children and adults alike.',
-    story: 'For over fifteen years, Celestial Dental Centre has earned the trust of Kenyan families through personalised dental care, honest guidance, and a genuine commitment to patient well-being.\nWhat began as a single clinic has grown into three accessible branches — Kasarani, Kamakis, and Eldoret — each offering the full range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\nWe are open every day of the week, work with more than twenty insurance and medical schemes, and treat every patient the way we would want our own family treated: with patience, clarity, and zero pressure.',
+    intro: 'Celestial Dental Centre is a family of modern dental clinics in Kasarani, Kamakis, Eldoret, and Kiambu Road — built on calm, personalised care for children and adults alike.',
+    story: 'For over fifteen years, Celestial Dental Centre has earned the trust of Kenyan families through personalised dental care, honest guidance, and a genuine commitment to patient well-being.\nWhat began as a single clinic has grown into four accessible branches — Kasarani, Kamakis, Eldoret, and Kiambu Road — each offering the full range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\nWe are open every day of the week, work with more than twenty insurance and medical schemes, and treat every patient the way we would want our own family treated: with patience, clarity, and zero pressure.',
     mission: 'To provide calm, modern, and affordable dental care that puts every patient — child or adult — completely at ease.',
     vision: "To be Kenya's most trusted dental care family, with a healthy smile within reach of every community we serve.",
     image: '/team/clinical-team.jpg',

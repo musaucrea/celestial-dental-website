@@ -78,8 +78,8 @@ function ServicePageInner() {
   return (
     <>
       <SEO
-        title={`${service.title} in Kasarani, Kamakis & Eldoret | ${site.name}`}
-        description={`${service.description} Book ${service.title.toLowerCase()} at Celestial Dental Centre — open daily 07:00–20:00 across Kasarani, Kamakis, and Eldoret.`}
+        title={`${service.title} in Kasarani, Kamakis, Eldoret & Kiambu Road | ${site.name}`}
+        description={`${service.description} Book ${service.title.toLowerCase()} at Celestial Dental Centre — open daily 07:00–20:00 across Kasarani, Kamakis, Eldoret, and Kiambu Road.`}
         image={service.image}
         canonicalPath={`/services/${serviceSlug(service.title)}`}
         keywords={[`${service.title} Nairobi`, `${service.title} Kenya`, `${service.title} Kasarani`, 'dentist Kenya']}
@@ -228,7 +228,7 @@ function ServicePageInner() {
               <div className="rounded-3xl bg-brand-700 p-8 lg:p-12 text-center">
                 <h2 className="text-2xl lg:text-3xl font-900 text-white">Ready to book {service.title.toLowerCase()}?</h2>
                 <p className="mt-2 text-sm text-brand-200">
-                  Open every day, 07:00–20:00, across Kasarani, Kamakis, and Eldoret. Walk-ins welcome — booking ahead saves you time.
+                  Open every day, 07:00–20:00, across Kasarani, Kamakis, Eldoret, and Kiambu Road. Walk-ins welcome — booking ahead saves you time.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <button onClick={() => openBooking(service.title)} className="btn-primary bg-white !text-brand-800 !shadow-none hover:!shadow-none">

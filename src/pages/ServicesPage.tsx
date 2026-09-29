@@ -15,10 +15,10 @@ export function ServicesPage() {
   return (
     <>
       <SEO
-        title={`Dental Services in Kasarani, Kamakis & Eldoret | ${site.name}`}
+        title={`Dental Services in Kasarani, Kamakis, Eldoret & Kiambu Road | ${site.name}`}
         description="Explore dental checkups, teeth cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry and emergency care at Celestial Dental Centre."
         canonicalPath="/services"
-        keywords={['dental services Kenya', 'dentist Kasarani', 'dentist Kamakis', 'dentist Eldoret']}
+        keywords={['dental services Kenya', 'dentist Kasarani', 'dentist Kamakis', 'dentist Eldoret', 'dentist Kiambu Road']}
       />
       <SchemaOrg />
       <Header />
@@ -37,7 +37,7 @@ export function ServicesPage() {
           </Reveal>
           <Reveal delay={120}>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-500">
-              Explore every treatment available at Celestial Dental Centre in Kasarani, Kamakis and Eldoret.
+              Explore every treatment available at Celestial Dental Centre in Kasarani, Kamakis, Eldoret and Kiambu Road.
             </p>
           </Reveal>
 

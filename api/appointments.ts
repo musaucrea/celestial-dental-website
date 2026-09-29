@@ -253,13 +253,15 @@ const BRANCH_WHATSAPP: Record<string, string> = {
   kasarani: '254707535000',
   kamakis: '254754400500',
   eldoret: '254794585217',
+  'kiambu-road': '254709000240', // central booking line
 };
 
 function branchWhatsAppNumber(branch: string): string {
-  const b = branch.toLowerCase();
+  // The form submits the branch name ("Kiambu Road"), so compare in slug form.
+  const b = branch.toLowerCase().trim().replace(/\s+/g, '-');
   for (const slug of Object.keys(BRANCH_WHATSAPP)) {
     if (b.includes(slug)) {
-      return process.env[`WHATSAPP_TO_${slug.toUpperCase()}`]?.replace(/\D/g, '')
+      return process.env[`WHATSAPP_TO_${slug.toUpperCase().replace(/-/g, '_')}`]?.replace(/\D/g, '')
         || BRANCH_WHATSAPP[slug];
     }
   }

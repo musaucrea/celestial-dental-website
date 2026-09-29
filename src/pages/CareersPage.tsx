@@ -527,7 +527,7 @@ function CareersPageInner() {
     <>
       <SEO
         title={`Dental Careers in Kenya | ${site.name}`}
-        description="Explore dental career opportunities at Celestial Dental Centre in Kasarani, Kamakis, and Eldoret. Send your CV for clinical, patient care, and support roles."
+        description="Explore dental career opportunities at Celestial Dental Centre in Kasarani, Kamakis, Eldoret, and Kiambu Road. Send your CV for clinical, patient care, and support roles."
         image="/team/clinical-team.jpg"
         canonicalPath="/careers"
         keywords={['dental jobs Kenya', 'dentist careers Nairobi', 'Celestial Dental careers']}

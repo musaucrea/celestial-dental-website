@@ -20,7 +20,7 @@ foreach (cd_posts() as $p) {
 echo <<<TXT
 # Celestial Dental Centre
 
-> Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani, Kamakis, and Eldoret. The practice offers general dentistry, dental emergencies, cosmetic dentistry, teeth whitening, crowns and bridges, dentures, dental implants, braces and orthodontics, root canal therapy, children's dentistry, fillings, gum disease treatment, extractions, and teeth cleaning. Branches are open Monday to Sunday, 07:00-20:00.
+> Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani, Kamakis, Eldoret, and Kiambu Road. The practice offers general dentistry, dental emergencies, cosmetic dentistry, teeth whitening, crowns and bridges, dentures, dental implants, braces and orthodontics, root canal therapy, children's dentistry, fillings, gum disease treatment, extractions, and teeth cleaning. Branches are open Monday to Sunday, 07:00-20:00.
 
 ## Canonical Site
 
@@ -56,11 +56,18 @@ echo <<<TXT
 - WhatsApp: https://wa.me/254794585217
 - Insurance: SHA (Social Health Authority) accepted for eligible schemes, plus direct billing with 20+ private insurers
 
+### Kiambu Road
+- URL: https://celestialdental.org/branches/kiambu-road
+- Address: Brick House, 2nd Floor, Thindigua, along Kiambu Road, Kiambu County
+- Phone: +254 709 000 240
+- Insurance: SHA (Social Health Authority) accepted for eligible schemes, plus direct billing with 20+ private insurers
+
 ## Service Areas
 
 - Nairobi: Kasarani, Mwiki, Roysambu, Zimmerman, and the Thika Road corridor (Kasarani branch)
 - Kiambu County: Ruiru, Kamakis, Kahawa Sukari, and the Eastern Bypass corridor (Kamakis branch)
 - Uasin Gishu and the Rift Valley: Eldoret town and surrounding areas (Eldoret branch)
+- Kiambu County: Thindigua and the Kiambu Road corridor (Kiambu Road branch)
 
 ## Services
 
@@ -91,7 +98,7 @@ echo <<<TXT
 
 ## Insurance Accepted
 
-SHA (Social Health Authority) is accepted at all three branches — Kasarani, Kamakis, and Eldoret — for eligible schemes and covered treatments such as check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays; coverage depends on the patient's scheme and pre-authorisation may be required. Celestial Dental Centre also works with major insurers and medical schemes including Jubilee Insurance, AAR Insurance, Madison, CIC Group, Britam, APA Insurance, Liaison Group, GA Insurance, Co-operative Bank, Trident Insurance, Saham Insurance, Kenya Commercial Bank, Kenya Alliance Insurance, Clarkson Insurance, Resolution Insurance, Minet Insurance, First Assurance, Karirana Estates, Heritage Insurance, and Equity Bank Insurance.
+SHA (Social Health Authority) is accepted at all four branches — Kasarani, Kamakis, Eldoret, and Kiambu Road — for eligible schemes and covered treatments such as check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays; coverage depends on the patient's scheme and pre-authorisation may be required. Celestial Dental Centre also works with major insurers and medical schemes including Jubilee Insurance, AAR Insurance, Madison, CIC Group, Britam, APA Insurance, Liaison Group, GA Insurance, Co-operative Bank, Trident Insurance, Saham Insurance, Kenya Commercial Bank, Kenya Alliance Insurance, Clarkson Insurance, Resolution Insurance, Minet Insurance, First Assurance, Karirana Estates, Heritage Insurance, and Equity Bank Insurance.
 
 $articles
 ## Citation Guidance

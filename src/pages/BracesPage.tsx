@@ -37,8 +37,8 @@ const STEPS = [
 
 const FAQS = [
   {
-    q: 'Do you offer braces in Nairobi, Ruiru, and Eldoret?',
-    a: 'Yes. Orthodontic consultations and braces are available at all three Celestial Dental branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, and central Eldoret. All branches are open every day, 07:00–20:00.',
+    q: 'Do you offer braces in Nairobi, Ruiru, Eldoret, and Kiambu Road?',
+    a: 'Yes. Orthodontic consultations and braces are available at all four Celestial Dental branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. All branches are open every day, 07:00–20:00.',
   },
   {
     q: 'How long does orthodontic treatment take?',
@@ -80,12 +80,12 @@ function BracesPageInner() {
   return (
     <>
       <SEO
-        title="Dental Braces in Nairobi, Ruiru & Eldoret | Orthodontist | Celestial Dental Centre"
-        description="Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental — orthodontic care in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret. Open 7 days, insurance & M-Pesa accepted. Book a braces consultation today."
+        title="Dental Braces in Nairobi, Ruiru, Eldoret & Kiambu Road | Orthodontist | Celestial Dental Centre"
+        description="Straighten your smile with metal braces, ceramic braces, or clear aligners at Celestial Dental — orthodontic care in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road. Open 7 days, insurance & M-Pesa accepted. Book a braces consultation today."
         image="/facility/childrens-treatment-room.jpg"
         canonicalPath="/braces"
         keywords={[
-          'dental braces Nairobi', 'dental braces Kenya', 'dental braces Eldoret',
+          'dental braces Nairobi', 'dental braces Kenya', 'dental braces Eldoret', 'dental braces Kiambu Road',
           'braces Kasarani', 'orthodontist Kasarani', 'orthodontist Nairobi',
           'clear aligners Kenya', 'teeth straightening Kenya',
         ]}
@@ -108,7 +108,7 @@ function BracesPageInner() {
                 </Reveal>
                 <Reveal delay={80}>
                   <h1 className="mt-4 text-4xl lg:text-5xl font-900 text-ink-900 leading-tight">
-                    Dental braces in Nairobi, Ruiru &amp; Eldoret
+                    Dental braces in Nairobi, Ruiru, Eldoret &amp; Kiambu Road
                   </h1>
                 </Reveal>
                 <Reveal delay={120}>
@@ -132,7 +132,7 @@ function BracesPageInner() {
                 </Reveal>
                 <Reveal delay={200}>
                   <ul className="mt-8 grid gap-2 text-sm text-ink-600 sm:grid-cols-2">
-                    {['Open 7 days a week', 'Insurance & M-Pesa accepted', 'Children, teens & adults', 'Three branches near you'].map(point => (
+                    {['Open 7 days a week', 'Insurance & M-Pesa accepted', 'Children, teens & adults', 'Four branches near you'].map(point => (
                       <li key={point} className="flex items-center gap-2">
                         <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700">
                           <Check className="h-3 w-3" strokeWidth={3} />
@@ -269,7 +269,7 @@ function BracesPageInner() {
               <div className="rounded-3xl bg-brand-700 p-8 lg:p-12 text-center">
                 <h2 className="text-2xl lg:text-3xl font-900 text-white">Ready to straighten your smile?</h2>
                 <p className="mt-2 text-sm text-brand-200">
-                  Book a braces consultation at Kasarani (Nairobi), Kamakis–Ruiru, or Eldoret.
+                  Book a braces consultation at Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, or Kiambu Road.
                   Open every day, 07:00–20:00 — walk-ins welcome.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">

@@ -100,7 +100,7 @@ function Services() {
         <Reveal delay={80}>
           <h2 className="mt-4 text-4xl font-900 text-ink-900 max-w-xl">Everything your smile needs, under one roof</h2>
         </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {services.map((s, i) => (
             <Reveal key={s.title} delay={i * 60}>
               <div className="group h-full overflow-hidden rounded-3xl bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-float">
@@ -227,7 +227,7 @@ function Branches() {
         <Reveal delay={80}>
           <h2 className="mt-4 text-4xl font-900 text-ink-900 max-w-xl">{countWord(branches.length)} locations, one standard of care</h2>
         </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {branches.map((b, i) => (
             <Reveal key={b.name} delay={i * 80}>
               <div className="group h-full overflow-hidden rounded-3xl bg-white border border-brand-100 shadow-card flex flex-col transition-all duration-300 hover:-translate-y-1.5 hover:shadow-float">
@@ -434,7 +434,7 @@ function Blog() {
           </Reveal>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {posts.map((post, i) => (
             <Reveal key={post.slug} delay={i * 80}>
               <article className="group flex flex-col overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-card hover:-translate-y-1 transition-transform duration-300">
@@ -683,8 +683,8 @@ function AppInner() {
   return (
     <>
       <SEO
-        title="Dentist in Nairobi (Kasarani), Kamakis–Ruiru & Eldoret | Celestial Dental Centre"
-        description="Dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open daily 07:00-20:00. Insurance & M-Pesa accepted."
+        title="Dentist in Nairobi (Kasarani), Kamakis–Ruiru, Eldoret & Kiambu Road | Celestial Dental Centre"
+        description="Dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open daily 07:00-20:00. Insurance & M-Pesa accepted."
         canonicalPath="/"
         keywords={['teeth cleaning Nairobi', 'root canal Nairobi', 'children dentist Kenya', 'cosmetic dentistry Kenya', 'dentist Ruiru', 'best dentist Kenya']}
       />

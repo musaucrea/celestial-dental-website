@@ -17,7 +17,7 @@ type HeroContent = {
 };
 
 const defaultHero: HeroContent = {
-  eyebrow: 'Kasarani · Kamakis · Eldoret',
+  eyebrow: 'Kasarani · Kamakis · Eldoret · Kiambu Road',
   title: 'Trusted dental care,',
   highlight: 'close to you.',
   subtitle:

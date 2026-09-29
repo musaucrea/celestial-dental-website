@@ -58,7 +58,7 @@ function websiteSchema() {
     alternateName: [site.shortName, ...site.alternateNames],
     url: 'https://celestialdental.org/',
     description:
-      'Celestial Dental Centre offers teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and emergency dental care in Kasarani, Kamakis, and Eldoret.',
+      'Celestial Dental Centre offers teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and emergency dental care in Kasarani, Kamakis, Eldoret, and Kiambu Road.',
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://celestialdental.org/?s={search_term_string}',
