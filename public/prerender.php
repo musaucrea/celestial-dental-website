@@ -473,7 +473,11 @@ function render_branch($branchSlug) {
   $addrHtml  = implode('<br />', array_map(fn($l) => htmlspecialchars($l, ENT_QUOTES, 'UTF-8'), $addrLines));
   $locality  = ['kasarani' => 'Kasarani, Nairobi', 'kamakis' => 'Kamakis, Ruiru'][$branchSlug] ?? ($b['name'] ?? '');
 
-  $insuranceText = "SHA (Social Health Authority) is accepted at the $name branch for eligible schemes and covered treatments — including check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays, depending on your cover. The clinic also offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet, and Equity Bank Insurance. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. M-Pesa and cash are also accepted.";
+  // SHA approval is per facility; keep in sync with shaBranchSlugs in src/data/site.ts.
+  $acceptsSha = in_array($branchSlug, ['kasarani', 'kamakis', 'eldoret'], true);
+  $insuranceText = $acceptsSha
+    ? "SHA (Social Health Authority) is accepted at the $name branch for eligible schemes and covered treatments — including check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays, depending on your cover. The clinic also offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet, and Equity Bank Insurance. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. M-Pesa and cash are also accepted."
+    : "The $name branch offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet, and Equity Bank Insurance. Bring your insurance card and the front desk will handle pre-authorisation. Confirm that your scheme is accepted at this branch before treatment. M-Pesa and cash are also accepted.";
 
   $schema = [
     '@context'  => 'https://schema.org',
@@ -494,7 +498,9 @@ function render_branch($branchSlug) {
       'opens'     => '07:00',
       'closes'    => '20:00',
     ]],
-    'paymentAccepted'    => 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA',
+    'paymentAccepted'    => $acceptsSha
+      ? 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA'
+      : 'Cash, M-Pesa, Insurance, AAR, Jubilee, Madison, CIC, Britam, APA',
     'parentOrganization' => ['@type' => 'Organization', 'name' => 'Celestial Dental Centre', 'url' => $SITE . '/'],
     'description'        => $b['description'] ?? '',
   ];
@@ -509,7 +515,7 @@ function render_branch($branchSlug) {
   $schemaJson = json_encode($schema, JSON_UNESCAPED_SLASHES);
 
   $title = "Dentist in " . htmlspecialchars($locality, ENT_QUOTES, 'UTF-8') . " | Celestial Dental Centre";
-  $metaDesc = htmlspecialchars(($b['description'] ?? '') . ' Open daily 07:00-20:00. SHA and 20+ insurance schemes accepted.', ENT_QUOTES, 'UTF-8');
+  $metaDesc = htmlspecialchars(($b['description'] ?? '') . ' Open daily 07:00-20:00. ' . ($acceptsSha ? 'SHA and 20+ insurance schemes accepted.' : '20+ insurance schemes accepted.'), ENT_QUOTES, 'UTF-8');
 
   header('Content-Type: text/html; charset=utf-8');
   header('X-Robots-Tag: index, follow');
@@ -536,7 +542,7 @@ function render_branch($branchSlug) {
   if ($googleProfile) {
     echo "<p>Official Google Business Profile: <a href=\"$googleProfile\">Celestial Dental Centre -Kasarani Branch</a>. Use the live profile for current reviews, rating, and directions.</p>\n";
   }
-  echo "<h2>Insurance and SHA at $name</h2>\n<p>" . htmlspecialchars($insuranceText, ENT_QUOTES, 'UTF-8') . "</p>\n";
+  echo "<h2>" . ($acceptsSha ? 'Insurance and SHA' : 'Insurance') . " at $name</h2>\n<p>" . htmlspecialchars($insuranceText, ENT_QUOTES, 'UTF-8') . "</p>\n";
   echo "<h2>Services at this branch</h2>\n<ul>\n";
   $services = [
     'dental-checkup' => 'Dental checkup and examination', 'general-dentistry' => 'General dentistry',
