@@ -15,7 +15,7 @@ export const USERS_SHEET = 'Users';
 export const USERS_HEADER = ['id', 'name', 'email', 'password', 'role', 'status', 'createdAt', 'branches', 'inviteTokenHash', 'inviteExpiresAt', 'inviteAcceptedAt'];
 
 // Branch slugs a Branch Blog Editor can be assigned to.
-export const BRANCH_SLUGS = ['kasarani', 'kamakis', 'eldoret'] as const;
+export const BRANCH_SLUGS = ['kasarani', 'kamakis', 'eldoret', 'kiambu-road'] as const;
 
 export function parseBranches(raw: string | undefined): string[] {
   return (raw || '')

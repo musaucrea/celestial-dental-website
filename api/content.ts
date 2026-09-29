@@ -167,6 +167,7 @@ async function readGoogleReviews() {
     ['Kasarani', 'Celestial Dental Centre -Kasarani Branch, Kasarani Mwiki Road, Nairobi'],
     ['Kamakis', 'Celestial Dental Centre Kamakis Ruiru Kenya'],
     ['Eldoret', 'Celestial Dental Centre Eldoret Kenya'],
+    ['Kiambu Road', 'Celestial Dental Centre Brick House Thindigua Kiambu Road'],
   ];
   const groups = await Promise.all(branches.map(async ([branch, textQuery]) => {
     const response = await fetch('https://places.googleapis.com/v1/places:searchText', {

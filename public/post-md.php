@@ -17,7 +17,7 @@ header('X-Robots-Tag: index, follow');
 // ── Markdown blog index ──
 if ($slug === 'blog' || $slug === '') {
   echo "# Celestial Dental Centre — Blog\n\n";
-  echo "> Patient education articles on dental health, braces, implants, and oral care from Celestial Dental Centre, a dental clinic group in Kenya (Kasarani, Kamakis, Eldoret). HTML index: " . CD_SITE . "/blog\n\n";
+  echo "> Patient education articles on dental health, braces, implants, and oral care from Celestial Dental Centre, a dental clinic group in Kenya (Kasarani, Kamakis, Eldoret, Kiambu Road). HTML index: " . CD_SITE . "/blog\n\n";
   foreach (cd_posts() as $p) {
     $u = cd_canonical($p);
     $d = cd_iso_published($p);
@@ -64,4 +64,4 @@ echo trim($body) . "\n\n";
 echo "---\n\n";
 $dot = preg_match('/[.!?]$/u', $title) ? '' : '.';
 echo "**How to cite:** Celestial Dental Centre. \"$title$dot\" Celestial Dental Centre Blog" . ($published ? ", $published" : '') . ". $canonical\n\n";
-echo "**About the publisher:** Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret, open daily 07:00–20:00. Bookings: " . CD_SITE . "/?book=1 · Phone/WhatsApp: +254 707 535 000. All articles: " . CD_SITE . "/blog.md\n";
+echo "**About the publisher:** Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua), open daily 07:00–20:00. Bookings: " . CD_SITE . "/?book=1 · Phone/WhatsApp: +254 707 535 000. All articles: " . CD_SITE . "/blog.md\n";

@@ -71,6 +71,17 @@ const seed: Array<Partial<Branch>> = [
     hours: 'Monday – Sunday · 07:00 – 20:00', image: '/facility/childrens-treatment-room.jpg',
     region: 'Uasin Gishu', lat: '0.5143', lng: '35.2698',
   },
+  {
+    slug: 'kiambu-road', name: 'Kiambu Road', status: 'published', badge: 'Kiambu Road Branch',
+    tagline: 'Dental care in Thindigua, along Kiambu Road',
+    description: 'Our Kiambu Road branch is at Brick House in Thindigua, along Kiambu Road. It offers the Celestial Dental range of services for children and adults — from routine check-ups and cleaning to orthodontics, implants, and emergency care.',
+    address: 'Brick House, 2nd Floor\nThindigua, along Kiambu Road\nKiambu County',
+    landmark: 'Thindigua, along Kiambu Road', parking: 'Call ahead to ask about parking',
+    phone: '+254 709 000 240', phoneHref: 'tel:+254709000240', whatsapp: 'https://wa.me/254767207000',
+    map: 'https://maps.google.com/?q=Brick+House+Thindigua+Kiambu+Road',
+    hours: 'Monday – Sunday · 07:00 – 20:00', image: '/facility/reception-lounge.jpg',
+    region: 'Kiambu',
+  },
 ];
 
 function clean(value: unknown) {

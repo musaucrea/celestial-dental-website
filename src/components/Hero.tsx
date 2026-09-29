@@ -17,11 +17,11 @@ type HeroContent = {
 };
 
 const defaultHero: HeroContent = {
-  eyebrow: 'Kasarani · Kamakis · Eldoret',
+  eyebrow: 'Kasarani · Kamakis · Eldoret · Kiambu Road',
   title: 'Celestial Dental Centre',
-  highlight: 'Kasarani · Kamakis · Eldoret',
+  highlight: 'Kasarani · Kamakis · Eldoret · Kiambu Road',
   subtitle:
-    'Dental care for children and adults at three branches. Open every day, 07:00 – 20:00.',
+    'Dental care for children and adults at four branches. Open every day, 07:00 – 20:00.',
   pills: heroPills.join(', '),
   slides: '/facility/reception-lounge.jpg\n/team/clinical-team.jpg\n/facility/waiting-area.jpg\n/team/patient-care-team.jpg\n/facility/childrens-treatment-room.jpg\n/facility/clinic-hallway.jpg',
 };

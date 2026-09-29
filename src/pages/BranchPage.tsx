@@ -32,7 +32,7 @@ function BranchPageInner() {
 
   // Search phrasing includes the wider locality, not just the branch name
   // (e.g. people search "dentist in ruiru" for Kamakis, "nairobi" for Kasarani).
-  const locality = { kasarani: 'Kasarani, Nairobi', kamakis: 'Kamakis, Ruiru' }[branch.slug] || branch.name;
+  const locality = { kasarani: 'Kasarani, Nairobi', kamakis: 'Kamakis, Ruiru', 'kiambu-road': 'Thindigua, Kiambu Road' }[branch.slug] || branch.name;
 
   return (
     <>

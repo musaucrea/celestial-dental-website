@@ -15,10 +15,10 @@ const header = ['id', 'status', 'question', 'answer', 'updatedAt'];
 
 // Seeds the sheet on first run so the site keeps its existing FAQs, now editable.
 const seed: Array<{ question: string; answer: string }> = [
-  { question: 'What are your opening hours?', answer: 'We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, and Eldoret. Walk-ins are welcome, but booking ahead helps us reserve time for you.' },
+  { question: 'What are your opening hours?', answer: 'We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, Eldoret, and Kiambu Road. Walk-ins are welcome, but booking ahead helps us reserve time for you.' },
   { question: 'Do you accept insurance and medical schemes?', answer: 'Yes. We work with a wide range of insurers and medical schemes including Jubilee, AAR, Madison, CIC, Britam, APA, SHA, NHIF and many more. Bring your insurance card and our team will handle pre-authorisation and billing.' },
   { question: 'Do you accept M-Pesa?', answer: 'Yes, we accept M-Pesa, cash, and direct insurance billing. For M-Pesa payments, our team at each branch will provide the till number at reception.' },
-  { question: 'Is there a dentist open on Sunday in Nairobi?', answer: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all three branches (Kasarani, Kamakis, and Eldoret).' },
+  { question: 'Is there a dentist open on Sunday in Nairobi?', answer: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all four branches (Kasarani, Kamakis, Eldoret, and Kiambu Road).' },
   { question: 'Do you handle dental emergencies?', answer: 'Yes. Call or WhatsApp the nearest branch and we\'ll aim to see you the same day. We\'re open 7 days a week, 07:00–20:00. For severe pain or swelling, come in directly and our team will prioritise you.' },
   { question: 'Do you treat children?', answer: 'Absolutely. We offer gentle children\'s dentistry in a calm, child-friendly setting. We recommend bringing children for their first visit as soon as the first tooth appears, or by age one. Early visits build good habits and prevent anxiety.' },
   { question: 'How do I book an appointment?', answer: 'Use the "Appointments" button on this page, message us on WhatsApp, or call the branch nearest to you during opening hours.' },

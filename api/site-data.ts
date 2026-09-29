@@ -49,16 +49,16 @@ function seedRows(): string[][] {
   stats.forEach((s, i) => push('stats', i, { value: s.value, label: s.label }));
   team.forEach((member, i) => push('team', i, { name: member.name, role: (member as { role?: string }).role || '', image: member.image }));
   push('hero', 0, {
-    eyebrow: 'Kasarani · Kamakis · Eldoret',
+    eyebrow: 'Kasarani · Kamakis · Eldoret · Kiambu Road',
     title: 'Celestial Dental Centre',
-    highlight: 'Kasarani · Kamakis · Eldoret',
-    subtitle: 'Dental care for children and adults at three branches. Open every day, 07:00 – 20:00.',
+    highlight: 'Kasarani · Kamakis · Eldoret · Kiambu Road',
+    subtitle: 'Dental care for children and adults at four branches. Open every day, 07:00 – 20:00.',
     pills: 'Checkups, Braces, Implants, Emergency care',
   });
   push('about', 0, {
     title: 'Caring for Kenyan smiles, one visit at a time',
-    intro: 'Celestial Dental Centre is a group of dental clinics in Kasarani, Kamakis, and Eldoret, treating children and adults.',
-    story: 'Celestial Dental Centre is a group of dental clinics in Kenya, operating at three branches — Kasarani, Kamakis, and Eldoret.\nEach branch offers the same range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\nAll three branches are open every day of the week, 07:00 – 20:00. Findings and treatment options are explained at the assessment, with the cost, before any treatment begins.',
+    intro: 'Celestial Dental Centre is a group of dental clinics in Kasarani, Kamakis, Eldoret, and Kiambu Road, treating children and adults.',
+    story: 'Celestial Dental Centre is a group of dental clinics in Kenya, operating at four branches — Kasarani, Kamakis, Eldoret, and Kiambu Road.\nEach branch offers the same range of dental services, from children\'s first check-ups to orthodontics, implants, and emergency care.\nAll four branches are open every day of the week, 07:00 – 20:00. Findings and treatment options are explained at the assessment, with the cost, before any treatment begins.',
     mission: 'To provide oral and dental healthcare across our branches, with treatment options explained before they begin.',
     vision: '',
     image: '/team/clinical-team.jpg',

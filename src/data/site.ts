@@ -272,7 +272,7 @@ export const whyChooseUs = [
     tag: 'Appointments',
     title: 'Care for children and adults',
     description:
-      'Appointments allow time to explain what is being done, for both adults and children, at all three branches.',
+      'Appointments allow time to explain what is being done, for both adults and children, at all four branches.',
   },
 ];
 
@@ -337,6 +337,24 @@ export const branches = [
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Eldoret',
     hours: 'Monday – Sunday · 07:00 – 20:00',
     image: '/facility/childrens-treatment-room.jpg',
+  },
+  {
+    name: 'Kiambu Road',
+    slug: 'kiambu-road',
+    badge: 'Kiambu Road Branch',
+    tagline: 'Dental care in Thindigua, along Kiambu Road',
+    description:
+      'Our Kiambu Road branch is at Brick House in Thindigua, along Kiambu Road. It offers the Celestial Dental range of services for children and adults — from routine check-ups and cleaning to orthodontics, implants, and emergency care.',
+    address: ['Brick House, 2nd Floor', 'Thindigua, along Kiambu Road', 'Kiambu County'],
+    landmark: 'Thindigua, along Kiambu Road',
+    parking: 'Call ahead to ask about parking',
+    phone: '+254 709 000 240',
+    phoneHref: 'tel:+254709000240',
+    whatsapp: 'https://wa.me/254767207000',
+    map: 'https://maps.google.com/?q=Brick+House+Thindigua+Kiambu+Road',
+    hours: 'Monday – Sunday · 07:00 – 20:00',
+    image: '/facility/reception-lounge.jpg',
+    region: 'Kiambu',
   },
 ];
 
@@ -408,7 +426,7 @@ export const blogPosts = [
 export const faqs = [
   {
     q: 'What are your opening hours?',
-    a: 'We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, and Eldoret. Walk-ins are welcome, but booking ahead helps us reserve time for you.',
+    a: 'We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, Eldoret, and Kiambu Road. Walk-ins are welcome, but booking ahead helps us reserve time for you.',
   },
   {
     q: 'Do you accept insurance and medical schemes?',
@@ -420,7 +438,7 @@ export const faqs = [
   },
   {
     q: 'Is there a dentist open on Sunday in Nairobi?',
-    a: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all three branches (Kasarani, Kamakis, and Eldoret).',
+    a: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all four branches (Kasarani, Kamakis, Eldoret, and Kiambu Road).',
   },
   {
     q: 'Do you handle dental emergencies?',
@@ -439,12 +457,12 @@ export const faqs = [
     a: 'A warm welcome, a thorough examination, X-rays if needed, and a clear explanation of any treatment required — with a plan tailored to your priorities and budget. No pressure, no surprises.',
   },
   {
-    q: 'Where can I find an emergency dentist in Kasarani, Ruiru, or Eldoret?',
-    a: 'Celestial Dental offers same-day emergency dental care at all three branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, and central Eldoret. Call or WhatsApp the nearest branch, or walk in directly; severe pain, swelling, or knocked-out teeth are prioritised. We are open every day, 07:00–20:00.',
+    q: 'Where can I find an emergency dentist in Kasarani, Ruiru, Eldoret, or Kiambu Road?',
+    a: 'Celestial Dental offers same-day emergency dental care at all four branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. Call or WhatsApp the nearest branch, or walk in directly; severe pain, swelling, or knocked-out teeth are prioritised. We are open every day, 07:00–20:00.',
   },
   {
     q: 'Do you offer braces and orthodontic treatment?',
-    a: 'Yes. Orthodontic consultations and dental braces for children, teens, and adults are available at our Kasarani, Kamakis (Ruiru), and Eldoret branches. Book a consultation and our team will assess your smile and recommend the right treatment plan.',
+    a: 'Yes. Orthodontic consultations and dental braces for children, teens, and adults are available at our Kasarani, Kamakis (Ruiru), Eldoret, and Kiambu Road branches. Book a consultation and our team will assess your smile and recommend the right treatment plan.',
   },
   {
     q: 'Do you place dental implants?',
@@ -452,7 +470,7 @@ export const faqs = [
   },
   {
     q: 'Do you offer teeth cleaning and dental check-ups?',
-    a: 'Yes — professional teeth cleaning (scaling and polishing) and comprehensive dental check-ups are available daily at our Kasarani, Kamakis (Ruiru), and Eldoret branches. We recommend a check-up and cleaning every six months to keep your smile healthy.',
+    a: 'Yes — professional teeth cleaning (scaling and polishing) and comprehensive dental check-ups are available daily at our Kasarani, Kamakis (Ruiru), Eldoret, and Kiambu Road branches. We recommend a check-up and cleaning every six months to keep your smile healthy.',
   },
   {
     q: 'How do I pay, and do you bill insurance directly?',
@@ -460,7 +478,7 @@ export const faqs = [
   },
   {
     q: 'Which areas do you serve?',
-    a: 'Our Kasarani branch serves Nairobi — including Mwiki, Roysambu, Zimmerman, and the wider Thika Road area. The Kamakis branch serves Ruiru, Kahawa Sukari, and the Eastern Bypass corridor. Our Eldoret branch serves Eldoret town and the greater Rift Valley region. If you are searching for a dentist near you in any of these areas, we are close by and open daily.',
+    a: 'Our Kasarani branch serves Nairobi — including Mwiki, Roysambu, Zimmerman, and the wider Thika Road area. The Kamakis branch serves Ruiru, Kahawa Sukari, and the Eastern Bypass corridor. Our Eldoret branch serves Eldoret town and the greater Rift Valley region. The Kiambu Road branch serves Thindigua and the Kiambu Road corridor. If you are searching for a dentist near you in any of these areas, we are close by and open daily.',
   },
 ];
 

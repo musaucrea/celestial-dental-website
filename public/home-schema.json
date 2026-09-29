@@ -15,6 +15,7 @@
       "Ruiru",
       "Kamakis",
       "Eldoret",
+      "Kiambu Road",
       "Kenya"
     ],
     "openingHoursSpecification": [
@@ -33,7 +34,7 @@
         "closes": "20:00"
       }
     ],
-    "description": "Dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru) and Eldoret. Open every day 07:00-20:00.",
+    "description": "Dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret and Kiambu Road (Thindigua). Open every day 07:00-20:00.",
     "department": [
       {
         "@type": "Dentist",
@@ -136,6 +137,35 @@
           "latitude": -1.1853,
           "longitude": 36.9761
         }
+      },
+      {
+        "@type": "Dentist",
+        "name": "Celestial Dental Centre - Kiambu Road Branch",
+        "url": "https://celestialdental.org/branches/kiambu-road",
+        "telephone": "+254 709 000 240",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Brick House, 2nd Floor, Thindigua, along Kiambu Road, Kiambu County",
+          "addressLocality": "Thindigua",
+          "addressRegion": "Kiambu",
+          "addressCountry": "KE"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "07:00",
+            "closes": "20:00"
+          }
+        ]
       }
     ]
   },
@@ -154,7 +184,7 @@
         "name": "What are your opening hours?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, and Eldoret. Walk-ins are welcome, but booking ahead helps us reserve time for you."
+          "text": "We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, Eldoret, and Kiambu Road. Walk-ins are welcome, but booking ahead helps us reserve time for you."
         }
       },
       {
@@ -178,7 +208,7 @@
         "name": "Is there a dentist open on Sunday in Nairobi?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all three branches (Kasarani, Kamakis, and Eldoret)."
+          "text": "Yes. Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all four branches (Kasarani, Kamakis, Eldoret, and Kiambu Road)."
         }
       },
       {

@@ -342,7 +342,7 @@ function ArticleCta({ postTitle }: { postTitle: string }) {
     <div className="mt-12 rounded-3xl bg-brand-700 p-8 text-center">
       <h2 className="text-2xl font-900 text-white">Have questions about your smile?</h2>
       <p className="mt-2 text-sm text-brand-200">
-        Our dentists are here every day, 07:00–20:00, in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret.
+        Our dentists are here every day, 07:00–20:00, in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <button

@@ -31,7 +31,7 @@ export function emailShell(
   title: string,
   body: string,
   action?: EmailAction,
-  footer = 'Celestial Dental Centre · Kasarani · Kamakis · Eldoret',
+  footer = 'Celestial Dental Centre · Kasarani · Kamakis · Eldoret · Kiambu Road',
 ) {
   return `<div style="background:#f2faf8;padding:28px 12px">
     <div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;background:#fff;border:1px solid #d4e9e6;border-radius:18px;padding:32px;color:#153536;line-height:1.6">
