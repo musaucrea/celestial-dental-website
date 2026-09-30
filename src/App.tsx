@@ -694,7 +694,7 @@ function AppInner() {
         title="Dentist in Nairobi (Kasarani), Kamakis–Ruiru & Eldoret | Celestial Dental Centre"
         description="Affordable dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open daily 07:00-20:00. Insurance & M-Pesa accepted."
         canonicalPath="/"
-        keywords={['teeth cleaning Nairobi', 'root canal Nairobi', 'children dentist Kenya', 'cosmetic dentistry Kenya', 'dentist Ruiru', 'affordable dental clinic Nairobi', 'best dentist Kenya']}
+        keywords={['teeth cleaning Nairobi', 'root canal Nairobi', 'children dentist Kenya', 'cosmetic dentistry Kenya', 'dentist Ruiru', 'best dentist Kenya']}
       />
       <Header />
       <main>

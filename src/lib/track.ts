@@ -7,7 +7,6 @@
  */
 
 import { ga4Id } from '../data/site';
-import { withWhatsAppCode } from './attribution';
 
 declare global {
   interface Window {
@@ -53,16 +52,8 @@ export function installContactClickTracking() {
         });
         window.fbq?.('track', 'Contact');
       } else if (/wa\.me|api\.whatsapp\.com|whatsapp:/i.test(href)) {
-        // Stamp the campaign code into the prefilled message. Done here rather
-        // than at each link so every WhatsApp entry point is covered — floating
-        // button, header, footer, branch cards, /braces CTAs. The capture-phase
-        // listener runs before the browser follows the link, so rewriting the
-        // href now is what actually gets opened.
-        const tagged = withWhatsAppCode(href);
-        if (tagged !== href) anchor.setAttribute('href', tagged);
-
         pushEvent('whatsapp_click', {
-          link_url: tagged.slice(0, 120),
+          link_url: href.slice(0, 120),
           link_text: (anchor.textContent || '').trim().slice(0, 80),
         });
         window.fbq?.('track', 'Contact');

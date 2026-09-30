@@ -5,7 +5,6 @@ import { useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
 import { useBooking } from './booking';
 import { pushEvent } from '../lib/track';
-import { attributionCode, attributionSource } from '../lib/attribution';
 import { describeNetworkError, describeResponseError } from '../lib/errors';
 
 // Whatever the reason, a patient who can't book online should be told how to
@@ -27,7 +26,6 @@ export function BookingModal() {
   const [message, setMessage] = useState('');
   const [referral, setReferral] = useState('');
   const [referralOther, setReferralOther] = useState('');
-  const [influencer, setInfluencer] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -37,14 +35,6 @@ export function BookingModal() {
       setService(presetService);
       setSent(false);
       setError('');
-      // Someone who arrived on a creator's link almost certainly heard about
-      // us from them — answer the question for them rather than making them
-      // remember a code. Both fields stay editable.
-      const code = attributionCode();
-      if (code) {
-        setInfluencer(current => current || code);
-        setReferral(current => current || 'Influencer');
-      }
     }
   }, [open, presetService]);
 
@@ -55,20 +45,13 @@ export function BookingModal() {
     setLoading(true);
     setError('');
 
-    // Keep the creator's name in the same cell as the answer it belongs to,
-    // so "Influencer" rows stay countable per creator in the sheet.
-    let referralValue = referral;
-    if (referral === 'Other') referralValue = referralOther.trim() || 'Other';
-    else if (referral === 'Influencer' && influencer.trim()) referralValue = `Influencer: ${influencer.trim().toUpperCase()}`;
-
     try {
       const res = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name, phone, email, branch, service, date, time, message,
-          referral: referralValue,
-          source: attributionSource(),
+          referral: referral === 'Other' ? (referralOther.trim() || 'Other') : referral,
         }),
       });
 
@@ -166,8 +149,8 @@ export function BookingModal() {
               <textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Any additional notes (optional)" rows={2} className={`${inputClass} resize-none`} />
 
               <div>
-                <label className="mb-1 block text-xs font-700 text-ink-500">How did you hear about us? *</label>
-                <select required value={referral} onChange={e => setReferral(e.target.value)} className={inputClass}>
+                <label className="mb-1 block text-xs font-700 text-ink-500">How did you hear about us?</label>
+                <select value={referral} onChange={e => setReferral(e.target.value)} className={inputClass}>
                   <option value="">Select an option</option>
                   {referralSources.map(source => (
                     <option key={source} value={source}>{source}</option>
@@ -178,14 +161,6 @@ export function BookingModal() {
                     value={referralOther}
                     onChange={e => setReferralOther(e.target.value)}
                     placeholder="Please tell us how you heard about us"
-                    className={`mt-3 ${inputClass}`}
-                  />
-                )}
-                {referral === 'Influencer' && (
-                  <input
-                    value={influencer}
-                    onChange={e => setInfluencer(e.target.value)}
-                    placeholder="Which one? Name or code (e.g. NASRA)"
                     className={`mt-3 ${inputClass}`}
                   />
                 )}

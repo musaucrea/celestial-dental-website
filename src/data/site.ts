@@ -335,36 +335,22 @@ export const branches = [
 export const testimonials = [
   {
     quote:
-      'The staff are exceedingly friendly, the wait time is minimal and the centre is unmatched in its cleanliness.',
-    author: 'Esther Aruka',
-    branch: 'Kasarani',
-    stars: 5,
-  },
-  {
-    quote:
-      'Excellent. Its clean, classy and has the best professional team. All your dental care needs under one roof.',
-    author: 'Ann Mwaniki',
+      "Just had a root canal at this facility today, I was attended by Dr. Belinda, she was so kind. The place is cosy, comfortable waiting area, modern machines & before you realize it, you're done. They make a 'usually uncomfortable root canal procedure' so easy, painless and seamless.",
+    author: 'Verified patient review',
     branch: 'Kamakis',
     stars: 5,
   },
   {
     quote:
       'Perfect experience all through, talked me through my course of treatment, a very warm, and professional dental practice this one.',
-    author: 'Mike Muthomi',
-    branch: 'Kamakis',
-    stars: 5,
-  },
-  {
-    quote:
-      'The best facility ever, from the reception to the dentist — keep it up.',
-    author: 'Janet Kamau',
+    author: 'Verified patient review',
     branch: 'Kamakis',
     stars: 5,
   },
   {
     quote:
       'Clean, warm and efficient reception. Great customer service and service delivery by the medical team.',
-    author: 'Noreen Kombo',
+    author: 'Verified patient review',
     branch: 'Kasarani',
     stars: 4,
   },
