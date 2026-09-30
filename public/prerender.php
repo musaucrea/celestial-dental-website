@@ -119,7 +119,7 @@ function about_section($SITE) {
     <section>
       <h2>About Celestial Dental Centre</h2>
       <p>Celestial Dental Centre is also known as Celestial Dental &amp; Orthodontic Centre. The Kasarani location's official Google Business Profile is named Celestial Dental Centre -Kasarani Branch.</p>
-      <p>Celestial Dental Centre is an affordable dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret — open every day, 07:00–20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
+      <p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret — open every day, 07:00–20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
       <p>Book an appointment: <a href="$SITE/?book=1">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>
     </section>
 HTML;
@@ -385,7 +385,7 @@ function render_static($staticPath) {
   if ($staticPath === 'about') {
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › About</p>\n"
       . "<h1>About Celestial Dental Centre</h1>\n"
-      . "<p>Celestial Dental Centre is an affordable dental clinic group in Kenya, serving patients across three branches — Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret. We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
+      . "<p>Celestial Dental Centre is a dental clinic group in Kenya, serving patients across three branches — Kasarani (Nairobi), Kamakis (Ruiru), and Eldoret. We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
       . "<p>Our team focuses on accurate diagnosis, clearly explained treatment planning, and quality materials and equipment. From routine checkups and cleaning to braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency care, we look after the whole family with calm, patient-friendly care.</p>\n"
       . "<p>We accept M-Pesa, cash, SHA (Social Health Authority), and 20+ insurance schemes including Jubilee, AAR, Madison, CIC, Britam, and APA. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
       . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"

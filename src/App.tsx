@@ -340,21 +340,13 @@ function Reviews() {
         </Reveal>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {reviews.map((review, index) => {
-            const initials = review.author.split(/\s+/).map(part => part[0]).join('').slice(0, 2).toUpperCase();
             const href = review.reviewUrl || review.placeUrl || undefined;
             return (
               <Reveal key={review.id} delay={(index % 6) * 60}>
                 <article className="flex h-full min-h-72 flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
                   <div className="flex items-start gap-4">
-                    {review.authorPhoto ? (
-                      <img loading="lazy" decoding="async" src={review.authorPhoto} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
-                    ) : (
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-700 text-sm font-900 text-white">
-                        {initials}
-                      </div>
-                    )}
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-base font-900 text-ink-900">{review.author}</h3>
+                      <h3 className="truncate text-base font-900 text-ink-900">Verified Google review</h3>
                       <p className="mt-0.5 text-sm text-ink-400">{review.relativeTime || review.branch}</p>
                     </div>
                     <img loading="lazy" decoding="async"
@@ -692,7 +684,7 @@ function AppInner() {
     <>
       <SEO
         title="Dentist in Nairobi (Kasarani), Kamakis–Ruiru & Eldoret | Celestial Dental Centre"
-        description="Affordable dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open daily 07:00-20:00. Insurance & M-Pesa accepted."
+        description="Dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, and Eldoret: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open daily 07:00-20:00. Insurance & M-Pesa accepted."
         canonicalPath="/"
         keywords={['teeth cleaning Nairobi', 'root canal Nairobi', 'children dentist Kenya', 'cosmetic dentistry Kenya', 'dentist Ruiru', 'best dentist Kenya']}
       />

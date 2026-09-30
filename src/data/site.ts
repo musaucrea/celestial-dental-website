@@ -104,7 +104,7 @@ export const heroPills = ['Checkups', 'Braces', 'Implants', 'Emergency care'];
 export const stats = [
   { value: '20+', label: 'Years of service' },
   { value: '3', label: 'Accessible branches' },
-  { value: '5 min', label: 'Target response time' },
+  { value: '07:00–20:00', label: 'Open every day' },
 ];
 
 export const services = [
@@ -242,28 +242,28 @@ export const services = [
 
 export const whyChooseUs = [
   {
-    tag: 'Technology',
-    title: 'Modern dentistry, clear treatment planning',
+    tag: 'Treatment planning',
+    title: 'Written treatment plans',
     description:
-      'From digital workflows to advanced restorative and cosmetic procedures, the team focuses on accurate diagnosis and clearly explained care.',
+      'Findings and treatment options are explained at the assessment and set out in writing, with the cost, before any treatment begins.',
   },
   {
-    tag: 'Materials',
-    title: 'Quality materials and equipment',
+    tag: 'Equipment',
+    title: 'Instruments and materials',
     description:
-      'Treatments use carefully selected instruments and materials from trusted manufacturers for durable, natural-looking results.',
+      'Treatments use instruments and materials from established manufacturers, chosen for the procedure being carried out.',
   },
   {
-    tag: 'Safety',
-    title: 'Sterilization you can trust',
+    tag: 'Infection control',
+    title: 'Instrument sterilisation',
     description:
-      'Every appointment is backed by strong sterilization protocols, clean clinical spaces, and consistent infection-control standards.',
+      'Instruments are sterilised between patients and clinical areas are cleaned to documented infection-control procedures.',
   },
   {
-    tag: 'Experience',
-    title: 'Friendly care for children and adults',
+    tag: 'Appointments',
+    title: 'Care for children and adults',
     description:
-      'Patients value calm communication, transparent guidance, and support that helps every visit feel manageable.',
+      'Appointments allow time to explain what is being done, for both adults and children, at all three branches.',
   },
 ];
 
@@ -463,8 +463,8 @@ export const faqs = [
     a: 'Yes — professional teeth cleaning (scaling and polishing) and comprehensive dental check-ups are available daily at our Kasarani, Kamakis (Ruiru), and Eldoret branches. We recommend a check-up and cleaning every six months to keep your smile healthy.',
   },
   {
-    q: 'Are you an affordable dental clinic in Nairobi?',
-    a: 'We work hard to keep quality dental care accessible. Every treatment starts with a clear, personalised plan agreed with you upfront, and you can pay via M-Pesa, cash, or direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison.',
+    q: 'How do I pay, and do you bill insurance directly?',
+    a: 'Every treatment starts with a clear, personalised plan agreed with you upfront, including the cost, before any work begins. You can pay via M-Pesa, cash, or direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison.',
   },
   {
     q: 'Which areas do you serve?',
