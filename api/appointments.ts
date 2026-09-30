@@ -14,9 +14,6 @@ type AppointmentPayload = {
   time?: string;
   message?: string;
   referral?: string;
-  // Campaign provenance captured on the landing page, e.g.
-  // `instagram/influencer/braces_2026/nasra`. See src/lib/attribution.ts.
-  source?: string;
 };
 
 const requiredFields: Array<keyof AppointmentPayload> = ['name', 'phone', 'service', 'date', 'time'];
@@ -128,9 +125,7 @@ async function appendToSheet(payload: AppointmentPayload) {
           clean(payload.time),
           clean(payload.message),
           clean(payload.referral),
-          // Was hardcoded 'Website' — every booking is still from the website,
-          // but the campaign that produced it is the part worth recording.
-          clean(payload.source) || 'Website',
+          'Website',
           clean(payload.branch),
           'pending',
         ],
@@ -219,9 +214,8 @@ async function sendEmailNotification(payload: AppointmentPayload) {
     `Preferred date: ${clean(payload.date)}`,
     `Preferred time: ${clean(payload.time)}`,
     `Referral source: ${clean(payload.referral) || 'Not provided'}`,
-    clean(payload.source) ? `Campaign: ${clean(payload.source)}` : '',
     `Message: ${clean(payload.message) || 'No message provided'}`,
-  ].filter(Boolean).join('\n');
+  ].join('\n');
 
   await Promise.all(
     recipients.map(async (to) => {
@@ -407,7 +401,6 @@ export async function sendToCrm(payload: AppointmentPayload, status = 'pending')
       time: clean(payload.time),
       message: clean(payload.message),
       referral: clean(payload.referral),
-      source: clean(payload.source),
       status,
     }),
   });
@@ -539,7 +532,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             time: appointment.time,
             message: appointment.message,
             referral: appointment.referral,
-            source: appointment.source,
           },
           appointment.status || 'pending',
         );
