@@ -253,7 +253,7 @@ const BRANCH_WHATSAPP: Record<string, string> = {
   kasarani: '254707535000',
   kamakis: '254754400500',
   eldoret: '254794585217',
-  'kiambu-road': '254709000240', // central booking line
+  'kiambu-road': '254711699281',
 };
 
 function branchWhatsAppNumber(branch: string): string {

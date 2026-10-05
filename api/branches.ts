@@ -77,7 +77,7 @@ const seed: Array<Partial<Branch>> = [
     description: 'Our Kiambu Road branch is at Brick House in Thindigua, along Kiambu Road. It offers the Celestial Dental range of services for children and adults — from routine check-ups and cleaning to orthodontics, implants, and emergency care.',
     address: 'Brick House, 2nd Floor\nThindigua, along Kiambu Road\nKiambu County',
     landmark: 'Thindigua, along Kiambu Road', parking: 'Call ahead to ask about parking',
-    phone: '+254 709 000 243', phoneHref: 'tel:+254709000243', whatsapp: 'https://wa.me/254767207000',
+    phone: '+254 709 000 243 / +254 711 699 281', phoneHref: 'tel:+254709000243', whatsapp: 'https://wa.me/254711699281',
     map: 'https://maps.google.com/?q=Brick+House+Thindigua+Kiambu+Road',
     hours: 'Monday – Sunday · 08:00 – 18:00', image: '/facility/reception-lounge.jpg',
     region: 'Kiambu',
