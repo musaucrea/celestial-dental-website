@@ -60,7 +60,7 @@ echo <<<TXT
 - URL: https://celestialdental.org/branches/kiambu-road
 - Address: Brick House, 2nd Floor, Thindigua, along Kiambu Road, Kiambu County
 - Phone: +254 709 000 243 / +254 711 699 281
-- WhatsApp: https://wa.me/254711699281
+- WhatsApp: https://wa.me/254767207000
 - Insurance: direct billing with 20+ private insurers
 
 ## Service Areas

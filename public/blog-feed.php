@@ -151,7 +151,7 @@ function cd_branches() {
         'landmark' => 'Thindigua, along Kiambu Road',
         'parking' => 'Call ahead to ask about parking',
         'phone' => '+254 709 000 243 / +254 711 699 281',
-        'whatsapp' => 'https://wa.me/254711699281',
+        'whatsapp' => 'https://wa.me/254767207000',
         'map' => 'https://maps.google.com/?q=Brick+House+Thindigua+Kiambu+Road',
         'hours' => 'Monday-Sunday, 08:00-18:00',
         'region' => 'Kiambu',
