@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials } from '../data/site';
-import { useBranches, type Branch } from '../data/branches';
+import { branchOpenClose, useBranches, type Branch } from '../data/branches';
 import { useFaqs, type Faq } from '../data/faqs';
 import { phoneParts } from './PhoneLinks';
 
@@ -154,8 +154,7 @@ function branchSchema(branch: Branch) {
         dayOfWeek: [
           'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday',
         ],
-        opens: '07:00',
-        closes: '20:00',
+        ...branchOpenClose(branch.hours),
       },
     ],
     paymentAccepted: shaBranchSlugs.includes(branch.slug)

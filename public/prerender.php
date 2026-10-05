@@ -119,7 +119,7 @@ function about_section($SITE) {
     <section>
       <h2>About Celestial Dental Centre</h2>
       <p>Celestial Dental Centre is also known as Celestial Dental &amp; Orthodontic Centre. The Kasarani location's official Google Business Profile is named Celestial Dental Centre -Kasarani Branch.</p>
-      <p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day, 07:00–20:00. Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
+      <p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day (Kiambu Road 08:00–18:00, other branches 07:00–20:00). Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>
       <p>Book an appointment: <a href="$SITE/?book=1">$SITE/?book=1</a> · Call: +254 709 000 240 / +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>
     </section>
 HTML;
@@ -312,7 +312,7 @@ function render_static($staticPath) {
     }
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Services</p>\n"
       . "<h1>Dental Services in Kasarani, Kamakis, Eldoret &amp; Kiambu Road</h1>\n"
-      . "<p>Explore the full range of dental care at Celestial Dental Centre — checkups, cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry, and same-day emergency care. Available at all four branches, open every day 07:00–20:00.</p>\n"
+      . "<p>Explore the full range of dental care at Celestial Dental Centre — checkups, cleaning, braces, implants, root canal treatment, children's dentistry, cosmetic dentistry, and same-day emergency care. Available at all four branches, open every day (Kasarani, Kamakis and Eldoret 07:00–20:00, Kiambu Road 08:00–18:00).</p>\n"
       . "<ul>\n$items</ul>\n"
       . "<p><a href=\"$SITE/?book=1\">Book an appointment</a> · Call +254 709 000 240 / +254 707 535 000</p>\n";
     emit_page(
@@ -336,7 +336,7 @@ function render_static($staticPath) {
       $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › <a href=\"$SITE/services\">Services</a> › {$esc($title)}</p>\n"
         . "<h1>{$esc($title)}</h1>\n"
         . "<p>{$esc($svc['description'])}</p>\n"
-        . "<p>Available at all four Celestial Dental Centre branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day, 07:00–20:00. <a href=\"$SITE/?book=1\">Book " . $esc($lc) . "</a> or call +254 709 000 240 / +254 707 535 000.</p>\n";
+        . "<p>Available at all four Celestial Dental Centre branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua) — open every day (Kiambu Road 08:00–18:00, other branches 07:00–20:00). <a href=\"$SITE/?book=1\">Book " . $esc($lc) . "</a> or call +254 709 000 240 / +254 707 535 000.</p>\n";
 
       $schema = [
         cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Services' => "$SITE/services", $title => $canonical]),
@@ -374,7 +374,7 @@ function render_static($staticPath) {
 
       emit_page(
         "$title in Kasarani, Kamakis, Eldoret & Kiambu Road | Celestial Dental Centre",
-        $svc['description'] . " Book $lc at Celestial Dental Centre — open daily 07:00–20:00 across Kasarani, Kamakis, Eldoret, and Kiambu Road.",
+        $svc['description'] . " Book $lc at Celestial Dental Centre — open daily across Kasarani, Kamakis, Eldoret, and Kiambu Road.",
         $canonicalPath, $main, $schema
       );
     }
@@ -386,7 +386,7 @@ function render_static($staticPath) {
   if ($staticPath === 'about') {
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › About</p>\n"
       . "<h1>About Celestial Dental Centre</h1>\n"
-      . "<p>Celestial Dental Centre is a dental clinic group in Kenya, serving patients across four branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua). We are open every day, 07:00–20:00, including weekends and public holidays.</p>\n"
+      . "<p>Celestial Dental Centre is a dental clinic group in Kenya, serving patients across four branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua). We are open every day (Kasarani, Kamakis and Eldoret 07:00–20:00, Kiambu Road 08:00–18:00), including weekends and public holidays.</p>\n"
       . "<p>Our team focuses on accurate diagnosis, clearly explained treatment planning, and quality materials and equipment. From routine checkups and cleaning to braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency care, we look after the whole family with calm, patient-friendly care.</p>\n"
       . "<p>We accept M-Pesa, cash, SHA (Social Health Authority), and 20+ insurance schemes including Jubilee, AAR, Madison, CIC, Britam, and APA. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
       . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 709 000 240 / +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"
@@ -475,6 +475,7 @@ function render_branch($branchSlug) {
 
   // SHA approval is per facility; keep in sync with shaBranchSlugs in src/data/site.ts.
   $acceptsSha = in_array($branchSlug, ['kasarani', 'kamakis', 'eldoret'], true);
+  [$bOpen, $bClose] = cd_open_close($b['hours'] ?? '');
   $insuranceText = $acceptsSha
     ? "SHA (Social Health Authority) is accepted at the $name branch for eligible schemes and covered treatments — including check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays, depending on your cover. The clinic also offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet, and Equity Bank Insurance. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. M-Pesa and cash are also accepted."
     : "The $name branch offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet, and Equity Bank Insurance. Bring your insurance card and the front desk will handle pre-authorisation. Confirm that your scheme is accepted at this branch before treatment. M-Pesa and cash are also accepted.";
@@ -495,8 +496,8 @@ function render_branch($branchSlug) {
     'openingHoursSpecification' => [[
       '@type'     => 'OpeningHoursSpecification',
       'dayOfWeek' => ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-      'opens'     => '07:00',
-      'closes'    => '20:00',
+      'opens'     => $bOpen,
+      'closes'    => $bClose,
     ]],
     'paymentAccepted'    => $acceptsSha
       ? 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA'
@@ -515,7 +516,7 @@ function render_branch($branchSlug) {
   $schemaJson = json_encode($schema, JSON_UNESCAPED_SLASHES);
 
   $title = "Dentist in " . htmlspecialchars($locality, ENT_QUOTES, 'UTF-8') . " | Celestial Dental Centre";
-  $metaDesc = htmlspecialchars(($b['description'] ?? '') . ' Open daily 07:00-20:00. ' . ($acceptsSha ? 'SHA and 20+ insurance schemes accepted.' : '20+ insurance schemes accepted.'), ENT_QUOTES, 'UTF-8');
+  $metaDesc = htmlspecialchars(($b['description'] ?? '') . " Open daily $bOpen-$bClose. " . ($acceptsSha ? 'SHA and 20+ insurance schemes accepted.' : '20+ insurance schemes accepted.'), ENT_QUOTES, 'UTF-8');
 
   header('Content-Type: text/html; charset=utf-8');
   header('X-Robots-Tag: index, follow');

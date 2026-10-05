@@ -39,7 +39,7 @@ const STEPS = [
 const FAQS = [
   {
     q: 'Do you offer braces in Nairobi, Ruiru, Eldoret, and Kiambu Road?',
-    a: 'Yes. Orthodontic consultations and braces are available at all four Celestial Dental branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. All branches are open every day, 07:00–20:00.',
+    a: 'Yes. Orthodontic consultations and braces are available at all four Celestial Dental branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. All branches are open every day (Kasarani, Kamakis and Eldoret 07:00–20:00, Kiambu Road 08:00–18:00).',
   },
   {
     q: 'How long does orthodontic treatment take?',

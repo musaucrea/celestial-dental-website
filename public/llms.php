@@ -93,7 +93,7 @@ echo <<<TXT
 - Email: info@celestialdental.org
 - Primary phone: +254 709 000 240 / +254 707 535 000
 - WhatsApp: https://wa.me/254707535000
-- Opening hours: Monday to Sunday, 07:00-20:00
+- Opening hours: Monday to Sunday; Kasarani, Kamakis and Eldoret 07:00-20:00, Kiambu Road 08:00-18:00
 - Accepted payments: M-Pesa, cash, direct insurance billing
 
 ## Insurance Accepted

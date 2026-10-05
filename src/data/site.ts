@@ -350,7 +350,7 @@ export const branches = [
     phoneHref: 'tel:+254709000243',
     whatsapp: 'https://wa.me/254767207000',
     map: 'https://maps.google.com/?q=Brick+House+Thindigua+Kiambu+Road',
-    hours: 'Monday – Sunday · 07:00 – 20:00',
+    hours: 'Monday – Sunday · 08:00 – 18:00',
     image: '/facility/reception-lounge.jpg',
     region: 'Kiambu',
   },
@@ -441,7 +441,7 @@ export const blogPosts = [
 export const faqs = [
   {
     q: 'What are your opening hours?',
-    a: 'We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, Eldoret, and Kiambu Road. Walk-ins are welcome, but booking ahead helps us reserve time for you.',
+    a: 'We are open every day of the week. Kasarani, Kamakis and Eldoret are open 07:00 to 20:00, and Kiambu Road 08:00 to 18:00. Walk-ins are welcome, but booking ahead helps us reserve time for you.',
   },
   {
     q: 'Do you accept insurance and medical schemes?',
@@ -453,7 +453,7 @@ export const faqs = [
   },
   {
     q: 'Is there a dentist open on Sunday in Nairobi?',
-    a: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all four branches (Kasarani, Kamakis, Eldoret, and Kiambu Road).',
+    a: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, at all four branches: 07:00 to 20:00 in Kasarani, Kamakis and Eldoret, and 08:00 to 18:00 on Kiambu Road.',
   },
   {
     q: 'Do you handle dental emergencies?',
@@ -473,7 +473,7 @@ export const faqs = [
   },
   {
     q: 'Where can I find an emergency dentist in Kasarani, Ruiru, Eldoret, or Kiambu Road?',
-    a: 'Celestial Dental offers same-day emergency dental care at all four branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. Call or WhatsApp the nearest branch, or walk in directly; severe pain, swelling, or knocked-out teeth are prioritised. We are open every day, 07:00–20:00.',
+    a: 'Celestial Dental offers same-day emergency dental care at all four branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. Call or WhatsApp the nearest branch, or walk in directly; severe pain, swelling, or knocked-out teeth are prioritised. We are open every day (Kasarani, Kamakis and Eldoret 07:00–20:00, Kiambu Road 08:00–18:00).',
   },
   {
     q: 'Do you offer braces and orthodontic treatment?',

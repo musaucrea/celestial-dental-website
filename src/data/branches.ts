@@ -35,6 +35,12 @@ type ApiBranch = {
   region?: string; lat?: string; lng?: string; status?: string; photos?: string;
 };
 
+/** Opening and closing time from a branch's free-text hours ("… 08:00 – 18:00"). */
+export function branchOpenClose(hours: string): { opens: string; closes: string } {
+  const m = hours.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
+  return m ? { opens: m[1], closes: m[2] } : { opens: '07:00', closes: '20:00' };
+}
+
 /** The static branches double as the initial value + offline fallback. */
 export const fallbackBranches: Branch[] = staticBranches as Branch[];
 

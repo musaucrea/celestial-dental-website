@@ -153,13 +153,19 @@ function cd_branches() {
         'phone' => '+254 709 000 243',
         'whatsapp' => 'https://wa.me/254767207000',
         'map' => 'https://maps.google.com/?q=Brick+House+Thindigua+Kiambu+Road',
-        'hours' => 'Monday-Sunday, 07:00-20:00',
+        'hours' => 'Monday-Sunday, 08:00-18:00',
         'region' => 'Kiambu',
         'image' => '/facility/reception-lounge.jpg',
       ],
     ];
   }
   return $branches;
+}
+
+/** Opening and closing time from a branch's free-text hours ("… 08:00 – 18:00"). */
+function cd_open_close($hours) {
+  if (preg_match('/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/u', (string)$hours, $m)) return [$m[1], $m[2]];
+  return ['07:00', '20:00'];
 }
 
 function cd_find_branch($slug) {

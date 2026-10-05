@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
 import { googleBusinessProfiles, services as staticServices, shaBranchSlugs, site } from '../data/site';
-import { useBranches } from '../data/branches';
+import { branchOpenClose, useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
 import { Header } from '../components/Header';
 import { Reveal } from '../components/Reveal';
@@ -32,6 +32,7 @@ function BranchPageInner() {
   const googleProfile = googleBusinessProfiles[branch.slug];
   const mapUrl = googleProfile?.profileUrl || branch.map;
   const acceptsSha = shaBranchSlugs.includes(branch.slug);
+  const { opens, closes } = branchOpenClose(branch.hours);
 
   // Search phrasing includes the wider locality, not just the branch name
   // (e.g. people search "dentist in ruiru" for Kamakis, "nairobi" for Kasarani).
@@ -41,7 +42,7 @@ function BranchPageInner() {
     <>
       <SEO
         title={`Dentist in ${locality} | ${site.name}`}
-        description={`${branch.description} Open daily 07:00-20:00. ${acceptsSha ? 'SHA and 20+ insurance schemes' : '20+ insurance schemes'} accepted. Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
+        description={`${branch.description} Open daily ${opens}-${closes}. ${acceptsSha ? 'SHA and 20+ insurance schemes' : '20+ insurance schemes'} accepted. Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
         image={branch.image}
         canonicalPath={`/branches/${branch.slug}`}
         keywords={[
@@ -283,7 +284,7 @@ function BranchPageInner() {
             <Reveal>
               <div className="rounded-3xl bg-brand-700 p-8 lg:p-12 text-center">
                 <h3 className="text-2xl lg:text-3xl font-900 text-white">Book at our {branch.name} branch</h3>
-                <p className="mt-2 text-sm text-brand-200">Open 7 days a week · 07:00 – 20:00 · Fast response guaranteed</p>
+                <p className="mt-2 text-sm text-brand-200">Open 7 days a week · {opens} – {closes} · Fast response guaranteed</p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <button onClick={() => openBooking()} className="btn-primary bg-white !text-brand-800 !shadow-none hover:!shadow-none">
                     <MessageCircle className="h-4 w-4" />

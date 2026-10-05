@@ -511,7 +511,7 @@ function AppInner() {
     <>
       <SEO
         title="Dentist in Nairobi (Kasarani), Kamakis–Ruiru, Eldoret & Kiambu Road | Celestial Dental Centre"
-        description="Dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open daily 07:00-20:00. Insurance & M-Pesa accepted."
+        description="Dental clinic in Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, and Kiambu Road: dental checkups, teeth cleaning, braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency dental care. Open every day. Insurance & M-Pesa accepted."
         canonicalPath="/"
         keywords={['teeth cleaning Nairobi', 'root canal Nairobi', 'children dentist Kenya', 'cosmetic dentistry Kenya', 'dentist Ruiru', 'best dentist Kenya']}
       />
