@@ -335,12 +335,20 @@ async function sendWhatsAppTo(to: string, text: string) {
 
   // CallMeBot: GET whatsapp.php?phone=&text=&apikey=, one key per recipient.
   const callMeBotKey = process.env[`CALLMEBOT_APIKEY_${to}`];
-  if (!callMeBotKey) return; // not configured for this number → skip silently
+  if (!callMeBotKey) {
+    console.warn('WhatsApp (CallMeBot) skipped: no CALLMEBOT_APIKEY for', to);
+    return;
+  }
   const endpoint = `https://api.callmebot.com/whatsapp.php?phone=${to}`
     + `&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(callMeBotKey)}`;
   const response = await fetch(endpoint, { signal: notifyTimeout() });
+  // CallMeBot answers 200 even when it refuses to deliver (paused bot, bad
+  // key, full queue) and puts the reason in the body, so always log it.
+  const reply = (await response.text()).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
   if (!response.ok) {
-    console.error('WhatsApp (CallMeBot) notification failed', to, response.status, await response.text());
+    console.error('WhatsApp (CallMeBot) notification failed', to, response.status, reply);
+  } else {
+    console.log('WhatsApp (CallMeBot) reply', to, response.status, reply);
   }
 }
 
