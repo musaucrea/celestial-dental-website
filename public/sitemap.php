@@ -11,6 +11,8 @@ $static = [
   ['/braces',                               '2026-07-14', 'weekly',  '0.9'],
   ['/about',                                '2026-07-08', 'monthly', '0.8'],
   ['/careers',                              '2026-07-08', 'weekly',  '0.6'],
+  ['/privacy-policy',                       '2026-11-20', 'yearly',  '0.3'],
+  ['/sitemap',                              '2026-11-20', 'monthly', '0.3'],
   ['/services',                             '2026-07-09', 'weekly',  '0.9'],
   ['/branches/kasarani',                    '2026-07-08', 'monthly', '0.9'],
   ['/branches/kamakis',                     '2026-07-08', 'monthly', '0.9'],

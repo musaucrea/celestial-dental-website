@@ -447,6 +447,55 @@ function render_static($staticPath) {
     );
   }
 
+  // ── /privacy-policy ── (text shared with the SPA via legal/privacy-policy.json)
+  if ($staticPath === 'privacy-policy') {
+    $policy = json_decode((string) @file_get_contents(__DIR__ . '/legal/privacy-policy.json'), true);
+    if (is_array($policy)) {
+      $updated = date('j F Y', strtotime($policy['updated']));
+      $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Privacy Policy</p>\n"
+        . "<h1>Privacy Policy</h1>\n<p>Last updated {$esc($updated)}</p>\n"
+        . "<p>{$esc($policy['intro'])}</p>\n";
+      foreach ($policy['sections'] as $sec) {
+        $main .= "<h2>{$esc($sec['heading'])}</h2>\n";
+        if (!empty($sec['bullets'])) {
+          $main .= "<ul>\n";
+          foreach ($sec['bullets'] as $b) $main .= "<li>{$esc($b)}</li>\n";
+          $main .= "</ul>\n";
+        }
+        foreach ($sec['paragraphs'] ?? [] as $para) $main .= "<p>{$esc($para)}</p>\n";
+      }
+      emit_page(
+        'Privacy Policy | Celestial Dental Centre',
+        "How Celestial Dental Centre collects, uses, shares and protects personal information submitted through celestialdental.org, and your rights under Kenya's Data Protection Act, 2019.",
+        '/privacy-policy', $main,
+        [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Privacy Policy' => "$SITE/privacy-policy"])],
+        false
+      );
+    }
+  }
+
+  // ── /sitemap ── human-readable list of every page
+  if ($staticPath === 'sitemap') {
+    $pages = ['/' => 'Home', '/about' => 'About Us', '/services' => 'All Services', '/braces' => 'Braces & Orthodontics',
+      '/blog' => 'Blog', '/careers' => 'Careers', '/privacy-policy' => 'Privacy Policy'];
+    $li = '';
+    foreach ($pages as $u => $label) $li .= "<li><a href=\"$SITE$u\">{$esc($label)}</a></li>\n";
+    $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Sitemap</p>\n<h1>Sitemap</h1>\n"
+      . "<h2>Main pages</h2>\n<ul>\n$li</ul>\n"
+      . cd_branch_links($SITE)
+      . cd_service_links($SITE);
+    $postsLi = '';
+    foreach (cd_posts() as $p) $postsLi .= "<li><a href=\"" . $esc(cd_canonical($p)) . "\">{$esc($p['title'] ?? '')}</a></li>\n";
+    if ($postsLi) $main .= "<h2>Blog articles</h2>\n<ul>\n$postsLi</ul>\n";
+    emit_page(
+      'Sitemap | Celestial Dental Centre',
+      'Every page on the Celestial Dental Centre website: dental services, branches in Kasarani, Kamakis, Eldoret and Kiambu Road, blog articles, careers and policies.',
+      '/sitemap', $main,
+      [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Sitemap' => "$SITE/sitemap"])],
+      false
+    );
+  }
+
   // Not a static route — return so blog/SPA handling continues.
 }
 

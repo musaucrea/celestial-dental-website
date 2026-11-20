@@ -120,6 +120,7 @@ export function SiteFooter() {
                 { label: 'Blog', href: '/blog' },
                 { label: 'Careers', href: '/careers' },
                 { label: 'FAQ', href: '/#faq' },
+                { label: 'Sitemap', href: '/sitemap' },
               ].map(link => (
                 <li key={link.label}>
                   <a href={link.href} className="text-sm text-white/60 hover:text-white transition-colors">{link.label}</a>
@@ -177,7 +178,12 @@ export function SiteFooter() {
       <div className="border-t border-white/10">
         <div className="container-page py-5 flex flex-col items-center justify-center gap-1 text-center text-xs text-white/35">
           <p>{(fc.tagline || '').trim() || site.tagline}</p>
-          <p>&copy; {new Date().getFullYear()} {site.name}. Built by MusauCreative.</p>
+          <p>&copy; {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+          <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+            <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/sitemap" className="hover:text-white transition-colors">Sitemap</a>
+          </nav>
+          <p>Built by MusauCreative.</p>
         </div>
       </div>
     </footer>

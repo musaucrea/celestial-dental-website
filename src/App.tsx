@@ -20,6 +20,8 @@ const ServicePage = lazy(() => import('./pages/ServicePage').then(m => ({ defaul
 const ServicesPage = lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
 const AboutPage = lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
 const BracesPage = lazy(() => import('./pages/BracesPage').then(m => ({ default: m.BracesPage })));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then(m => ({ default: m.PrivacyPolicyPage })));
+const SitemapPage = lazy(() => import('./pages/SitemapPage').then(m => ({ default: m.SitemapPage })));
 import { AccessibilityWidget } from './components/AccessibilityWidget';
 import { RetargetingConsent } from './components/RetargetingConsent';
 import { installContactClickTracking } from './lib/track';
@@ -602,6 +604,8 @@ export default function App() {
         <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/careers" element={<CareersPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/sitemap" element={<SitemapPage />} />
         {/* Blog articles live at root-level keyword slugs (e.g. /braces-after-a-root-canal);
             anything that doesn't match a post redirects home like the old catch-all */}
         <Route path="/:slug" element={<BlogPostPage rootLevel />} />
