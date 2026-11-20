@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials } from '../data/site';
+import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials, branchAreas } from '../data/site';
 import { branchOpenClose, useBranches, type Branch } from '../data/branches';
 import { useFaqs, type Faq } from '../data/faqs';
 import { phoneParts } from './PhoneLinks';
@@ -165,6 +165,9 @@ function branchSchema(branch: Branch) {
       'Root Canal Treatment', 'Children\'s Dentistry', 'Emergency Dentistry',
       'Dental Cleaning', 'Cosmetic Dentistry',
     ],
+    ...(branchAreas[branch.slug] && {
+      areaServed: branchAreas[branch.slug].map(name => ({ '@type': 'Place', name })),
+    }),
     hasMap: googleProfile?.mapsUrl || branch.map,
     ...(googleProfile && { sameAs: [googleProfile.profileUrl] }),
     parentOrganization: {

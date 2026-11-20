@@ -284,6 +284,19 @@ export const gallery = [
  */
 export const shaBranchSlugs = ['kasarani', 'kamakis', 'eldoret'];
 
+/**
+ * Neighbourhoods each branch is close to. Kept in code rather than in the
+ * admin-managed branch description so an edit there can't drop them: Google
+ * only links a branch to an area ("dentist runda") when the page names it.
+ * Keep in sync with $branchAreas in public/prerender.php.
+ */
+export const branchAreas: Record<string, string[]> = {
+  kasarani: ['Kasarani', 'Mwiki', 'Roysambu', 'Zimmerman', 'Clay City', 'Thika Road'],
+  kamakis: ['Kamakis', 'Ruiru', 'Kahawa Sukari', 'Membley', 'Eastern Bypass'],
+  eldoret: ['Eldoret town', 'Uasin Gishu'],
+  'kiambu-road': ['Thindigua', 'Kiambu Road', 'Ridgeways', 'Runda'],
+};
+
 export const branches = [
   {
     name: 'Kasarani',
@@ -493,7 +506,7 @@ export const faqs = [
   },
   {
     q: 'Which areas do you serve?',
-    a: 'Our Kasarani branch serves Nairobi — including Mwiki, Roysambu, Zimmerman, and the wider Thika Road area. The Kamakis branch serves Ruiru, Kahawa Sukari, and the Eastern Bypass corridor. Our Eldoret branch serves Eldoret town and the greater Rift Valley region. The Kiambu Road branch serves Thindigua and the Kiambu Road corridor. If you are searching for a dentist near you in any of these areas, we are close by and open daily.',
+    a: 'Our Kasarani branch serves Nairobi — including Mwiki, Roysambu, Zimmerman, and the wider Thika Road area. The Kamakis branch serves Ruiru, Kahawa Sukari, and the Eastern Bypass corridor. Our Eldoret branch serves Eldoret town and the greater Rift Valley region. The Kiambu Road branch in Thindigua serves the Kiambu Road corridor, including Ridgeways and Runda. If you are searching for a dentist near you in any of these areas, we are close by and open daily.',
   },
 ];
 

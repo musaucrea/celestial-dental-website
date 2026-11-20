@@ -345,7 +345,7 @@ function render_static($staticPath) {
           'name' => $title, 'serviceType' => $title, 'description' => $svc['description'],
           'url' => $canonical,
           'provider' => ['@type' => 'Dentist', 'name' => 'Celestial Dental Centre', 'url' => "$SITE/"],
-          'areaServed' => ['Kasarani, Nairobi', 'Kamakis, Ruiru', 'Eldoret', 'Kiambu Road, Thindigua', 'Kenya'],
+          'areaServed' => ['Kasarani, Nairobi', 'Kamakis, Ruiru', 'Eldoret', 'Kiambu Road, Thindigua', 'Ridgeways', 'Runda', 'Kenya'],
         ],
       ];
 
@@ -520,7 +520,15 @@ function render_branch($branchSlug) {
   $canonical = $SITE . '/branches/' . rawurlencode($branchSlug);
   $addrLines = array_values(array_filter(array_map('trim', preg_split('/\r?\n/', (string)($b['address'] ?? '')))));
   $addrHtml  = implode('<br />', array_map(fn($l) => htmlspecialchars($l, ENT_QUOTES, 'UTF-8'), $addrLines));
-  $locality  = ['kasarani' => 'Kasarani, Nairobi', 'kamakis' => 'Kamakis, Ruiru'][$branchSlug] ?? ($b['name'] ?? '');
+  $locality  = ['kasarani' => 'Kasarani, Nairobi', 'kamakis' => 'Kamakis, Ruiru', 'kiambu-road' => 'Thindigua, Kiambu Road'][$branchSlug] ?? ($b['name'] ?? '');
+  // Neighbourhoods near each branch; keep in sync with branchAreas in src/data/site.ts.
+  $branchAreas = [
+    'kasarani'    => ['Kasarani', 'Mwiki', 'Roysambu', 'Zimmerman', 'Clay City', 'Thika Road'],
+    'kamakis'     => ['Kamakis', 'Ruiru', 'Kahawa Sukari', 'Membley', 'Eastern Bypass'],
+    'eldoret'     => ['Eldoret town', 'Uasin Gishu'],
+    'kiambu-road' => ['Thindigua', 'Kiambu Road', 'Ridgeways', 'Runda'],
+  ];
+  $areas = $branchAreas[$branchSlug] ?? [];
 
   // SHA approval is per facility; keep in sync with shaBranchSlugs in src/data/site.ts.
   $acceptsSha = in_array($branchSlug, ['kasarani', 'kamakis', 'eldoret'], true);
@@ -554,6 +562,7 @@ function render_branch($branchSlug) {
     'parentOrganization' => ['@type' => 'Organization', 'name' => 'Celestial Dental Centre', 'url' => $SITE . '/'],
     'description'        => $b['description'] ?? '',
   ];
+  if ($areas) $schema['areaServed'] = array_map(fn($a) => ['@type' => 'Place', 'name' => $a], $areas);
   if ($googleMap) $schema['hasMap'] = $googleMap;
   if ($googleProfile) $schema['sameAs'] = [$googleProfile];
   if (!empty($b['lat']) && !empty($b['lng'])) {
@@ -583,6 +592,11 @@ function render_branch($branchSlug) {
   echo "<h2>Visit us</h2>\n<p>$addrHtml</p>\n";
   if ($landmark) echo "<p>Landmark: $landmark</p>\n";
   if ($parking) echo "<p>Parking: $parking</p>\n";
+  if ($areas) {
+    $last = array_pop($areas);
+    $areasText = htmlspecialchars($areas ? implode(', ', $areas) . " and $last" : $last, ENT_QUOTES, 'UTF-8');
+    echo "<h2>Areas we serve</h2>\n<p>The $name branch serves patients in $areasText.</p>\n";
+  }
   $phoneLinks = implode(' / ', array_map(function ($p) {
     $p = trim($p);
     return "<a href=\"tel:" . preg_replace('/[^+\d]/', '', $p) . "\">$p</a>";

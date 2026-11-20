@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
-import { googleBusinessProfiles, services as staticServices, shaBranchSlugs, site } from '../data/site';
+import { branchAreas, googleBusinessProfiles, services as staticServices, shaBranchSlugs, site } from '../data/site';
 import { branchOpenClose, useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
 import { Header } from '../components/Header';
@@ -33,6 +33,11 @@ function BranchPageInner() {
   const mapUrl = googleProfile?.profileUrl || branch.map;
   const acceptsSha = shaBranchSlugs.includes(branch.slug);
   const { opens, closes } = branchOpenClose(branch.hours);
+  const areas = branchAreas[branch.slug] || [];
+  // Areas not already in the branch's name or address, e.g. "Ridgeways and Runda" for Kiambu Road.
+  const here = `${branch.name} ${branch.address.join(' ')}`.toLowerCase();
+  const nearby = areas.filter(a => !here.includes(a.toLowerCase()));
+  const nearbyText = nearby.length > 1 ? `${nearby.slice(0, -1).join(', ')} and ${nearby[nearby.length - 1]}` : nearby[0] || '';
 
   // Search phrasing includes the wider locality, not just the branch name
   // (e.g. people search "dentist in ruiru" for Kamakis, "nairobi" for Kasarani).
@@ -42,7 +47,7 @@ function BranchPageInner() {
     <>
       <SEO
         title={`Dentist in ${locality} | ${site.name}`}
-        description={`${branch.description} Open daily ${opens}-${closes}. ${acceptsSha ? 'SHA and 20+ insurance schemes' : '20+ insurance schemes'} accepted. Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
+        description={`${branch.description}${nearbyText ? ` Close to ${nearbyText}.` : ''} Open daily ${opens}-${closes}. ${acceptsSha ? 'SHA and 20+ insurance schemes' : '20+ insurance schemes'} accepted. Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
         image={branch.image}
         canonicalPath={`/branches/${branch.slug}`}
         keywords={[
@@ -54,6 +59,7 @@ function BranchPageInner() {
           `dental implants ${branch.name}`,
           `teeth cleaning ${branch.name}`,
           `dental checkup ${branch.name}`,
+          ...nearby.flatMap(a => [`dentist ${a}`, `dental clinic ${a}`]),
         ]}
       />
       <SchemaOrg />
@@ -171,6 +177,20 @@ function BranchPageInner() {
                 </div>
               </Reveal>
             </div>
+
+            {areas.length > 0 && (
+              <Reveal delay={210}>
+                <div className="mt-6 rounded-3xl bg-white p-6 shadow-card flex items-start gap-4">
+                  <MapPin className="h-6 w-6 shrink-0 text-brand-500" />
+                  <div>
+                    <h2 className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">Areas we serve</h2>
+                    <p className="text-sm text-ink-700 leading-relaxed">
+                      The {branch.name} branch serves patients in {areas.length > 1 ? `${areas.slice(0, -1).join(', ')} and ${areas[areas.length - 1]}` : areas[0]}.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+            )}
 
             <Reveal delay={240}>
               <div className="mt-6 rounded-3xl bg-white p-6 shadow-card flex items-start gap-4">
