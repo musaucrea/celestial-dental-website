@@ -675,7 +675,14 @@ function render_branch($branchSlug) {
   $whatsapp  = htmlspecialchars($b['whatsapp'] ?? '', ENT_QUOTES, 'UTF-8');
   $hours     = htmlspecialchars($b['hours'] ?? 'Monday – Sunday · 07:00 – 20:00', ENT_QUOTES, 'UTF-8');
   $region    = $b['region'] ?? '';
-  $googleProfile = $branchSlug === 'kasarani' ? 'https://share.google/g8vcwFAtSxwSbhEUW' : '';
+  // Official Google Business Profiles; keep in sync with googleBusinessProfiles in src/data/site.ts.
+  $profiles = [
+    'kasarani'    => ['https://share.google/g8vcwFAtSxwSbhEUW', 'Celestial Dental Centre -Kasarani Branch', ''],
+    'kamakis'     => ['https://share.google/DxCzsY8twDIjZrzoE', 'Celestial Dental Centre -Kamakis Branch', ''],
+    'eldoret'     => ['https://share.google/1DW9GobEX1VWO4dUB', 'Celestial Dental Centre -Eldoret Branch', ''],
+    'kiambu-road' => ['https://g.page/r/CS_CiT0WtA85EBI', 'Celestial Dental Centre-Kiambu Road', 'https://g.page/r/CS_CiT0WtA85EBI/review'],
+  ];
+  [$googleProfile, $googleProfileName, $googleReview] = $profiles[$branchSlug] ?? ['', '', ''];
   $googleMap = $branchSlug === 'kasarani' ? 'https://www.google.com/maps?cid=6616178097052496250' : ($b['map'] ?? '');
   $schemaName = $branchSlug === 'kasarani' ? 'Celestial Dental Centre -Kasarani Branch' : "Celestial Dental Centre — $name";
   $canonical = $SITE . '/branches/' . rawurlencode($branchSlug);
@@ -757,7 +764,7 @@ function render_branch($branchSlug) {
   echo "<p>Phone: $phoneLinks" . ($whatsapp ? " · WhatsApp: <a href=\"$whatsapp\">$whatsapp</a>" : '') . "</p>\n";
   echo "<p>Opening hours: " . htmlspecialchars($hoursText, ENT_QUOTES, 'UTF-8') . ". For public holidays, call the branch to confirm.</p>\n";
   if ($googleProfile) {
-    echo "<p>Official Google Business Profile: <a href=\"$googleProfile\">Celestial Dental Centre -Kasarani Branch</a>. Use the live profile for current reviews, rating, and directions.</p>\n";
+    echo "<h2>Google reviews</h2>\n<p>Read reviews of the $name branch on its official Google Business Profile: <a href=\"$googleProfile\">$googleProfileName</a>." . ($googleReview ? " Leave a review: <a href=\"$googleReview\">$googleReview</a>." : '') . "</p>\n";
   }
   echo "<h2>" . $pay['heading'] . " at $name</h2>\n<p>" . htmlspecialchars($insuranceText, ENT_QUOTES, 'UTF-8') . "</p>\n";
   echo "<h2>Services at this branch</h2>\n<ul>\n";

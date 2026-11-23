@@ -45,6 +45,8 @@ export const googleBusinessProfiles: Record<string, {
   name: string;
   profileUrl: string;
   mapsUrl: string;
+  /** Direct "write a review" link, when known. */
+  reviewUrl?: string;
 }> = {
   kasarani: {
     name: 'Celestial Dental Centre -Kasarani Branch',
@@ -60,6 +62,13 @@ export const googleBusinessProfiles: Record<string, {
     name: 'Celestial Dental Centre -Kamakis Branch',
     profileUrl: 'https://share.google/DxCzsY8twDIjZrzoE',
     mapsUrl: 'https://share.google/DxCzsY8twDIjZrzoE',
+  },
+  // From the branch's review QR code (kiambu-road-review-qr.png in the website folder).
+  'kiambu-road': {
+    name: 'Celestial Dental Centre-Kiambu Road',
+    profileUrl: 'https://g.page/r/CS_CiT0WtA85EBI',
+    mapsUrl: 'https://www.google.com/maps?cid=4111702992427270703',
+    reviewUrl: 'https://g.page/r/CS_CiT0WtA85EBI/review',
   },
 };
 
