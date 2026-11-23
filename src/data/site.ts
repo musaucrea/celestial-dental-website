@@ -286,6 +286,30 @@ export const gallery = [
   { src: '/facility/clinic-hallway.jpg', caption: 'Bright, private treatment corridors' },
 ];
 
+/**
+ * 5-star Google reviews shown on the branch pages, copied from each branch's
+ * Google Business Profile on 23 Nov 2026 at the clinic's request. Excluded:
+ * reviews with no text, reviews naming a practitioner or staff member, a review
+ * cut off mid-sentence, and a review posted from the owner's own account.
+ * Reviewer names are shortened to first name and initial.
+ * Note: the site removed patient reviews on 2026-09-19 as patient testimony
+ * under Rule 5(1)(a),(b); the clinic chose to show these on 2026-11-23.
+ */
+export const branchReviews: Record<string, { name: string; text: string }[]> = {
+  "kiambu-road": [
+    { name: "Sophie M.", text: "I had an amazing experience from start to finish. The ambience is so calm, clean, and welcoming, it really takes away the usual anxiety of going to the dentist. The staff were warm, professional, and attentive, and the service was impressively fast with almost no waiting time. You can also tell they’ve invested in state-of-the-art equipment, including modern digital imaging, which made the whole procedure smooth and comfortable. Highly recommend them for anyone looking for top-notch dental care in Kiambu." },
+    { name: "Shiqou M.", text: "Very baby friendly doctor. My kids visit was remarkable. Customer service on top notch" },
+  ],
+  "kamakis": [
+    { name: "Rosemary N.", text: "Excellent dental services, friendly staff and professional care. A clean, welcoming environment where patients feel valued. Highly recommended!" },
+    { name: "Christine M.", text: "The dental facility is at its best and deserves even more than 5 stars. There's good reception, good service from the professionals there. Outstanding decor, well ventilated and very clean. 10/10" },
+    { name: "Esther W.", text: "The service was just exemplary. Was a bit afraid but the moment I found a gentle dentist, I relaxed. I highly recommend it." },
+    { name: "Mike M.", text: "Perfect experience all through, talked me through my course of treatment, a very warm, and professional dental practice this one" },
+    { name: "Ann M.", text: "Excellent. Its clean, classy and has the best professional team. All your dental care needs under one roof." },
+    { name: "Janet K.", text: "The best facility ever, from the reception to the dentist keep it up." },
+  ],
+};
+
 /** Branches approved for SHA (Social Health Authority). SHA approval is per facility. */
 export const shaBranchSlugs = ['kasarani', 'kamakis'];
 

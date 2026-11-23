@@ -763,8 +763,27 @@ function render_branch($branchSlug) {
   }, explode('/', $phone)));
   echo "<p>Phone: $phoneLinks" . ($whatsapp ? " · WhatsApp: <a href=\"$whatsapp\">$whatsapp</a>" : '') . "</p>\n";
   echo "<p>Opening hours: " . htmlspecialchars($hoursText, ENT_QUOTES, 'UTF-8') . ". For public holidays, call the branch to confirm.</p>\n";
+  // Selected 5-star Google reviews; keep in sync with branchReviews in src/data/site.ts.
+  $branchReviews = [
+    'kiambu-road' => [
+      ["Sophie M.", "I had an amazing experience from start to finish. The ambience is so calm, clean, and welcoming, it really takes away the usual anxiety of going to the dentist. The staff were warm, professional, and attentive, and the service was impressively fast with almost no waiting time. You can also tell they’ve invested in state-of-the-art equipment, including modern digital imaging, which made the whole procedure smooth and comfortable. Highly recommend them for anyone looking for top-notch dental care in Kiambu."],
+      ["Shiqou M.", "Very baby friendly doctor. My kids visit was remarkable. Customer service on top notch"],
+    ],
+    'kamakis' => [
+      ["Rosemary N.", "Excellent dental services, friendly staff and professional care. A clean, welcoming environment where patients feel valued. Highly recommended!"],
+      ["Christine M.", "The dental facility is at its best and deserves even more than 5 stars. There's good reception, good service from the professionals there. Outstanding decor, well ventilated and very clean. 10/10"],
+      ["Esther W.", "The service was just exemplary. Was a bit afraid but the moment I found a gentle dentist, I relaxed. I highly recommend it."],
+      ["Mike M.", "Perfect experience all through, talked me through my course of treatment, a very warm, and professional dental practice this one"],
+      ["Ann M.", "Excellent. Its clean, classy and has the best professional team. All your dental care needs under one roof."],
+      ["Janet K.", "The best facility ever, from the reception to the dentist keep it up."],
+    ],
+  ];
   if ($googleProfile) {
-    echo "<h2>Google reviews</h2>\n<p>Read reviews of the $name branch on its official Google Business Profile: <a href=\"$googleProfile\">$googleProfileName</a>." . ($googleReview ? " Leave a review: <a href=\"$googleReview\">$googleReview</a>." : '') . "</p>\n";
+    echo "<h2>Google reviews</h2>\n";
+    foreach ($branchReviews[$branchSlug] ?? [] as [$rn, $rt]) {
+      echo "<blockquote><p>" . htmlspecialchars($rt, ENT_QUOTES, 'UTF-8') . "</p><footer>" . htmlspecialchars($rn, ENT_QUOTES, 'UTF-8') . ", Google review (5 stars)</footer></blockquote>\n";
+    }
+    echo "<p>Read reviews of the $name branch on its official Google Business Profile: <a href=\"$googleProfile\">$googleProfileName</a>." . ($googleReview ? " Leave a review: <a href=\"$googleReview\">$googleReview</a>." : '') . "</p>\n";
   }
   echo "<h2>" . $pay['heading'] . " at $name</h2>\n<p>" . htmlspecialchars($insuranceText, ENT_QUOTES, 'UTF-8') . "</p>\n";
   echo "<h2>Services at this branch</h2>\n<ul>\n";
