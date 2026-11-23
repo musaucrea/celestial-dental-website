@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
-import { branchHours, branchPayment, googleBusinessProfiles, services as staticServices, site } from '../data/site';
+import { branchHours, branchPayment, branchReviews, googleBusinessProfiles, services as staticServices, site } from '../data/site';
 import { branchAreas } from '../data/serviceAreas';
 import { useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
@@ -32,6 +32,7 @@ function BranchPageInner() {
 
   const otherBranches = branches.filter(b => b.slug !== slug);
   const googleProfile = googleBusinessProfiles[branch.slug];
+  const reviews = branchReviews[branch.slug] || [];
   const mapUrl = googleProfile?.profileUrl || branch.map;
   const hoursText = branchHours[branch.slug]?.text || branch.hours;
   const pay = branchPayment(branch.slug, branch.name);
@@ -122,32 +123,53 @@ function BranchPageInner() {
           </div>
         </section>
 
-        {/* Google reviews: a link out to the branch's Google profile. Reviews are
-            not quoted on the site (patient testimony in advertising, Rule 5(1)). */}
+        {/* Google reviews. Branches listed in branchReviews show selected 5-star
+            reviews copied from their Google profile (clinic's choice, 23 Nov 2026);
+            every branch links out to read more or leave one. */}
         {googleProfile && (
           <section className="bg-white py-12">
             <div className="container-page">
               <Reveal>
-                <div className="flex flex-col gap-6 rounded-3xl border border-gold-300/60 bg-gold-300/10 p-7 shadow-card md:flex-row md:items-center md:justify-between lg:p-9">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
-                    <Star className="h-7 w-7 shrink-0 fill-gold-400 text-gold-500 sm:mt-0.5" aria-hidden="true" />
-                    <div>
-                      <h2 className="text-2xl font-900 text-ink-900">Read our {branch.name} reviews on Google</h2>
-                      <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-600">
-                        See what patients have shared about our {branch.name} branch on its official Google Business Profile,
-                        or leave an honest review of your own visit.
-                      </p>
+                <div className="rounded-3xl border border-gold-300/60 bg-gold-300/10 p-7 shadow-card lg:p-9">
+                  <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+                      <Star className="h-7 w-7 shrink-0 fill-gold-400 text-gold-500 sm:mt-0.5" aria-hidden="true" />
+                      <div>
+                        <h2 className="text-2xl font-900 text-ink-900">
+                          {reviews.length ? `Google reviews of our ${branch.name} branch` : `Read our ${branch.name} reviews on Google`}
+                        </h2>
+                        <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-600">
+                          {reviews.length
+                            ? `What patients wrote on our ${branch.name} branch's official Google Business Profile. Read them all there, or leave an honest review of your own visit.`
+                            : `See what patients have shared about our ${branch.name} branch on its official Google Business Profile, or leave an honest review of your own visit.`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3 md:shrink-0">
+                      <a href={googleProfile.profileUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">
+                        {reviews.length ? 'All reviews on Google' : 'Read Google reviews'}
+                        <ChevronRight className="h-4 w-4" />
+                      </a>
+                      <a href={googleProfile.reviewUrl || googleProfile.profileUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                        Leave a review
+                      </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-3 md:shrink-0">
-                    <a href={googleProfile.profileUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">
-                      Read Google reviews
-                      <ChevronRight className="h-4 w-4" />
-                    </a>
-                    <a href={googleProfile.reviewUrl || googleProfile.profileUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-                      Leave a review
-                    </a>
-                  </div>
+                  {reviews.length > 0 && (
+                    <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {reviews.map(r => (
+                        <li key={r.name} className="flex h-full flex-col rounded-2xl bg-white p-5 shadow-card">
+                          <div className="flex gap-0.5" role="img" aria-label="Rated 5 out of 5 on Google">
+                            {[0, 1, 2, 3, 4].map(i => <Star key={i} className="h-4 w-4 fill-gold-400 text-gold-500" aria-hidden="true" />)}
+                          </div>
+                          <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-ink-700">“{r.text}”</blockquote>
+                          <p className="mt-4 text-xs font-800 text-ink-900">
+                            {r.name} <span className="font-600 text-ink-400">· Google review</span>
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </Reveal>
             </div>
