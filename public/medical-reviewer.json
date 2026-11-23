@@ -1,0 +1,8 @@
+{
+  "_comment": "Clinician who reviews the blog's health content. Fill in name and registration and every article gains a visible 'Medically reviewed by' line plus Person author/reviewedBy schema, in both the React page and the crawler prerender. While name is empty, both fall back to attributing the clinical team, exactly as before. Do not put a name here that has not agreed to review the content.",
+  "name": "",
+  "credentials": "",
+  "registration": "",
+  "jobTitle": "Dentist",
+  "url": ""
+}

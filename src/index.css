@@ -6,17 +6,30 @@
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 
   /* Brand teal */
-  --color-brand-50: #effdf9;
-  --color-brand-100: #c9f7ec;
-  --color-brand-200: #95edd9;
-  --color-brand-300: #5bdcc3;
-  --color-brand-400: #2cc1a7;
-  --color-brand-500: #14a58c;
-  --color-brand-600: #0d8a76;
-  --color-brand-700: #0f6e60;
-  --color-brand-800: #11574d;
-  --color-brand-900: #114840;
-  --color-brand-950: #042a26;
+  /* Primary — cyan-turquoise blended from the Celestial logo */
+  --color-brand-50: #ecfdff;
+  --color-brand-100: #cff7fb;
+  --color-brand-200: #a2edf5;
+  --color-brand-300: #67dced;
+  --color-brand-400: #2ec6dc;
+  --color-brand-500: #13a8c2;
+  --color-brand-600: #0c88a3;
+  --color-brand-700: #106d84;
+  --color-brand-800: #145a6c;
+  --color-brand-900: #144b5b;
+  --color-brand-950: #05292f;
+
+  /* Secondary navy (from brand) */
+  --color-secondary-50: #eef0f9;
+  --color-secondary-100: #d5daf0;
+  --color-secondary-200: #adb8e0;
+  --color-secondary-300: #7e8fcd;
+  --color-secondary-400: #5566b3;
+  --color-secondary-500: #384a95;
+  --color-secondary-600: #293a80;
+  --color-secondary-700: #1b2a72;
+  --color-secondary-800: #172358;
+  --color-secondary-900: #141d47;
 
   /* Warm gold accent (from logo) */
   --color-gold-300: #fcd34d;
@@ -107,14 +120,33 @@
     font-weight: 800;
     font-family: var(--font-display);
     color: #fff;
-    background: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700));
-    box-shadow: 0 14px 30px -10px rgba(13, 138, 118, 0.6);
+    background: linear-gradient(120deg, var(--color-brand-400) 0%, var(--color-brand-500) 40%, var(--color-brand-700) 100%);
+    box-shadow: 0 14px 30px -10px rgba(12, 136, 163, 0.55);
     transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
   }
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 22px 40px -12px rgba(13, 138, 118, 0.7);
-    filter: brightness(1.04);
+    box-shadow: 0 22px 42px -12px rgba(12, 136, 163, 0.68);
+    filter: brightness(1.06) saturate(1.05);
+  }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border-radius: 999px;
+    padding: 0.95rem 1.6rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-secondary-600), var(--color-secondary-800));
+    box-shadow: 0 14px 30px -12px rgba(27, 42, 114, 0.6);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  }
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 40px -14px rgba(27, 42, 114, 0.7);
+    filter: brightness(1.08);
   }
   .btn-ghost {
     display: inline-flex;
@@ -149,13 +181,68 @@
   transform: none;
 }
 
+/* Rotating hero patient story: pop in, hold ~7s, fade out (matches the 7s swap interval) */
+@keyframes story-pop {
+  0%   { opacity: 0; transform: translateY(14px) scale(0.95); }
+  6%   { opacity: 1; transform: translateY(0) scale(1); }
+  93%  { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-10px) scale(0.97); }
+}
+.story-pop { animation: story-pop 7s ease-in-out both; }
+
+/* Hero slideshow: slow Ken Burns zoom on the active slide (restarts when the
+   class is re-applied on slide change) */
+@keyframes hero-kenburns {
+  from { transform: scale(1); }
+  to   { transform: scale(1.09); }
+}
+.hero-kenburns { animation: hero-kenburns 7.5s ease-out forwards; }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
   .animate-marquee, .animate-float-slow, .animate-blob { animation: none !important; }
+  .story-pop { animation: none !important; opacity: 1; }
+  .hero-kenburns { animation: none !important; }
 }
 
 .mask-fade-x {
   -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
+
+/* ─── Accessibility (visually-impaired) helpers ───────────────────
+   Font scale + high-contrast/grayscale filters are applied as inline
+   styles on <html> by the AccessibilityWidget. These add link and
+   readable-font modes, and keep the widget itself always usable. */
+html.a11y-links a {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 2px;
+}
+html.a11y-readable body,
+html.a11y-readable p,
+html.a11y-readable li,
+html.a11y-readable span,
+html.a11y-readable a,
+html.a11y-readable h1,
+html.a11y-readable h2,
+html.a11y-readable h3 {
+  font-family: Verdana, Tahoma, Arial, sans-serif !important;
+  letter-spacing: 0.01em;
+}
+html.a11y-readable p,
+html.a11y-readable li {
+  line-height: 1.9 !important;
+}
+/* The accessibility widget must never be dimmed by the page filters */
+.a11y-widget { filter: none !important; }
+
+/* Hide the Google Translate top banner / chrome, keep our own UI */
+.goog-te-banner-frame,
+.goog-te-gadget-icon,
+#goog-gt-tt,
+.goog-te-balloon-frame { display: none !important; }
+.goog-te-gadget { font-size: 0 !important; color: transparent !important; }
+body { top: 0 !important; }
+.skiptranslate iframe { display: none !important; }

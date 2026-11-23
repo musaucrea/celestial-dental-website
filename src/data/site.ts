@@ -1,29 +1,101 @@
+/**
+ * Google Tag Manager container id (format: GTM-XXXXXXX). Leave empty to keep
+ * GTM off. Loaded only after the visitor accepts the cookie banner.
+ * NOTE: this file is also imported by the serverless API (Node), so it must
+ * not reference import.meta.env — Vite-only syntax crashes the functions.
+ */
+export const gtmId = 'GTM-K8ZDP7VF';
+
+/** GA4 web stream. Loaded directly after consent so analytics remains
+ * operational while Google's malware scanner reviews the GTM container. */
+export const ga4Id = 'G-VK0ZKB97KW';
+
 export const site = {
   name: 'Celestial Dental Centre',
   shortName: 'Celestial Dental',
+  alternateNames: [
+    'Celestial Dental & Orthodontic Centre',
+    'Celestial Dental & Orthodontic Centre Nairobi',
+  ],
   tagline: 'Your smile matters',
   logo: '/brand/celestial-logo.png',
   email: 'info@celestialdental.org',
   emailHref: 'mailto:info@celestialdental.org',
-  primaryPhone: { label: '+254 707 535 000', href: 'tel:+254707535000' },
+  primaryPhone: { label: '+254 709 000 240 / +254 707 535 000', href: 'tel:+254709000240' },
   whatsappHref: 'https://wa.me/254767207000',
-  hours: 'Monday – Sunday · 07:00 – 20:00',
+  hours: 'Every day · hours vary by branch',
 };
 
+export const socials = [
+  { label: 'Facebook', href: 'https://www.facebook.com/CelestialDentalCentre/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/celestial_dental/' },
+  { label: 'X', href: 'https://twitter.com/celestialdental' },
+  { label: 'LinkedIn', href: 'https://ke.linkedin.com/company/celestial-dental-centre' },
+  { label: 'WhatsApp', href: 'https://wa.me/254767207000' },
+];
+
+/**
+ * Canonical Google Business Profile entities.
+ *
+ * Keep these separate from admin-managed directions links so the website,
+ * structured data, and review calls-to-action consistently identify the
+ * verified branch selected by the clinic.
+ */
+export const googleBusinessProfiles: Record<string, {
+  name: string;
+  profileUrl: string;
+  mapsUrl: string;
+}> = {
+  kasarani: {
+    name: 'Celestial Dental Centre -Kasarani Branch',
+    profileUrl: 'https://share.google/g8vcwFAtSxwSbhEUW',
+    mapsUrl: 'https://www.google.com/maps?cid=6616178097052496250',
+  },
+  eldoret: {
+    name: 'Celestial Dental Centre -Eldoret Branch',
+    profileUrl: 'https://share.google/1DW9GobEX1VWO4dUB',
+    mapsUrl: 'https://share.google/1DW9GobEX1VWO4dUB',
+  },
+  kamakis: {
+    name: 'Celestial Dental Centre -Kamakis Branch',
+    profileUrl: 'https://share.google/DxCzsY8twDIjZrzoE',
+    mapsUrl: 'https://share.google/DxCzsY8twDIjZrzoE',
+  },
+};
+
+export const team = [
+  { name: 'Dennis Onyango', image: '/team/staff/dennis-onyango.jpg' },
+  { name: 'Ann Wambui', image: '/team/staff/ann-wambui.jpg' },
+  { name: 'Amos Njega', image: '/team/staff/amos-njega.jpg' },
+  { name: 'Doris Murithi', image: '/team/staff/doris-murithi.jpg' },
+  { name: 'Millicent Nyongesa', image: '/team/staff/millicent-nyongesa.jpg' },
+];
+
+/** URL-safe slug from a title, e.g. "Orthodontics (Braces)" → "orthodontics-braces". */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/['']/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/** Stable slug for a service, used for its dedicated /services/<slug> page. */
+export const serviceSlug = (title: string) => slugify(title);
+
 export const nav = [
-  { label: 'Services', href: '/#services' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Services', href: '/services', dropdown: 'services' as const },
   { label: 'Why Choose Us', href: '/#why' },
   {
     label: 'Branches',
     href: '/#branches',
-    dropdown: [
-      { label: 'Kasarani', href: '/branches/kasarani' },
-      { label: 'Kamakis', href: '/branches/kamakis' },
-      { label: 'Eldoret', href: '/branches/eldoret' },
-    ],
+    dropdown: 'branches' as const,
   },
   { label: 'Gallery', href: '/#gallery' },
-  { label: 'Blog', href: '/#blog' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Careers', href: '/careers' },
   { label: 'FAQ', href: '/#faq' },
 ];
 
@@ -32,119 +104,211 @@ export const heroPills = ['Checkups', 'Braces', 'Implants', 'Emergency care'];
 export const stats = [
   { value: '20+', label: 'Years of service' },
   { value: '3', label: 'Accessible branches' },
-  { value: '10 min', label: 'Target response time' },
+  { value: '7 days', label: 'Open every day of the week' },
 ];
 
 export const services = [
   {
+    title: 'Dental Checkup',
+    description:
+      'A thorough examination of your teeth, gums, and mouth to catch problems early — the simplest way to keep your smile healthy.',
+    image: '/facility/reception-lounge.jpg',
+    faqs: [
+      { q: 'How often should I have a dental checkup?', a: 'For most people, every 6 months — even when nothing hurts. Regular checkups catch small problems early, when they are simpler to treat.' },
+      { q: 'What happens during a dental checkup?', a: 'We examine your teeth and gums, check for decay, gum disease, and other issues, and discuss anything we find. If needed, we may recommend a cleaning, x-rays, or treatment — always explained clearly first.' },
+    ],
+  },
+  {
+    title: 'General Dentistry',
+    description:
+      'Everyday dental care and diagnosis for the whole family — your first stop for a healthy smile.',
+    image: '/team/clinical-team.jpg',
+    faqs: [
+      { q: 'How often should I visit the dentist?', a: 'We recommend a checkup every 6 months, even when nothing hurts — small problems caught early are simpler to fix.' },
+    ],
+  },
+  {
+    title: 'Dental X-rays',
+    description:
+      'Safe, low-dose digital x-rays that reveal what the eye cannot see — hidden decay, bone health, and issues below the gumline.',
+    image: '/facility/clinic-hallway.jpg',
+    faqs: [
+      { q: 'Are dental x-rays safe?', a: 'Yes. We use modern digital x-rays, which use a very low dose of radiation — far less than older film x-rays. We only take them when they will genuinely help your diagnosis.' },
+      { q: 'Why do I need a dental x-ray?', a: 'X-rays let us see between and inside teeth, check the roots and jawbone, and spot problems like hidden decay or infection early — things a visual exam alone can miss.' },
+    ],
+  },
+  {
+    title: 'Dental Emergencies',
+    description:
+      'Same-day relief for severe tooth pain, swelling, knocked-out teeth, and urgent dental problems — 7 days a week.',
+    image: '/facility/reception-lounge.jpg',
+    faqs: [
+      { q: 'Do you handle dental emergencies same day?', a: 'Yes. We aim to see emergency patients the same day — call or WhatsApp the nearest branch and we\'ll fit you in as quickly as possible. Every branch is open every day of the week.' },
+    ],
+  },
+  {
+    title: 'Cosmetic Dentistry',
+    description:
+      'Smile makeovers, veneers, and aesthetic treatments tailored to how you want to look and feel.',
+    image: '/facility/waiting-area.jpg',
+  },
+  {
+    title: 'Teeth Whitening',
+    description:
+      'Professional in-office whitening and take-home kits that safely lift your smile by several shades.',
+    image: '/team/patient-care-team.jpg',
+    faqs: [
+      { q: 'Are whitening results guaranteed?', a: 'Whitening is designed to lighten natural tooth enamel by several shades. Individual results vary depending on the starting shade and tooth type. We assess your suitability at consultation to give you realistic expectations.' },
+    ],
+  },
+  {
+    title: 'Dental Bridges & Crowns',
+    description:
+      'Strong, natural-looking crowns and bridges that restore damaged or missing teeth to full function.',
+    image: '/facility/clinic-hallway.jpg',
+  },
+  {
+    title: 'Full & Partial Dentures',
+    description:
+      'Comfortable, well-fitted dentures — full or partial — that restore your smile, speech, and chewing.',
+    image: '/facility/waiting-area.jpg',
+  },
+  {
+    title: 'Dental Implants',
+    description:
+      'Durable titanium implants with natural-looking crowns — the closest thing to a real tooth.',
+    image: '/facility/clinic-hallway.jpg',
+    faqs: [
+      { q: 'Does the implant procedure hurt?', a: 'The procedure is done under local anaesthesia so you should feel little to no pain during placement. Some soreness is normal for a few days after — we provide clear aftercare instructions and a review appointment.' },
+    ],
+  },
+  {
+    title: 'Orthodontics (Braces)',
+    description:
+      'Metal braces, ceramic braces, and clear aligners for children, teens, and adults — with clear timelines.',
+    image: '/facility/childrens-treatment-room.jpg',
+    faqs: [
+      { q: 'How long does orthodontic treatment take?', a: 'Most cases take 12–24 months. Your dentist will give you a personalised timeline at your first consultation after assessing your teeth.' },
+      { q: 'What\'s the difference between metal braces, ceramic, and aligners?', a: 'Metal braces are the most affordable and work for most cases. Ceramic braces are less visible. Clear aligners (like Invisalign-style) are removable and nearly invisible but suit simpler cases. We\'ll help you choose what\'s right for your teeth and lifestyle.' },
+    ],
+  },
+  {
+    title: 'Root Canal Therapy',
+    description:
+      'Pain-relieving root canal treatment that saves your natural tooth — done gently under local anaesthesia.',
+    image: '/team/patient-care-team.jpg',
+    faqs: [
+      { q: 'Is a root canal painful?', a: 'Modern root canal treatment is done under local anaesthesia and is designed to relieve pain, not cause it. Most patients are surprised at how comfortable the procedure is. Mild soreness for 1–2 days afterward is normal.' },
+    ],
+  },
+  {
     title: "Children's Dentistry",
     description:
       'Gentle, friendly care that helps young patients feel calm — from first visits to cavity care and prevention.',
-    image: '/team/clinical-team.jpg',
-    priceFrom: 'from KSh 2,000',
-    priceNote: 'subject to consultation',
+    image: '/facility/childrens-treatment-room.jpg',
     faqs: [
       { q: 'At what age should my child first see a dentist?', a: 'We recommend bringing your child in as soon as their first tooth appears, or by age one — whichever comes first. Early visits help prevent problems and make dentistry feel normal.' },
       { q: 'How do you keep children calm during treatment?', a: 'Our child-friendly rooms, gentle approach, and patient explanations help kids feel safe. We never rush, and we involve children in what\'s happening at every step.' },
     ],
   },
   {
-    title: 'Orthodontics & Braces',
+    title: 'Dental Fillings',
     description:
-      'Braces and aligner planning for children, teens, and adults, with clear timelines and progress reviews.',
-    image: '/facility/childrens-treatment-room.jpg',
-    priceFrom: 'from KSh 80,000',
-    priceNote: 'metal braces · subject to consultation',
-    faqs: [
-      { q: 'How much do braces cost at Celestial Dental?', a: 'Metal braces start from KSh 80,000, ceramic braces from KSh 100,000, and clear aligners from KSh 120,000 — all subject to a consultation. The final cost depends on the complexity of your case and treatment duration.' },
-      { q: 'How long does orthodontic treatment take?', a: 'Most cases take 12–24 months. Your dentist will give you a personalised timeline at your first consultation after assessing your teeth.' },
-      { q: 'What\'s the difference between metal braces, ceramic, and aligners?', a: 'Metal braces are the most affordable and work for most cases. Ceramic braces are less visible. Clear aligners (like Invisalign-style) are removable and nearly invisible but suit simpler cases. We\'ll help you choose what\'s right for your teeth and lifestyle.' },
-    ],
+      'Tooth-coloured fillings that stop cavities in their tracks and blend invisibly with your natural teeth.',
+    image: '/team/clinical-team.jpg',
   },
   {
-    title: 'Implants & Restorations',
+    title: 'Gum Disease Treatment',
     description:
-      'Durable, natural-looking implants, crowns, and restorative work using quality materials.',
-    image: '/facility/clinic-hallway.jpg',
-    priceFrom: 'from KSh 45,000',
-    priceNote: 'per implant · subject to consultation',
-    faqs: [
-      { q: 'How much do dental implants cost in Nairobi?', a: 'A single dental implant at Celestial Dental starts from KSh 45,000, which includes the titanium post, abutment, and crown. The final price depends on your bone condition and the number of implants needed.' },
-      { q: 'Does the implant procedure hurt?', a: 'The procedure is done under local anaesthesia so you should feel little to no pain during placement. Some soreness is normal for a few days after — we provide clear aftercare instructions and a review appointment.' },
-    ],
-  },
-  {
-    title: 'Teeth Cleaning & Checkups',
-    description:
-      'Routine scaling, polishing, and exams that keep your smile healthy and catch issues early.',
+      'Deep cleaning and gum therapy that treats bleeding gums, bad breath, and periodontal disease.',
     image: '/facility/reception-lounge.jpg',
-    priceFrom: 'from KSh 2,500',
-    priceNote: 'full-mouth cleaning · subject to consultation',
+  },
+  {
+    title: 'Teeth Extraction',
+    description:
+      'Safe, comfortable removal of damaged teeth and wisdom teeth, with clear aftercare and healing support.',
+    image: '/facility/clinic-hallway.jpg',
+  },
+  {
+    title: 'Teeth Cleaning',
+    description:
+      'Professional scaling and polishing that removes plaque and stains, keeping your gums healthy and breath fresh.',
+    image: '/facility/reception-lounge.jpg',
     faqs: [
-      { q: 'How much does a dental cleaning cost?', a: 'A full-mouth scaling and polishing starts from KSh 2,500. A routine checkup with X-rays starts from KSh 1,500. Prices may vary by branch and complexity.' },
       { q: 'How often should I get my teeth cleaned?', a: 'We recommend a professional cleaning every 6 months for most adults. If you have gum disease or heavy tartar build-up, every 3–4 months is better — we\'ll advise you at your first visit.' },
-    ],
-  },
-  {
-    title: 'Cosmetic Dentistry',
-    description:
-      'Whitening, smile restoration, and aesthetic treatments tailored to how you want to look and feel.',
-    image: '/facility/waiting-area.jpg',
-    priceFrom: 'from KSh 8,000',
-    priceNote: 'teeth whitening · subject to consultation',
-    faqs: [
-      { q: 'How much does teeth whitening cost?', a: 'Professional teeth whitening at Celestial Dental starts from KSh 8,000 for in-office treatment. Take-home whitening kits start from KSh 5,000. Results typically last 1–2 years with good oral hygiene.' },
-      { q: 'Are whitening results guaranteed?', a: 'Whitening is designed to lighten natural tooth enamel by several shades. Individual results vary depending on the starting shade and tooth type. We assess your suitability at consultation to give you realistic expectations.' },
-    ],
-  },
-  {
-    title: 'Root Canal & Emergency Care',
-    description:
-      'Prompt relief for tooth pain, root canal treatment, and urgent dental emergencies when you need it.',
-    image: '/team/patient-care-team.jpg',
-    priceFrom: 'from KSh 15,000',
-    priceNote: 'root canal · subject to consultation',
-    faqs: [
-      { q: 'How much does a root canal cost in Nairobi?', a: 'Root canal treatment at Celestial Dental starts from KSh 15,000 per tooth, subject to the number of canals and complexity. This typically includes the procedure and a temporary filling — a crown may be recommended separately.' },
-      { q: 'Do you handle dental emergencies same day?', a: 'Yes. We aim to see emergency patients the same day — call or WhatsApp the nearest branch and we\'ll fit you in as quickly as possible. We\'re open every day, 07:00–20:00.' },
-      { q: 'Is a root canal painful?', a: 'Modern root canal treatment is done under local anaesthesia and is designed to relieve pain, not cause it. Most patients are surprised at how comfortable the procedure is. Mild soreness for 1–2 days afterward is normal.' },
     ],
   },
 ];
 
 export const whyChooseUs = [
   {
-    tag: 'Technology',
-    title: 'Modern dentistry, clear treatment planning',
+    tag: 'Treatment planning',
+    title: 'Written treatment plans',
     description:
-      'From digital workflows to advanced restorative and cosmetic procedures, the team focuses on accurate diagnosis and clearly explained care.',
+      'Findings and treatment options are explained at the assessment and set out in writing, with the cost, before any treatment begins.',
   },
   {
-    tag: 'Materials',
-    title: 'Quality materials and equipment',
+    tag: 'Equipment',
+    title: 'Instruments and materials',
     description:
-      'Treatments use carefully selected instruments and materials from trusted manufacturers for durable, natural-looking results.',
+      'Treatments use instruments and materials from established manufacturers, chosen for the procedure being carried out.',
   },
   {
-    tag: 'Safety',
-    title: 'Sterilization you can trust',
+    tag: 'Infection control',
+    title: 'Instrument sterilisation',
     description:
-      'Every appointment is backed by strong sterilization protocols, clean clinical spaces, and consistent infection-control standards.',
+      'Instruments are sterilised between patients and clinical areas are cleaned to documented infection-control procedures.',
   },
   {
-    tag: 'Experience',
-    title: 'Friendly care for children and adults',
+    tag: 'Appointments',
+    title: 'Care for children and adults',
     description:
-      'Patients value calm communication, transparent guidance, and support that helps every visit feel manageable.',
+      'Appointments allow time to explain what is being done, for both adults and children, at all four branches.',
   },
 ];
 
 export const gallery = [
+  { src: '/facility/clinic-exterior-night.jpg', caption: 'Celestial Dental clinic lit up at night' },
+  { src: '/facility/clinic-hallway-evening.jpg', caption: 'Our bright treatment corridor with signature chandelier' },
+  { src: '/team/receptionist.jpg', caption: 'We listen first, then make every visit feel easier' },
   { src: '/facility/reception-lounge.jpg', caption: 'Warm reception & patient lounge' },
   { src: '/facility/waiting-area.jpg', caption: 'Comfortable waiting area' },
   { src: '/facility/childrens-treatment-room.jpg', caption: 'Child-friendly treatment room' },
   { src: '/facility/clinic-hallway.jpg', caption: 'Bright, private treatment corridors' },
 ];
+
+/**
+ * Branches where SHA (Social Health Authority) is accepted. SHA approval is
+ * per facility, so a branch is only described as accepting SHA when listed
+ * here. Kiambu Road is deliberately absent.
+ */
+export const shaBranchSlugs = ['kasarani', 'kamakis', 'eldoret'];
+
+/**
+ * Branches that are yet to start accepting insurance (cash and M-Pesa only).
+ * Keep in sync with $noInsuranceYet in public/prerender.php.
+ */
+export const noInsuranceYetSlugs = ['kiambu-road'];
+
+/**
+ * Each branch's opening hours, confirmed November 2026 (the CRM's
+ * src/lib/branch-hours.ts holds the same). Used for the page text and for
+ * Google (schema.org) instead of the admin's free-text hours. Keep in sync
+ * with $branchHours in public/prerender.php and public/home-schema.json.
+ */
+const EVERY_DAY = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const branchHours: Record<string, { text: string; spec: { days: string[]; opens: string; closes: string }[] }> = {
+  kasarani: { text: 'Every day · 07:00 – 20:00', spec: [{ days: EVERY_DAY, opens: '07:00', closes: '20:00' }] },
+  kamakis: {
+    text: 'Mon – Sat · 07:00 – 20:00 · Sun · 08:00 – 18:00',
+    spec: [{ days: EVERY_DAY.slice(0, 6), opens: '07:00', closes: '20:00' }, { days: ['Sunday'], opens: '08:00', closes: '18:00' }],
+  },
+  eldoret: {
+    text: 'Mon – Fri · 08:00 – 18:00 · Sat – Sun · 09:00 – 16:00',
+    spec: [{ days: EVERY_DAY.slice(0, 5), opens: '08:00', closes: '18:00' }, { days: ['Saturday', 'Sunday'], opens: '09:00', closes: '16:00' }],
+  },
+  'kiambu-road': { text: 'Every day · 08:00 – 18:00', spec: [{ days: EVERY_DAY, opens: '08:00', closes: '18:00' }] },
+};
 
 export const branches = [
   {
@@ -157,10 +321,10 @@ export const branches = [
     address: ['Total Petrol Station Building, 2nd Floor', 'Along Kasarani – Mwiki Road', 'Kasarani, Nairobi'],
     landmark: '5 minutes from Thika Road Mall',
     parking: 'Parking available at the Total Petrol Station',
-    phone: '+254 707 535 000',
-    phoneHref: 'tel:+254707535000',
+    phone: '+254 709 000 241 / +254 707 535 000',
+    phoneHref: 'tel:+254709000241',
     whatsapp: 'https://wa.me/254707535000',
-    map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Kasarani',
+    map: 'https://www.google.com/maps?cid=6616178097052496250',
     hours: 'Monday – Sunday · 07:00 – 20:00',
     image: '/facility/reception-lounge.jpg',
   },
@@ -174,11 +338,11 @@ export const branches = [
     address: ['Along Eastern Bypass', 'Kamakis, Ruiru', 'Kiambu County'],
     landmark: 'Easy access from the Eastern Bypass',
     parking: 'Ample parking available on-site',
-    phone: '+254 754 400 500',
-    phoneHref: 'tel:+254754400500',
-    whatsapp: 'https://wa.me/254754400500',
+    phone: '+254 709 000 242 / +254 724 202 252',
+    phoneHref: 'tel:+254709000242',
+    whatsapp: 'https://wa.me/254724202252',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Kamakis',
-    hours: 'Monday – Sunday · 07:00 – 20:00',
+    hours: 'Mon – Sat · 07:00 – 20:00 · Sun · 08:00 – 18:00',
     image: '/facility/waiting-area.jpg',
   },
   {
@@ -191,30 +355,55 @@ export const branches = [
     address: ['Along Banaptai Street', 'Eldoret Town', 'Uasin Gishu County'],
     landmark: 'Central Eldoret — easily accessible from all directions',
     parking: 'Street parking available nearby',
-    phone: '+254 794 585 217',
-    phoneHref: 'tel:+254794585217',
+    phone: '+254 709 000 244 / +254 794 585 217',
+    phoneHref: 'tel:+254709000244',
     whatsapp: 'https://wa.me/254794585217',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Eldoret',
-    hours: 'Monday – Sunday · 07:00 – 20:00',
+    hours: 'Mon – Fri · 08:00 – 18:00 · Sat – Sun · 09:00 – 16:00',
     image: '/facility/childrens-treatment-room.jpg',
+  },
+  {
+    name: 'Kiambu Road',
+    slug: 'kiambu-road',
+    badge: 'Kiambu Road Branch',
+    tagline: 'Dental care in Thindigua, along Kiambu Road',
+    description:
+      'Our Kiambu Road branch is at Brick House in Thindigua, along Kiambu Road. It offers the Celestial Dental range of services for children and adults — from routine check-ups and cleaning to orthodontics, implants, and emergency care.',
+    address: ['Brick House, 2nd Floor', 'Thindigua, along Kiambu Road', 'Kiambu County'],
+    landmark: 'Thindigua, along Kiambu Road',
+    parking: 'Call ahead to ask about parking',
+    phone: '+254 709 000 243 / +254 711 699 281',
+    phoneHref: 'tel:+254709000243',
+    whatsapp: 'https://wa.me/254711699281',
+    map: 'https://maps.google.com/?q=Brick+House+Thindigua+Kiambu+Road',
+    hours: 'Monday – Sunday · 08:00 – 18:00',
+    image: '/facility/reception-lounge.jpg',
+    region: 'Kiambu',
   },
 ];
 
+// Real Google reviews from the Kasarani & Kamakis Google Business profiles.
 export const testimonials = [
   {
     quote:
-      'Their staff are very friendly and welcoming. They have excellent customer care and their prices are affordable.',
-    author: 'Nairobi Resident',
+      "Just had a root canal at this facility today, I was attended by Dr. Belinda, she was so kind. The place is cosy, comfortable waiting area, modern machines & before you realize it, you're done. They make a 'usually uncomfortable root canal procedure' so easy, painless and seamless.",
+    author: 'Verified patient review',
+    branch: 'Kamakis',
+    stars: 5,
   },
   {
     quote:
-      'Calm, professional, and thorough. The team explained everything clearly and made my treatment stress-free.',
-    author: 'Kasarani Resident',
+      'Perfect experience all through, talked me through my course of treatment, a very warm, and professional dental practice this one.',
+    author: 'Verified patient review',
+    branch: 'Kamakis',
+    stars: 5,
   },
   {
     quote:
-      'My kids actually look forward to their dental visits now. Patient, gentle, and genuinely caring.',
-    author: 'Parent from Thika Road',
+      'Clean, warm and efficient reception. Great customer service and service delivery by the medical team.',
+    author: 'Verified patient review',
+    branch: 'Kasarani',
+    stars: 4,
   },
 ];
 
@@ -239,7 +428,7 @@ export const insurers = [
   { name: 'First Assurance', logo: '/insurance/first-assurance.png' },
   { name: 'Karirana Estates', logo: '/insurance/karirana-estates.png' },
   { name: 'Heritage Insurance', logo: '/insurance/heritage.png' },
-  { name: 'Equity Bank Insurance', logo: '/insurance/equity.svg' },
+  { name: 'Equity Bank Insurance', logo: '/insurance/equity-bank.png' },
 ];
 
 export const blogPosts = [
@@ -278,31 +467,23 @@ export const blogPosts = [
 export const faqs = [
   {
     q: 'What are your opening hours?',
-    a: 'We are open Monday to Sunday, 07:00 to 20:00, across all branches in Kasarani, Kamakis, and Eldoret. Walk-ins are welcome, but booking ahead helps us reserve time for you.',
-  },
-  {
-    q: 'How much does a dental checkup cost?',
-    a: 'A routine checkup and consultation starts from KSh 1,500, and a full-mouth scaling and polishing (teeth cleaning) starts from KSh 2,500 — subject to consultation. We\'ll always explain costs upfront before any treatment begins.',
-  },
-  {
-    q: 'How much do braces cost at Celestial Dental?',
-    a: 'Metal braces start from KSh 80,000, ceramic braces from KSh 100,000, and clear aligners from KSh 120,000 — all subject to a full orthodontic consultation. The exact cost depends on the complexity of your case and expected treatment duration.',
+    a: 'We are open every day of the week. Hours by branch: Kasarani 07:00–20:00 every day; Kamakis 07:00–20:00 Monday to Saturday and 08:00–18:00 on Sundays; Kiambu Road 08:00–18:00 every day; Eldoret 08:00–18:00 on weekdays and 09:00–16:00 at weekends. For public holidays, call the branch to confirm. Walk-ins are welcome, but booking ahead helps us reserve time for you.',
   },
   {
     q: 'Do you accept insurance and medical schemes?',
-    a: 'Yes. We work with a wide range of insurers and medical schemes including Jubilee, AAR, Madison, CIC, Britam, APA, SHA, NHIF and many more. Bring your insurance card and our team will handle pre-authorisation and billing.',
+    a: 'Yes. We work with a wide range of insurers and medical schemes including Jubilee, AAR, Madison, CIC, Britam, APA, SHA, NHIF and many more. Bring your insurance card and our team will handle pre-authorisation and billing. Insurance and SHA are accepted at Kasarani, Kamakis and Eldoret; the Kiambu Road branch is yet to start accepting insurance.',
   },
   {
     q: 'Do you accept M-Pesa?',
-    a: 'Yes, we accept M-Pesa, cash, and direct insurance billing. For M-Pesa payments, our team at each branch will provide the till number at reception.',
+    a: 'Yes, every branch accepts M-Pesa and cash. Direct insurance billing is available at Kasarani, Kamakis and Eldoret. For M-Pesa payments, our team at each branch will provide the till number at reception.',
   },
   {
     q: 'Is there a dentist open on Sunday in Nairobi?',
-    a: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, from 07:00 to 20:00 across all three branches (Kasarani, Kamakis, and Eldoret).',
+    a: 'Yes. Every branch is open on Sundays: Kasarani 07:00–20:00, Kamakis and Kiambu Road 08:00–18:00, and Eldoret 09:00–16:00. For public holidays, call the branch to confirm.',
   },
   {
     q: 'Do you handle dental emergencies?',
-    a: 'Yes. Call or WhatsApp the nearest branch and we\'ll aim to see you the same day. We\'re open 7 days a week, 07:00–20:00. For severe pain or swelling, come in directly and our team will prioritise you.',
+    a: 'Yes. Call or WhatsApp the nearest branch and we\'ll aim to see you the same day. Every branch is open 7 days a week. For severe pain or swelling, come in directly and our team will prioritise you.',
   },
   {
     q: 'Do you treat children?',
@@ -310,11 +491,35 @@ export const faqs = [
   },
   {
     q: 'How do I book an appointment?',
-    a: 'Use the "Book Appointment" button on this page, message us on WhatsApp, or call the branch nearest to you. We aim to respond within about 10 minutes during opening hours.',
+    a: 'Use the "Book Appointment" button on this page, message us on WhatsApp, or call the branch nearest to you. We aim to respond within about 5 minutes during opening hours.',
   },
   {
     q: 'What should I expect on my first visit?',
     a: 'A warm welcome, a thorough examination, X-rays if needed, and a clear explanation of any treatment required — with a plan tailored to your priorities and budget. No pressure, no surprises.',
+  },
+  {
+    q: 'Where can I find an emergency dentist in Kasarani, Ruiru, Eldoret, or Kiambu Road?',
+    a: 'Celestial Dental offers same-day emergency dental care at all four branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. Call or WhatsApp the nearest branch, or walk in directly; severe pain, swelling, or knocked-out teeth are prioritised. We are open every day (Kasarani 07:00–20:00; Kamakis 07:00–20:00, Sundays 08:00–18:00; Kiambu Road 08:00–18:00; Eldoret 08:00–18:00 weekdays, 09:00–16:00 weekends).',
+  },
+  {
+    q: 'Do you offer braces and orthodontic treatment?',
+    a: 'Yes. Orthodontic consultations and dental braces for children, teens, and adults are available at our Kasarani, Kamakis (Ruiru), Eldoret, and Kiambu Road branches. Book a consultation and our team will assess your smile and recommend the right treatment plan.',
+  },
+  {
+    q: 'Do you place dental implants?',
+    a: 'Yes. Dental implants are available at all our branches, including Eldoret. An implant consultation includes a thorough examination and X-rays, followed by a clear, personalised treatment plan to permanently replace missing teeth.',
+  },
+  {
+    q: 'Do you offer teeth cleaning and dental check-ups?',
+    a: 'Yes — professional teeth cleaning (scaling and polishing) and comprehensive dental check-ups are available daily at our Kasarani, Kamakis (Ruiru), Eldoret, and Kiambu Road branches. We recommend a check-up and cleaning every six months to keep your smile healthy.',
+  },
+  {
+    q: 'How do I pay, and do you bill insurance directly?',
+    a: 'Every treatment starts with a clear, personalised plan agreed with you upfront, including the cost, before any work begins. You can pay via M-Pesa, cash, or direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison at Kasarani, Kamakis and Eldoret. The Kiambu Road branch is yet to start accepting insurance.',
+  },
+  {
+    q: 'Which areas do you serve?',
+    a: 'Our Kasarani branch serves Nairobi — including Mwiki, Roysambu, Zimmerman, and the wider Thika Road area. The Kamakis branch serves Ruiru, Kahawa Sukari, and the Eastern Bypass corridor. Our Eldoret branch serves Eldoret town and the greater Rift Valley region. The Kiambu Road branch in Thindigua serves the Kiambu Road corridor, including Ridgeways and Runda. If you are searching for a dentist near you in any of these areas, we are close by and open daily.',
   },
 ];
 
@@ -324,6 +529,7 @@ export const referralSources = [
   'Instagram',
   'Facebook',
   'WhatsApp',
+  'Influencer',
   'Friend or family referral',
   'Doctor / hospital referral',
   'Walk-in / passed by the clinic',
@@ -331,12 +537,82 @@ export const referralSources = [
 ];
 
 export const serviceOptions = [
-  'General checkup & cleaning',
-  'Braces / orthodontics',
-  'Dental implants',
-  'Root canal treatment',
-  "Children's dentistry",
-  'Cosmetic dentistry',
-  'Emergency / tooth pain',
+  'General Dentistry',
+  'Dental Emergencies',
+  'Cosmetic Dentistry',
+  'Teeth Whitening',
+  'Dental Bridges & Crowns',
+  'Full & Partial Dentures',
+  'Dental Implants',
+  'Orthodontics (Braces)',
+  'Root Canal Therapy',
+  "Children's Dentistry",
+  'Dental Fillings',
+  'Gum Disease Treatment',
+  'Teeth Extraction',
+  'Teeth Cleaning',
   'Other',
 ];
+
+export const careers = {
+  email: 'hr@celestialdental.org',
+  emailHref: 'mailto:hr@celestialdental.org',
+  intro:
+    'We\'re a growing dental group across all our branches, built on calm, patient-first care. If you take pride in your craft and genuinely enjoy helping people, we\'d love to hear from you.',
+  perks: [
+    {
+      tag: 'Growth',
+      title: 'Room to grow',
+      description:
+        'Mentorship, continuous professional development, and clear paths to take on more responsibility across all our branches.',
+    },
+    {
+      tag: 'Team',
+      title: 'A supportive team',
+      description:
+        'Work alongside friendly, experienced clinicians and support staff who back each other every day.',
+    },
+    {
+      tag: 'Tools',
+      title: 'Modern equipment',
+      description:
+        'Practise with quality materials and well-maintained equipment in clean, purpose-built clinical spaces.',
+    },
+    {
+      tag: 'Balance',
+      title: 'Fair, flexible scheduling',
+      description:
+        'Open 7 days means shifts that can flex around your life, with a workload that respects your wellbeing.',
+    },
+  ],
+  openings: [
+    {
+      title: 'Dental Officer / Dentist',
+      type: 'Full-time',
+      location: 'Kasarani · Kamakis · Eldoret',
+      description:
+        'Provide general and restorative dental care, from check-ups and cleanings to fillings, extractions, and root canals.',
+    },
+    {
+      title: 'Orthodontist',
+      type: 'Full-time / Sessional',
+      location: 'Kasarani · Eldoret',
+      description:
+        'Plan and deliver braces and aligner treatment for children, teens, and adults. Relevant postgraduate orthodontic qualification required.',
+    },
+    {
+      title: 'Dental Hygienist',
+      type: 'Full-time',
+      location: 'Kasarani · Kamakis',
+      description:
+        'Carry out scaling, polishing, and preventive care, and coach patients on oral hygiene. Diploma in dental hygiene and a warm, patient-friendly manner required.',
+    },
+    {
+      title: 'Front Office / Patient Coordinator',
+      type: 'Full-time',
+      location: 'Kamakis · Eldoret',
+      description:
+        'Be the welcoming first point of contact — manage bookings, insurance pre-authorisation, and M-Pesa billing while keeping the patient experience smooth and friendly.',
+    },
+  ],
+};

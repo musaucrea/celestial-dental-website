@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getRole, isAuthenticated } from './_utils';
+import { getRole, isAuthenticated , applySheetsRetries, getCachedPublic, setCachedPublic, clearCachedPublic, isSheetEnsured, markSheetEnsured} from './_utils.js';
+import { testimonials } from '../src/data/site.js';
 
 type ContentItem = {
   id: string;
@@ -43,6 +44,7 @@ async function getSheets() {
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
 
+  applySheetsRetries(google);
   return {
     spreadsheetId,
     sheets: google.sheets({ version: 'v4', auth }),
@@ -51,6 +53,7 @@ async function getSheets() {
 
 async function ensureContentSheet() {
   const { sheets, spreadsheetId } = await getSheets();
+  if (isSheetEnsured(sheetTitle)) return { sheets, spreadsheetId };
   const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
   const exists = spreadsheet.data.sheets?.some((sheet) => sheet.properties?.title === sheetTitle);
 
@@ -69,6 +72,7 @@ async function ensureContentSheet() {
     });
   }
 
+  markSheetEnsured(sheetTitle);
   return { sheets, spreadsheetId };
 }
 
@@ -90,6 +94,16 @@ async function readItems() {
     range: `${sheetTitle}!A:H`,
   });
   return rowsToItems((result.data.values || []) as string[][]);
+}
+
+async function readArchivedItems(): Promise<ContentItem[]> {
+  const { sheets, spreadsheetId } = await ensureContentSheet();
+  const result = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${sheetTitle}!A:H` });
+  return ((result.data.values || []) as string[][])
+    .slice(1).filter(row => row.some(Boolean))
+    .map(row => Object.fromEntries(header.map((key, index) => [key, row[index] || ''])) as ContentItem)
+    .filter(item => item.status === 'archived')
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
 async function saveItem(input: Partial<ContentItem>) {
@@ -136,6 +150,59 @@ async function saveItem(input: Partial<ContentItem>) {
   return row;
 }
 
+function fallbackGoogleReviews() {
+  return testimonials
+    .map((review, index) => ({
+      id: `fallback-${index}`, author: review.author, text: review.quote, rating: review.stars,
+      branch: review.branch, relativeTime: '', authorPhoto: '', reviewUrl: '', placeUrl: '',
+    }));
+}
+
+async function readGoogleReviews() {
+  const fallback = fallbackGoogleReviews();
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  if (!apiKey) return { reviews: fallback, live: false };
+
+  const branches = [
+    ['Kasarani', 'Celestial Dental Centre -Kasarani Branch, Kasarani Mwiki Road, Nairobi'],
+    ['Kamakis', 'Celestial Dental Centre Kamakis Ruiru Kenya'],
+    ['Eldoret', 'Celestial Dental Centre Eldoret Kenya'],
+    ['Kiambu Road', 'Celestial Dental Centre Brick House Thindigua Kiambu Road'],
+  ];
+  const groups = await Promise.all(branches.map(async ([branch, textQuery]) => {
+    const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': 'places.id,places.googleMapsUri,places.reviews',
+      },
+      body: JSON.stringify({ textQuery, pageSize: 1 }),
+    });
+    if (!response.ok) throw new Error(`Google Places request failed: ${response.status}`);
+    const data = await response.json() as { places?: Array<Record<string, any>> };
+    const place = data.places?.[0];
+    if (!place) return [];
+    return (place.reviews || [])
+      .filter((review: Record<string, any>) => Number(review.rating) >= 1 && review.text?.text?.trim())
+      .map((review: Record<string, any>, index: number) => ({
+        id: `${place.id || branch}-${review.publishTime || index}`,
+        author: review.authorAttribution?.displayName || 'Google user',
+        text: review.text.text,
+        rating: Number(review.rating),
+        branch,
+        relativeTime: review.relativePublishTimeDescription || '',
+        authorPhoto: review.authorAttribution?.photoUri || '',
+        reviewUrl: review.googleMapsUri || review.authorAttribution?.uri || place.googleMapsUri || '',
+        placeUrl: place.googleMapsUri || '',
+      }));
+  }));
+  const reviews = groups.flat()
+    .sort((a, b) => String(b.id).localeCompare(String(a.id)))
+    .slice(0, 9);
+  return { reviews: reviews.length ? reviews : fallback, live: reviews.length > 0 };
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-password, x-admin-email');
@@ -146,10 +213,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method === 'GET') {
+      if (req.query.trash === '1') {
+        const role = await getRole(req);
+        if (role !== 'super_admin' && role !== 'admin') return res.status(403).json({ error: 'Super admin access required' });
+        return res.status(200).json({ items: await readArchivedItems() });
+      }
+      if (req.query.resource === 'google-reviews') {
+        res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+        try {
+          return res.status(200).json(await readGoogleReviews());
+        } catch (error) {
+          console.error('Google reviews failed', error);
+          return res.status(200).json({ reviews: fallbackGoogleReviews(), live: false });
+        }
+      }
+      if (await isAuthed(req)) {
+        return res.status(200).json({ items: await readItems() });
+      }
+      const hit = getCachedPublic<object>('content');
+      if (hit) return res.status(200).json(hit);
       const items = await readItems();
-      return res.status(200).json({
-        items: await isAuthed(req) ? items : items.filter((item) => item.status === 'published'),
-      });
+      const body = { items: items.filter((item) => item.status === 'published') };
+      setCachedPublic('content', body);
+      return res.status(200).json(body);
     }
 
     if (req.method === 'POST') {
@@ -162,13 +248,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Title is required' });
       }
 
-      // Content creators can only save as draft
+      // News & updates are managed by the Super Admin only
       const role = await getRole(req);
-      if (role === 'content_creator') {
-        payload.status = 'draft';
+      if (role !== 'super_admin' && role !== 'admin') {
+        return res.status(403).json({ error: 'Super admin access required' });
       }
 
       await saveItem(payload);
+      clearCachedPublic('content');
       return res.status(200).json({ ok: true });
     }
 
