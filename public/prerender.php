@@ -248,7 +248,7 @@ function cd_service_links($SITE) {
 // whitening, cosmetic masking and veneers may not be covered.
 function cd_insurance_note($SITE, $elective = false) {
   $note = "<h2>Insurance, SHA and payment</h2>\n"
-    . "<p>SHA (Social Health Authority) is accepted for eligible schemes and covered treatments, depending on your cover. Celestial Dental also bills more than 20 insurers directly, including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet and Equity Bank Insurance. M-Pesa and cash are accepted at every branch. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. See <a href=\"$SITE/dental-insurance-and-sha-coverage\">insurance and SHA coverage</a>.</p>\n";
+    . "<p>SHA (Social Health Authority) is accepted at the Kasarani and Kamakis branches for eligible schemes and covered treatments, depending on your cover. Those branches also bill more than 20 insurers directly, including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet and Equity Bank Insurance. Eldoret accepts AAR, First Assurance, CIC Group, Equity, Britam and Minet. M-Pesa and cash are accepted at every branch. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. See <a href=\"$SITE/dental-insurance-and-sha-coverage\">insurance and SHA coverage</a>.</p>\n";
   if ($elective) {
     $note .= "<p><strong>Cosmetic and orthodontic treatment is treated differently.</strong> Braces, teeth whitening, cosmetic masking and veneers are elective procedures and may not be covered under standard plans or by SHA. Most cover is limited to routine, preventive or medically necessary care. Confirm with your insurer or SHA scheme before treatment starts, and ask us for a written quote so you know the out-of-pocket cost.</p>\n";
   }
@@ -394,7 +394,7 @@ function render_static($staticPath) {
       . "<h1>About Celestial Dental Centre</h1>\n"
       . "<p>Celestial Dental Centre is a dental clinic group in Kenya, serving patients across four branches — Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua). We are open every day (Kasarani 07:00–20:00; Kamakis 07:00–20:00, Sundays 08:00–18:00; Kiambu Road 08:00–18:00; Eldoret 08:00–18:00 weekdays, 09:00–16:00 weekends), including weekends. For public holidays, call the branch to confirm.</p>\n"
       . "<p>Our team focuses on accurate diagnosis, clearly explained treatment planning, and quality materials and equipment. From routine checkups and cleaning to braces, implants, root canal treatment, cosmetic dentistry, and same-day emergency care, we look after the whole family with calm, patient-friendly care.</p>\n"
-      . "<p>We accept M-Pesa and cash at every branch. Insurance and SHA are accepted at Kasarani, Kamakis and Eldoret; the Kiambu Road branch is yet to start accepting insurance. Insurers include Jubilee, AAR, Madison, CIC, Britam, and APA. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
+      . "<p>We accept M-Pesa and cash at every branch. SHA and direct billing with insurers such as Jubilee, AAR, Madison, CIC, Britam and APA are available at Kasarani and Kamakis. Eldoret accepts AAR, First Assurance, CIC Group, Equity, Britam and Minet. Bring your insurance or SHA details and our front desk will handle pre-authorisation.</p>\n"
       . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> · Call: +254 709 000 240 / +254 707 535 000 · WhatsApp: https://wa.me/254707535000</p>\n"
       . cd_service_links($SITE)
       . cd_insurance_note($SITE)
@@ -543,13 +543,41 @@ function cd_area_links($SITE, $areas, $current = '') {
   return "<ul>\n$li</ul>\n";
 }
 
-function cd_payment_text($slug, $name) {
-  if ($slug === 'kiambu-road') return "The $name branch accepts M-Pesa and cash. We are yet to start accepting insurance at this branch; for insurance or SHA, our Kasarani and Kamakis branches handle pre-authorisation.";
-  $sha = in_array($slug, ['kasarani', 'kamakis', 'eldoret'], true);
-  return ($sha ? 'SHA (for eligible schemes and covered treatments) and direct billing with 20+ insurers' : 'Direct billing with 20+ insurers')
-    . ", including Jubilee, AAR, Madison, CIC, Britam and APA, at the $name branch. Bring your insurance card" . ($sha ? ' or SHA details' : '')
-    . ' and the front desk will handle pre-authorisation. M-Pesa and cash are also accepted.';
+// Mirrors branchPayment() in src/data/site.ts. Kiambu Road mentions M-Pesa and
+// cash only, never insurance. Eldoret has its own insurer panel; SHA is
+// accepted at Kasarani and Kamakis only.
+function cd_payment($slug, $name) {
+  $branchInsurers = ['eldoret' => ['AAR', 'First Assurance', 'CIC Group', 'Equity', 'Britam', 'Minet']];
+  $join = fn($xs) => count($xs) > 1 ? implode(', ', array_slice($xs, 0, -1)) . ' and ' . end($xs) : ($xs[0] ?? '');
+  if ($slug === 'kiambu-road') {
+    return ['heading' => 'Payment', 'text' => "The $name branch accepts M-Pesa and cash.", 'short' => 'M-Pesa and cash accepted.', 'schema' => 'Cash, M-Pesa'];
+  }
+  if (isset($branchInsurers[$slug])) {
+    $own = $branchInsurers[$slug];
+    return [
+      'heading' => 'Insurance',
+      'text' => "The $name branch accepts a range of insurance covers, including " . $join($own) . ". Before your visit, contact the branch to confirm your cover's eligibility and the dental services included in your benefits. M-Pesa and cash are also accepted.",
+      'short' => 'Insurance accepted, including ' . $join($own) . '.',
+      'schema' => 'Cash, M-Pesa, Insurance, ' . implode(', ', $own),
+    ];
+  }
+  if (in_array($slug, ['kasarani', 'kamakis'], true)) {
+    return [
+      'heading' => 'Insurance and SHA',
+      'text' => "SHA (Social Health Authority) is accepted at the $name branch for eligible schemes and covered treatments — including check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays, depending on your cover. The clinic also offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet, and Equity Bank Insurance. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. M-Pesa and cash are also accepted.",
+      'short' => 'SHA and 20+ insurance schemes accepted.',
+      'schema' => 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA',
+    ];
+  }
+  return [
+    'heading' => 'Insurance',
+    'text' => "The $name branch offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance. Bring your insurance card and the front desk will handle pre-authorisation. Confirm that your scheme is accepted at this branch before treatment. M-Pesa and cash are also accepted.",
+    'short' => '20+ insurance schemes accepted.',
+    'schema' => 'Cash, M-Pesa, Insurance, AAR, Jubilee, Madison, CIC, Britam, APA',
+  ];
 }
+
+function cd_payment_text($slug, $name) { return cd_payment($slug, $name)['text']; }
 
 function render_service_area($areaSlug) {
   $SITE = CD_SITE;
@@ -600,7 +628,7 @@ function render_service_area($areaSlug) {
   $faqs = [
     ["Is there a Celestial Dental clinic near $an?", "Yes. Patients from $an visit our $bName branch in $place: $addr. From $an, $route." . ($other ? " Our $other branch is also convenient from $an." : '')],
     ["What are the $bName branch's opening hours?", str_replace(' · ', ' ', $hours) . '. For public holidays, call the branch to confirm.'],
-    ["Do you accept insurance for patients from $an?", $payment],
+    [$bs === 'kiambu-road' ? "How can patients from $an pay?" : "Do you accept insurance for patients from $an?", $payment],
     ['Can I book for my children and family?', "Yes. The $bName branch sees adults and children, including children's dentistry. Book online, call " . trim(explode('/', $phone)[0]) . ' or WhatsApp the branch and say how many people are coming.'],
     ["What should I do in a dental emergency in $an?", "Call or WhatsApp the $bName branch. We aim to see emergency patients the same day and will fit you in as quickly as we can."],
   ];
@@ -612,7 +640,7 @@ function render_service_area($areaSlug) {
     . "<h2>Your nearest branch: Celestial Dental {$esc($bName)}</h2>\n"
     . "<p>{$esc($addr)}</p>\n<p>Opening hours: {$esc($hours)}</p>\n<p>Phone: {$esc($phone)}</p>\n"
     . ($other ? "<p>Also convenient from {$esc($an)}: our <a href=\"$SITE/branches/{$area['alsoNear']}\">{$esc($other)} branch</a>.</p>\n" : '')
-    . "<h2>Insurance and payment</h2>\n<p>{$esc($payment)}</p>\n"
+    . "<h2>" . ($bs === 'kiambu-road' ? 'Payment' : 'Insurance and payment') . "</h2>\n<p>{$esc($payment)}</p>\n"
     . cd_service_links($SITE)
     . "<h2>Our {$esc($bName)} branch serves</h2>\n" . cd_area_links($SITE, cd_areas_for_branch($bs), $area['slug'])
     . "<p><a href=\"$SITE/service-areas\">All areas we serve</a></p>\n"
@@ -658,20 +686,13 @@ function render_branch($branchSlug) {
   $areaRows = cd_areas_for_branch($branchSlug);
   $areas = array_map(fn($a) => $a['name'], $areaRows);
 
-  // SHA approval is per facility; keep in sync with shaBranchSlugs in src/data/site.ts.
-  $acceptsSha = in_array($branchSlug, ['kasarani', 'kamakis', 'eldoret'], true);
+  $pay = cd_payment($branchSlug, $name);
   [$bOpen, $bClose] = cd_open_close($b['hours'] ?? '');
-  // Keep in sync with noInsuranceYetSlugs and branchHours in src/data/site.ts.
-  $noInsuranceYet = in_array($branchSlug, ['kiambu-road'], true);
   $week = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   $branchHours = cd_branch_hours_table();
 
   [$hoursText, $hoursSpec] = $branchHours[$branchSlug] ?? ["Every day · $bOpen – $bClose", [[$week, $bOpen, $bClose]]];
-  $insuranceText = $noInsuranceYet
-    ? "The $name branch accepts M-Pesa and cash. We are yet to start accepting insurance at this branch. For insurance or SHA, the Kasarani and Kamakis branches handle pre-authorisation."
-    : ($acceptsSha
-    ? "SHA (Social Health Authority) is accepted at the $name branch for eligible schemes and covered treatments — including check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays, depending on your cover. The clinic also offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet, and Equity Bank Insurance. Bring your insurance card or SHA details and the front desk will handle pre-authorisation. M-Pesa and cash are also accepted."
-    : "The $name branch offers direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet, and Equity Bank Insurance. Bring your insurance card and the front desk will handle pre-authorisation. Confirm that your scheme is accepted at this branch before treatment. M-Pesa and cash are also accepted.");
+  $insuranceText = $pay['text'];
 
   $schema = [
     '@context'  => 'https://schema.org',
@@ -692,9 +713,7 @@ function render_branch($branchSlug) {
       'opens'     => $h[1],
       'closes'    => $h[2],
     ], $hoursSpec),
-    'paymentAccepted'    => $noInsuranceYet ? 'Cash, M-Pesa' : ($acceptsSha
-      ? 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA'
-      : 'Cash, M-Pesa, Insurance, AAR, Jubilee, Madison, CIC, Britam, APA'),
+    'paymentAccepted'    => $pay['schema'],
     'parentOrganization' => ['@type' => 'Organization', 'name' => 'Celestial Dental Centre', 'url' => $SITE . '/'],
     'description'        => $b['description'] ?? '',
   ];
@@ -710,7 +729,7 @@ function render_branch($branchSlug) {
   $schemaJson = json_encode($schema, JSON_UNESCAPED_SLASHES);
 
   $title = "Dentist in " . htmlspecialchars($locality, ENT_QUOTES, 'UTF-8') . " | Celestial Dental Centre";
-  $metaDesc = htmlspecialchars(($b['description'] ?? '') . ' Open ' . str_replace([' · ', 'Every day'], [' ', 'every day'], $hoursText) . '. ' . ($noInsuranceYet ? 'Cash and M-Pesa accepted; yet to start accepting insurance.' : ($acceptsSha ? 'SHA and 20+ insurance schemes accepted.' : '20+ insurance schemes accepted.')), ENT_QUOTES, 'UTF-8');
+  $metaDesc = htmlspecialchars(($b['description'] ?? '') . ' Open ' . str_replace([' · ', 'Every day'], [' ', 'every day'], $hoursText) . '. ' . $pay['short'], ENT_QUOTES, 'UTF-8');
 
   header('Content-Type: text/html; charset=utf-8');
   header('X-Robots-Tag: index, follow');
@@ -740,7 +759,7 @@ function render_branch($branchSlug) {
   if ($googleProfile) {
     echo "<p>Official Google Business Profile: <a href=\"$googleProfile\">Celestial Dental Centre -Kasarani Branch</a>. Use the live profile for current reviews, rating, and directions.</p>\n";
   }
-  echo "<h2>" . ($acceptsSha ? 'Insurance and SHA' : ($noInsuranceYet ? 'Payment' : 'Insurance')) . " at $name</h2>\n<p>" . htmlspecialchars($insuranceText, ENT_QUOTES, 'UTF-8') . "</p>\n";
+  echo "<h2>" . $pay['heading'] . " at $name</h2>\n<p>" . htmlspecialchars($insuranceText, ENT_QUOTES, 'UTF-8') . "</p>\n";
   echo "<h2>Services at this branch</h2>\n<ul>\n";
   $services = [
     'dental-checkup' => 'Dental checkup and examination', 'general-dentistry' => 'General dentistry',

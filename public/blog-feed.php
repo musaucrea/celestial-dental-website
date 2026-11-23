@@ -131,10 +131,10 @@ function cd_branches() {
         'slug' => 'eldoret',
         'tagline' => 'Trusted dental care in the heart of Eldoret',
         'description' => 'Celestial Dental Centre Eldoret provides preventive, restorative, cosmetic, orthodontic, children\'s, implant, and emergency dental care in central Eldoret.',
-        'address' => "Along Banaptai Street\nEldoret Town\nUasin Gishu County",
-        'landmark' => 'Central Eldoret',
+        'address' => "Champions Heights Building, 1st Floor, Room 1\nBanaptai Street, next to Grand Empire Hotel\nEldoret Town, Uasin Gishu County",
+        'landmark' => 'Next to Grand Empire Hotel',
         'parking' => 'Street parking available nearby',
-        'phone' => '+254 709 000 244 / +254 794 585 217',
+        'phone' => '+254 794 585 217',
         'whatsapp' => 'https://wa.me/254794585217',
         'map' => 'https://maps.google.com/?q=Celestial+Dental+Centre+Eldoret',
         'hours' => 'Monday-Friday 08:00-18:00, Saturday-Sunday 09:00-16:00',
@@ -168,9 +168,23 @@ function cd_open_close($hours) {
   return ['07:00', '20:00'];
 }
 
+// Contact details pinned in code because the admin-managed branch record still
+// holds older text. Keep in sync with branchContactPins in src/data/site.ts.
+function cd_branch_pins($b) {
+  $pins = [
+    'eldoret' => [
+      'address' => "Champions Heights Building, 1st Floor, Room 1\nBanaptai Street, next to Grand Empire Hotel\nEldoret Town, Uasin Gishu County",
+      'landmark' => 'Next to Grand Empire Hotel',
+      'phone' => '+254 794 585 217',
+      'whatsapp' => 'https://wa.me/254794585217',
+    ],
+  ];
+  return array_merge($b, $pins[$b['slug'] ?? ''] ?? []);
+}
+
 function cd_find_branch($slug) {
   foreach (cd_branches() as $b) {
-    if (($b['slug'] ?? '') === $slug) return $b;
+    if (($b['slug'] ?? '') === $slug) return cd_branch_pins($b);
   }
   return null;
 }

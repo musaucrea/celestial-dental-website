@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
-import { branchHours, googleBusinessProfiles, noInsuranceYetSlugs, services as staticServices, shaBranchSlugs, site } from '../data/site';
+import { branchHours, branchPayment, googleBusinessProfiles, services as staticServices, site } from '../data/site';
 import { branchAreas } from '../data/serviceAreas';
 import { useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
@@ -33,12 +33,9 @@ function BranchPageInner() {
   const otherBranches = branches.filter(b => b.slug !== slug);
   const googleProfile = googleBusinessProfiles[branch.slug];
   const mapUrl = googleProfile?.profileUrl || branch.map;
-  const acceptsSha = shaBranchSlugs.includes(branch.slug);
   const hoursText = branchHours[branch.slug]?.text || branch.hours;
-  const noInsuranceYet = noInsuranceYetSlugs.includes(branch.slug);
-  const payment = noInsuranceYet
-    ? 'Cash and M-Pesa accepted; this branch is yet to start accepting insurance.'
-    : `${acceptsSha ? 'SHA and 20+ insurance schemes' : '20+ insurance schemes'} accepted.`;
+  const pay = branchPayment(branch.slug, branch.name);
+  const payment = pay.short;
   const areas = branchAreas[branch.slug] || [];
   // Areas not already in the branch's name or address, e.g. "Ridgeways and Runda" for Kiambu Road.
   const here = `${branch.name} ${branch.address.join(' ')}`.toLowerCase();
@@ -190,27 +187,8 @@ function BranchPageInner() {
               <div className="mt-6 rounded-3xl bg-white p-6 shadow-card flex items-start gap-4">
                 <ShieldCheck className="h-6 w-6 shrink-0 text-brand-500" />
                 <div>
-                  <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">{acceptsSha ? <>Insurance &amp; SHA</> : noInsuranceYet ? 'Payment' : 'Insurance'}</p>
-                  {noInsuranceYet ? (
-                    <p className="text-sm text-ink-700 leading-relaxed">
-                      The {branch.name} branch accepts M-Pesa and cash. We are yet to start accepting insurance at this branch.
-                      For insurance or SHA, our{' '}
-                      <Link to="/branches/kasarani" className="font-bold text-brand-600 hover:text-brand-800">Kasarani</Link> and{' '}
-                      <Link to="/branches/kamakis" className="font-bold text-brand-600 hover:text-brand-800">Kamakis</Link> branches handle pre-authorisation.
-                    </p>
-                  ) : acceptsSha ? (
-                    <p className="text-sm text-ink-700 leading-relaxed">
-                      We accept SHA (Social Health Authority) for eligible schemes and covered treatments at our {branch.name} branch,
-                      plus direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance.
-                      Bring your insurance card or SHA details and our front desk will handle pre-authorisation. M-Pesa and cash also accepted.
-                    </p>
-                  ) : (
-                    <p className="text-sm text-ink-700 leading-relaxed">
-                      Direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance.
-                      Bring your insurance card and our front desk will handle pre-authorisation. M-Pesa and cash also accepted.
-                      Confirm that your scheme is accepted at the {branch.name} branch before treatment.
-                    </p>
-                  )}
+                  <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">{pay.heading}</p>
+                  <p className="text-sm text-ink-700 leading-relaxed">{pay.text}</p>
                 </div>
               </div>
             </Reveal>

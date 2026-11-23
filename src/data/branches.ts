@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react';
-import { branches as staticBranches } from './site';
+import { branchContactPins, branches as staticBranches } from './site';
 
 /**
  * Runtime branch model used across the site. Matches the static shape in
@@ -77,7 +77,7 @@ function load() {
     .then(r => (r.ok ? r.json() : null))
     .then(data => {
       const list: ApiBranch[] = data?.branches || [];
-      const mapped = list.map(normalize).filter(b => b.name && b.slug);
+      const mapped = list.map(normalize).filter(b => b.name && b.slug).map(b => ({ ...b, ...branchContactPins[b.slug] }));
       if (mapped.length) {
         current = mapped;
         listeners.forEach(fn => fn());

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials, branchHours, noInsuranceYetSlugs } from '../data/site';
+import { blogPosts, googleBusinessProfiles, serviceSlug, site, services, socials, branchHours, branchPayment } from '../data/site';
 import { branchAreas } from '../data/serviceAreas';
 import { branchOpenClose, useBranches, type Branch } from '../data/branches';
 import { useFaqs, type Faq } from '../data/faqs';
@@ -152,11 +152,7 @@ function branchSchema(branch: Branch) {
     openingHoursSpecification: (branchHours[branch.slug]?.spec
       || [{ days: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'], ...branchOpenClose(branch.hours) }])
       .map(h => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.days, opens: h.opens, closes: h.closes })),
-    paymentAccepted: noInsuranceYetSlugs.includes(branch.slug)
-      ? 'Cash, M-Pesa'
-      : shaBranchSlugs.includes(branch.slug)
-      ? 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA'
-      : 'Cash, M-Pesa, Insurance, AAR, Jubilee, Madison, CIC, Britam, APA',
+    paymentAccepted: branchPayment(branch.slug, branch.name).schema,
     knowsAbout: [
       'Braces', 'Orthodontics', 'Teeth Whitening', 'Dental Implants',
       'Root Canal Treatment', 'Children\'s Dentistry', 'Emergency Dentistry',
