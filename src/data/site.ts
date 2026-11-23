@@ -289,13 +289,30 @@ export const gallery = [
 /**
  * 5-star Google reviews shown on the branch pages, copied from each branch's
  * Google Business Profile on 23 Nov 2026 at the clinic's request. Excluded:
- * reviews with no text, reviews naming a practitioner or staff member, a review
- * cut off mid-sentence, and a review posted from the owner's own account.
+ * reviews with no text, reviews naming a practitioner or staff member, reviews
+ * mentioning prices, "affordable" or "painless" or promising results, reviews
+ * cut off mid-sentence, and reviews posted from the owner's own accounts.
  * Reviewer names are shortened to first name and initial.
  * Note: the site removed patient reviews on 2026-09-19 as patient testimony
  * under Rule 5(1)(a),(b); the clinic chose to show these on 2026-11-23.
  */
 export const branchReviews: Record<string, { name: string; text: string }[]> = {
+  "kasarani": [
+    { name: "Amos K.", text: "The experience was awesome, I loved the clinic posture with modern equipments. The staff's are welcoming from the Reception to the procedure rooms." },
+    { name: "Esther A.", text: "The staff are exceedingly friendly, the wait time is minimal and the centre is unmatched in its cleanliness." },
+    { name: "Linet W.", text: "Cleanliness top-notch, the customer care desk are so welcoming and also in general workers are so friendly 😊😊😊. I would definitely recommend 👌" },
+    { name: "Satoshistacker", text: "Best services staff and dentists are very professional, highly recommend." },
+    { name: "Jecinta K.", text: "I had the best experience" },
+    { name: "Elizabeth T.", text: "Excellent" },
+  ],
+  "eldoret": [
+    { name: "Sang B.", text: "This place provides excellent service. The staff are kind, patient and skilled at their job. Parents with kids will particularly love this location because of their kids corner where kids can play a myriad of interesting games." },
+    { name: "Giulio M.", text: "Just had my braces done at Celestial Dental - Eldoret. The after care service is really good. It's like they walk with you even after treatment. I highly recomment their braces services." },
+    { name: "Okoth J.", text: "Very assuring environment for a dental clinic. Vibrant staff. I'd totally recommend them for kids dental services as well. Keep it up Celestial Dental- Eldoret" },
+    { name: "Victor K.", text: "Had a great experience at Celestial Dental Clinic. Their quick service and excellent customer care truly stood out. The staff were friendly, professional, and very welcoming. Highly recommend for anyone looking for quality dental services!" },
+    { name: "Sherry J.", text: "The services are topnotch, right from the front office to the treatment. Celestial leaves you feeling very satisfied and happy. Smiles all through ☺" },
+    { name: "Humphrey O.", text: "Good reception. Good at recommendations and giving available options." },
+  ],
   "kiambu-road": [
     { name: "Sophie M.", text: "I had an amazing experience from start to finish. The ambience is so calm, clean, and welcoming, it really takes away the usual anxiety of going to the dentist. The staff were warm, professional, and attentive, and the service was impressively fast with almost no waiting time. You can also tell they’ve invested in state-of-the-art equipment, including modern digital imaging, which made the whole procedure smooth and comfortable. Highly recommend them for anyone looking for top-notch dental care in Kiambu." },
     { name: "Shiqou M.", text: "Very baby friendly doctor. My kids visit was remarkable. Customer service on top notch" },

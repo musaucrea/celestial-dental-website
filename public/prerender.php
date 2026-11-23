@@ -765,6 +765,22 @@ function render_branch($branchSlug) {
   echo "<p>Opening hours: " . htmlspecialchars($hoursText, ENT_QUOTES, 'UTF-8') . ". For public holidays, call the branch to confirm.</p>\n";
   // Selected 5-star Google reviews; keep in sync with branchReviews in src/data/site.ts.
   $branchReviews = [
+    'kasarani' => [
+      ["Amos K.", "The experience was awesome, I loved the clinic posture with modern equipments. The staff's are welcoming from the Reception to the procedure rooms."],
+      ["Esther A.", "The staff are exceedingly friendly, the wait time is minimal and the centre is unmatched in its cleanliness."],
+      ["Linet W.", "Cleanliness top-notch, the customer care desk are so welcoming and also in general workers are so friendly 😊😊😊. I would definitely recommend 👌"],
+      ["Satoshistacker", "Best services staff and dentists are very professional, highly recommend."],
+      ["Jecinta K.", "I had the best experience"],
+      ["Elizabeth T.", "Excellent"],
+    ],
+    'eldoret' => [
+      ["Sang B.", "This place provides excellent service. The staff are kind, patient and skilled at their job. Parents with kids will particularly love this location because of their kids corner where kids can play a myriad of interesting games."],
+      ["Giulio M.", "Just had my braces done at Celestial Dental - Eldoret. The after care service is really good. It's like they walk with you even after treatment. I highly recomment their braces services."],
+      ["Okoth J.", "Very assuring environment for a dental clinic. Vibrant staff. I'd totally recommend them for kids dental services as well. Keep it up Celestial Dental- Eldoret"],
+      ["Victor K.", "Had a great experience at Celestial Dental Clinic. Their quick service and excellent customer care truly stood out. The staff were friendly, professional, and very welcoming. Highly recommend for anyone looking for quality dental services!"],
+      ["Sherry J.", "The services are topnotch, right from the front office to the treatment. Celestial leaves you feeling very satisfied and happy. Smiles all through ☺"],
+      ["Humphrey O.", "Good reception. Good at recommendations and giving available options."],
+    ],
     'kiambu-road' => [
       ["Sophie M.", "I had an amazing experience from start to finish. The ambience is so calm, clean, and welcoming, it really takes away the usual anxiety of going to the dentist. The staff were warm, professional, and attentive, and the service was impressively fast with almost no waiting time. You can also tell they’ve invested in state-of-the-art equipment, including modern digital imaging, which made the whole procedure smooth and comfortable. Highly recommend them for anyone looking for top-notch dental care in Kiambu."],
       ["Shiqou M.", "Very baby friendly doctor. My kids visit was remarkable. Customer service on top notch"],
