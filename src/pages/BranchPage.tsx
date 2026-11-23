@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
-import { branchAreas, googleBusinessProfiles, services as staticServices, shaBranchSlugs, site } from '../data/site';
-import { branchOpenClose, useBranches } from '../data/branches';
+import { branchAreas, branchHours, googleBusinessProfiles, noInsuranceYetSlugs, services as staticServices, shaBranchSlugs, site } from '../data/site';
+import { useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
 import { Header } from '../components/Header';
 import { Reveal } from '../components/Reveal';
@@ -32,7 +32,11 @@ function BranchPageInner() {
   const googleProfile = googleBusinessProfiles[branch.slug];
   const mapUrl = googleProfile?.profileUrl || branch.map;
   const acceptsSha = shaBranchSlugs.includes(branch.slug);
-  const { opens, closes } = branchOpenClose(branch.hours);
+  const hoursText = branchHours[branch.slug]?.text || branch.hours;
+  const noInsuranceYet = noInsuranceYetSlugs.includes(branch.slug);
+  const payment = noInsuranceYet
+    ? 'Cash and M-Pesa accepted; this branch is yet to start accepting insurance.'
+    : `${acceptsSha ? 'SHA and 20+ insurance schemes' : '20+ insurance schemes'} accepted.`;
   const areas = branchAreas[branch.slug] || [];
   // Areas not already in the branch's name or address, e.g. "Ridgeways and Runda" for Kiambu Road.
   const here = `${branch.name} ${branch.address.join(' ')}`.toLowerCase();
@@ -47,7 +51,7 @@ function BranchPageInner() {
     <>
       <SEO
         title={`Dentist in ${locality} | ${site.name}`}
-        description={`${branch.description}${nearbyText ? ` Close to ${nearbyText}.` : ''} Open daily ${opens}-${closes}. ${acceptsSha ? 'SHA and 20+ insurance schemes' : '20+ insurance schemes'} accepted. Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
+        description={`${branch.description}${nearbyText ? ` Close to ${nearbyText}.` : ''} Open ${hoursText.replace(/ · /g, ' ').replace('Every day', 'every day')}. ${payment} Call ${branch.phone} to book dental checkups, braces, implants, root canal treatment, teeth cleaning, cosmetic dentistry, and emergency dental care.`}
         image={branch.image}
         canonicalPath={`/branches/${branch.slug}`}
         keywords={[
@@ -147,7 +151,7 @@ function BranchPageInner() {
                   <Clock className="h-6 w-6 text-brand-500" />
                   <div>
                     <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">Opening Hours</p>
-                    <p className="text-sm text-ink-700 leading-relaxed">{branch.hours}</p>
+                    <p className="text-sm text-ink-700 leading-relaxed">{hoursText}</p>
                     <p className="mt-1 text-xs text-brand-600 font-bold">Open 7 days a week</p>
                   </div>
                 </div>
@@ -196,8 +200,15 @@ function BranchPageInner() {
               <div className="mt-6 rounded-3xl bg-white p-6 shadow-card flex items-start gap-4">
                 <ShieldCheck className="h-6 w-6 shrink-0 text-brand-500" />
                 <div>
-                  <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">{acceptsSha ? <>Insurance &amp; SHA</> : 'Insurance'}</p>
-                  {acceptsSha ? (
+                  <p className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">{acceptsSha ? <>Insurance &amp; SHA</> : noInsuranceYet ? 'Payment' : 'Insurance'}</p>
+                  {noInsuranceYet ? (
+                    <p className="text-sm text-ink-700 leading-relaxed">
+                      The {branch.name} branch accepts M-Pesa and cash. We are yet to start accepting insurance at this branch.
+                      For insurance or SHA, our{' '}
+                      <Link to="/branches/kasarani" className="font-bold text-brand-600 hover:text-brand-800">Kasarani</Link> and{' '}
+                      <Link to="/branches/kamakis" className="font-bold text-brand-600 hover:text-brand-800">Kamakis</Link> branches handle pre-authorisation.
+                    </p>
+                  ) : acceptsSha ? (
                     <p className="text-sm text-ink-700 leading-relaxed">
                       We accept SHA (Social Health Authority) for eligible schemes and covered treatments at our {branch.name} branch,
                       plus direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance.
@@ -304,7 +315,7 @@ function BranchPageInner() {
             <Reveal>
               <div className="rounded-3xl bg-brand-700 p-8 lg:p-12 text-center">
                 <h3 className="text-2xl lg:text-3xl font-900 text-white">Book at our {branch.name} branch</h3>
-                <p className="mt-2 text-sm text-brand-200">Open 7 days a week · {opens} – {closes} · Fast response guaranteed</p>
+                <p className="mt-2 text-sm text-brand-200">{hoursText} · Fast response guaranteed</p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <button onClick={() => openBooking()} className="btn-primary bg-white !text-brand-800 !shadow-none hover:!shadow-none">
                     <MessageCircle className="h-4 w-4" />

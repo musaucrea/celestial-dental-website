@@ -23,7 +23,7 @@ export const site = {
   emailHref: 'mailto:info@celestialdental.org',
   primaryPhone: { label: '+254 709 000 240 / +254 707 535 000', href: 'tel:+254709000240' },
   whatsappHref: 'https://wa.me/254767207000',
-  hours: 'Monday – Sunday · 07:00 – 20:00',
+  hours: 'Every day · hours vary by branch',
 };
 
 export const socials = [
@@ -104,7 +104,7 @@ export const heroPills = ['Checkups', 'Braces', 'Implants', 'Emergency care'];
 export const stats = [
   { value: '20+', label: 'Years of service' },
   { value: '3', label: 'Accessible branches' },
-  { value: '07:00–20:00', label: 'Open every day' },
+  { value: '7 days', label: 'Open every day of the week' },
 ];
 
 export const services = [
@@ -143,7 +143,7 @@ export const services = [
       'Same-day relief for severe tooth pain, swelling, knocked-out teeth, and urgent dental problems — 7 days a week.',
     image: '/facility/reception-lounge.jpg',
     faqs: [
-      { q: 'Do you handle dental emergencies same day?', a: 'Yes. We aim to see emergency patients the same day — call or WhatsApp the nearest branch and we\'ll fit you in as quickly as possible. We\'re open every day, 07:00–20:00.' },
+      { q: 'Do you handle dental emergencies same day?', a: 'Yes. We aim to see emergency patients the same day — call or WhatsApp the nearest branch and we\'ll fit you in as quickly as possible. Every branch is open every day of the week.' },
     ],
   },
   {
@@ -285,6 +285,32 @@ export const gallery = [
 export const shaBranchSlugs = ['kasarani', 'kamakis', 'eldoret'];
 
 /**
+ * Branches that are yet to start accepting insurance (cash and M-Pesa only).
+ * Keep in sync with $noInsuranceYet in public/prerender.php.
+ */
+export const noInsuranceYetSlugs = ['kiambu-road'];
+
+/**
+ * Each branch's opening hours, confirmed November 2026 (the CRM's
+ * src/lib/branch-hours.ts holds the same). Used for the page text and for
+ * Google (schema.org) instead of the admin's free-text hours. Keep in sync
+ * with $branchHours in public/prerender.php and public/home-schema.json.
+ */
+const EVERY_DAY = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const branchHours: Record<string, { text: string; spec: { days: string[]; opens: string; closes: string }[] }> = {
+  kasarani: { text: 'Every day · 07:00 – 20:00', spec: [{ days: EVERY_DAY, opens: '07:00', closes: '20:00' }] },
+  kamakis: {
+    text: 'Mon – Sat · 07:00 – 20:00 · Sun · 08:00 – 18:00',
+    spec: [{ days: EVERY_DAY.slice(0, 6), opens: '07:00', closes: '20:00' }, { days: ['Sunday'], opens: '08:00', closes: '18:00' }],
+  },
+  eldoret: {
+    text: 'Mon – Fri · 08:00 – 18:00 · Sat – Sun · 09:00 – 16:00',
+    spec: [{ days: EVERY_DAY.slice(0, 5), opens: '08:00', closes: '18:00' }, { days: ['Saturday', 'Sunday'], opens: '09:00', closes: '16:00' }],
+  },
+  'kiambu-road': { text: 'Every day · 08:00 – 18:00', spec: [{ days: EVERY_DAY, opens: '08:00', closes: '18:00' }] },
+};
+
+/**
  * Neighbourhoods each branch is close to. Kept in code rather than in the
  * admin-managed branch description so an edit there can't drop them: Google
  * only links a branch to an area ("dentist runda") when the page names it.
@@ -329,7 +355,7 @@ export const branches = [
     phoneHref: 'tel:+254709000242',
     whatsapp: 'https://wa.me/254724202252',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Kamakis',
-    hours: 'Monday – Sunday · 07:00 – 20:00',
+    hours: 'Mon – Sat · 07:00 – 20:00 · Sun · 08:00 – 18:00',
     image: '/facility/waiting-area.jpg',
   },
   {
@@ -346,7 +372,7 @@ export const branches = [
     phoneHref: 'tel:+254709000244',
     whatsapp: 'https://wa.me/254794585217',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Eldoret',
-    hours: 'Monday – Sunday · 07:00 – 20:00',
+    hours: 'Mon – Fri · 08:00 – 18:00 · Sat – Sun · 09:00 – 16:00',
     image: '/facility/childrens-treatment-room.jpg',
   },
   {
@@ -454,23 +480,23 @@ export const blogPosts = [
 export const faqs = [
   {
     q: 'What are your opening hours?',
-    a: 'We are open every day of the week. Kasarani, Kamakis and Eldoret are open 07:00 to 20:00, and Kiambu Road 08:00 to 18:00. Walk-ins are welcome, but booking ahead helps us reserve time for you.',
+    a: 'We are open every day of the week. Hours by branch: Kasarani 07:00–20:00 every day; Kamakis 07:00–20:00 Monday to Saturday and 08:00–18:00 on Sundays; Kiambu Road 08:00–18:00 every day; Eldoret 08:00–18:00 on weekdays and 09:00–16:00 at weekends. For public holidays, call the branch to confirm. Walk-ins are welcome, but booking ahead helps us reserve time for you.',
   },
   {
     q: 'Do you accept insurance and medical schemes?',
-    a: 'Yes. We work with a wide range of insurers and medical schemes including Jubilee, AAR, Madison, CIC, Britam, APA, SHA, NHIF and many more. Bring your insurance card and our team will handle pre-authorisation and billing.',
+    a: 'Yes. We work with a wide range of insurers and medical schemes including Jubilee, AAR, Madison, CIC, Britam, APA, SHA, NHIF and many more. Bring your insurance card and our team will handle pre-authorisation and billing. Insurance and SHA are accepted at Kasarani, Kamakis and Eldoret; the Kiambu Road branch is yet to start accepting insurance.',
   },
   {
     q: 'Do you accept M-Pesa?',
-    a: 'Yes, we accept M-Pesa, cash, and direct insurance billing. For M-Pesa payments, our team at each branch will provide the till number at reception.',
+    a: 'Yes, every branch accepts M-Pesa and cash. Direct insurance billing is available at Kasarani, Kamakis and Eldoret. For M-Pesa payments, our team at each branch will provide the till number at reception.',
   },
   {
     q: 'Is there a dentist open on Sunday in Nairobi?',
-    a: 'Yes — Celestial Dental is open every day of the week, including Sundays and public holidays, at all four branches: 07:00 to 20:00 in Kasarani, Kamakis and Eldoret, and 08:00 to 18:00 on Kiambu Road.',
+    a: 'Yes. Every branch is open on Sundays: Kasarani 07:00–20:00, Kamakis and Kiambu Road 08:00–18:00, and Eldoret 09:00–16:00. For public holidays, call the branch to confirm.',
   },
   {
     q: 'Do you handle dental emergencies?',
-    a: 'Yes. Call or WhatsApp the nearest branch and we\'ll aim to see you the same day. We\'re open 7 days a week, 07:00–20:00. For severe pain or swelling, come in directly and our team will prioritise you.',
+    a: 'Yes. Call or WhatsApp the nearest branch and we\'ll aim to see you the same day. Every branch is open 7 days a week. For severe pain or swelling, come in directly and our team will prioritise you.',
   },
   {
     q: 'Do you treat children?',
@@ -486,7 +512,7 @@ export const faqs = [
   },
   {
     q: 'Where can I find an emergency dentist in Kasarani, Ruiru, Eldoret, or Kiambu Road?',
-    a: 'Celestial Dental offers same-day emergency dental care at all four branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. Call or WhatsApp the nearest branch, or walk in directly; severe pain, swelling, or knocked-out teeth are prioritised. We are open every day (Kasarani, Kamakis and Eldoret 07:00–20:00, Kiambu Road 08:00–18:00).',
+    a: 'Celestial Dental offers same-day emergency dental care at all four branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. Call or WhatsApp the nearest branch, or walk in directly; severe pain, swelling, or knocked-out teeth are prioritised. We are open every day (Kasarani 07:00–20:00; Kamakis 07:00–20:00, Sundays 08:00–18:00; Kiambu Road 08:00–18:00; Eldoret 08:00–18:00 weekdays, 09:00–16:00 weekends).',
   },
   {
     q: 'Do you offer braces and orthodontic treatment?',
@@ -502,7 +528,7 @@ export const faqs = [
   },
   {
     q: 'How do I pay, and do you bill insurance directly?',
-    a: 'Every treatment starts with a clear, personalised plan agreed with you upfront, including the cost, before any work begins. You can pay via M-Pesa, cash, or direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison.',
+    a: 'Every treatment starts with a clear, personalised plan agreed with you upfront, including the cost, before any work begins. You can pay via M-Pesa, cash, or direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison at Kasarani, Kamakis and Eldoret. The Kiambu Road branch is yet to start accepting insurance.',
   },
   {
     q: 'Which areas do you serve?',

@@ -39,7 +39,7 @@ const STEPS = [
 const FAQS = [
   {
     q: 'Do you offer braces in Nairobi, Ruiru, Eldoret, and Kiambu Road?',
-    a: 'Yes. Orthodontic consultations and braces are available at all four Celestial Dental branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. All branches are open every day (Kasarani, Kamakis and Eldoret 07:00–20:00, Kiambu Road 08:00–18:00).',
+    a: 'Yes. Orthodontic consultations and braces are available at all four Celestial Dental branches — Kasarani in Nairobi, Kamakis along the Eastern Bypass in Ruiru, central Eldoret, and Thindigua along Kiambu Road. All branches are open every day (Kasarani 07:00–20:00; Kamakis 07:00–20:00, Sundays 08:00–18:00; Kiambu Road 08:00–18:00; Eldoret 08:00–18:00 weekdays, 09:00–16:00 weekends).',
   },
   {
     q: 'How long does orthodontic treatment take?',
@@ -55,7 +55,7 @@ const FAQS = [
   },
   {
     q: 'Can I pay with insurance or M-Pesa?',
-    a: 'Yes. We accept M-Pesa, cash, and direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison. Your treatment plan is agreed with you clearly before treatment begins.',
+    a: 'Yes. Every branch accepts M-Pesa and cash. Direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison is available at Kasarani, Kamakis and Eldoret; the Kiambu Road branch is yet to start accepting insurance. Your treatment plan is agreed with you clearly before treatment begins.',
   },
 ];
 
@@ -116,7 +116,7 @@ function BracesPageInner() {
                   <p className="mt-5 text-lg text-ink-500 leading-relaxed">
                     Metal braces, ceramic braces, and clear aligners for children, teens, and adults —
                     fitted by a caring team, with clear timelines and a plan agreed before you start.
-                    Open every day, 07:00–20:00.
+                    Open every day.
                   </p>
                 </Reveal>
                 <Reveal delay={160}>
@@ -271,7 +271,7 @@ function BracesPageInner() {
                 <h2 className="text-2xl lg:text-3xl font-900 text-white">Ready to straighten your smile?</h2>
                 <p className="mt-2 text-sm text-brand-200">
                   Book a braces consultation at Kasarani (Nairobi), Kamakis–Ruiru, Eldoret, or Kiambu Road.
-                  Open every day, 07:00–20:00 — walk-ins welcome.
+                  Open every day — walk-ins welcome.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <button onClick={() => openBracesBooking('footer-cta')} className="btn-primary bg-white !text-brand-800 !shadow-none hover:!shadow-none">

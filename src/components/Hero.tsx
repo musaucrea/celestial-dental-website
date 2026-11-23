@@ -206,7 +206,7 @@ export function Hero() {
               </div>
               <div>
                 <div className="text-sm font-800 text-white">Open every day</div>
-                <div className="text-xs font-medium text-white/60">07:00 – 20:00</div>
+                <div className="text-xs font-medium text-white/60">Hours vary by branch</div>
               </div>
             </div>
 

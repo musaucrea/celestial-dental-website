@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials, branchAreas } from '../data/site';
+import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials, branchAreas, branchHours, noInsuranceYetSlugs } from '../data/site';
 import { branchOpenClose, useBranches, type Branch } from '../data/branches';
 import { useFaqs, type Faq } from '../data/faqs';
 import { phoneParts } from './PhoneLinks';
@@ -148,16 +148,12 @@ function branchSchema(branch: Branch) {
         longitude: geo.lng,
       },
     }),
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: [
-          'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday',
-        ],
-        ...branchOpenClose(branch.hours),
-      },
-    ],
-    paymentAccepted: shaBranchSlugs.includes(branch.slug)
+    openingHoursSpecification: (branchHours[branch.slug]?.spec
+      || [{ days: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'], ...branchOpenClose(branch.hours) }])
+      .map(h => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.days, opens: h.opens, closes: h.closes })),
+    paymentAccepted: noInsuranceYetSlugs.includes(branch.slug)
+      ? 'Cash, M-Pesa'
+      : shaBranchSlugs.includes(branch.slug)
       ? 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA'
       : 'Cash, M-Pesa, Insurance, AAR, Jubilee, Madison, CIC, Britam, APA',
     knowsAbout: [

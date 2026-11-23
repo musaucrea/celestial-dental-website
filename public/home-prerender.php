@@ -31,10 +31,10 @@ $services = [
 
 // Mirrors `faqs` in src/data/site.ts (the homepage FAQ section).
 $faqs = [
-  ['q' => 'What are your opening hours?', 'a' => 'We are open every day of the week. Kasarani, Kamakis and Eldoret are open 07:00 to 20:00, and Kiambu Road 08:00 to 18:00. Walk-ins are welcome, but booking ahead helps us reserve time for you.'],
-  ['q' => 'Do you accept insurance and medical schemes?', 'a' => 'Yes. We work with a wide range of insurers and medical schemes including Jubilee, AAR, Madison, CIC, Britam, APA, SHA, NHIF and many more. Bring your insurance card and our team will handle pre-authorisation and billing.'],
-  ['q' => 'Do you accept M-Pesa?', 'a' => 'Yes, we accept M-Pesa, cash, and direct insurance billing. For M-Pesa payments, our team at each branch will provide the till number at reception.'],
-  ['q' => 'Is there a dentist open on Sunday in Nairobi?', 'a' => 'Yes. Celestial Dental is open every day of the week, including Sundays and public holidays, at all four branches: 07:00 to 20:00 in Kasarani, Kamakis and Eldoret, and 08:00 to 18:00 on Kiambu Road.'],
+  ['q' => 'What are your opening hours?', 'a' => 'We are open every day of the week. Hours by branch: Kasarani 07:00–20:00 every day; Kamakis 07:00–20:00 Monday to Saturday and 08:00–18:00 on Sundays; Kiambu Road 08:00–18:00 every day; Eldoret 08:00–18:00 on weekdays and 09:00–16:00 at weekends. For public holidays, call the branch to confirm. Walk-ins are welcome, but booking ahead helps us reserve time for you.'],
+  ['q' => 'Do you accept insurance and medical schemes?', 'a' => 'Yes. We work with a wide range of insurers and medical schemes including Jubilee, AAR, Madison, CIC, Britam, APA, SHA, NHIF and many more. Bring your insurance card and our team will handle pre-authorisation and billing. Insurance and SHA are accepted at Kasarani, Kamakis and Eldoret; the Kiambu Road branch is yet to start accepting insurance.'],
+  ['q' => 'Do you accept M-Pesa?', 'a' => 'Yes, every branch accepts M-Pesa and cash. Direct insurance billing is available at Kasarani, Kamakis and Eldoret. For M-Pesa payments, our team at each branch will provide the till number at reception.'],
+  ['q' => 'Is there a dentist open on Sunday in Nairobi?', 'a' => 'Yes. Every branch is open on Sundays: Kasarani 07:00–20:00, Kamakis and Kiambu Road 08:00–18:00, and Eldoret 09:00–16:00. For public holidays, call the branch to confirm.'],
   ['q' => 'Do you handle dental emergencies?', 'a' => 'Yes. Call or WhatsApp the nearest branch and we aim to see you the same day. For severe pain or swelling, come in directly and our team will prioritise you.'],
   ['q' => 'Do you treat children?', 'a' => 'Yes. We offer gentle children\'s dentistry in a calm, child-friendly setting. We recommend a first visit as soon as the first tooth appears, or by age one.'],
 ];
@@ -148,7 +148,7 @@ foreach ($schemas as $s) {
 echo "</head>\n<body>\n<main>\n";
 
 echo "<h1>Dentist in Kasarani (Nairobi), Kamakis-Ruiru, Eldoret and Kiambu Road</h1>\n";
-echo "<p>Celestial Dental Centre is a dental clinic group in Kenya with four branches, open every day including Sundays and public holidays (Kasarani, Kamakis and Eldoret 07:00 to 20:00, Kiambu Road 08:00 to 18:00). We provide checkups, teeth cleaning, braces and orthodontics, implants, root canal treatment, children's dentistry, cosmetic dentistry and same-day emergency dental care. SHA, 20+ private insurers, M-Pesa and cash are accepted.</p>\n";
+echo "<p>Celestial Dental Centre is a dental clinic group in Kenya with four branches, open every day including Sundays (Kasarani 07:00–20:00; Kamakis 07:00–20:00, Sundays 08:00–18:00; Kiambu Road 08:00–18:00; Eldoret 08:00–18:00 weekdays, 09:00–16:00 weekends). We provide checkups, teeth cleaning, braces and orthodontics, implants, root canal treatment, children's dentistry, cosmetic dentistry and same-day emergency dental care. SHA, 20+ private insurers, M-Pesa and cash are accepted.</p>\n";
 echo "<p><a href=\"$SITE/?book=1\">Book an appointment</a> &middot; Call +254 709 000 240 / +254 707 535 000</p>\n";
 
 echo "<h2>Dental services we offer</h2>\n<ul>\n";
@@ -160,7 +160,7 @@ echo "</ul>\n<p><a href=\"$SITE/services\">All dental services</a></p>\n";
 echo "<h2>Our branches</h2>\n" . $branchHtml;
 
 echo "<h2>Insurance, SHA and payment</h2>\n";
-echo "<p>SHA (Social Health Authority) is accepted for eligible schemes and covered treatments, including check-ups, cleaning, fillings, root canal treatment, extractions and X-rays, depending on your cover. We also bill more than 20 insurers directly, including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet and Equity Bank Insurance. M-Pesa and cash are accepted at every branch. See <a href=\"$SITE/dental-insurance-and-sha-coverage\">insurance and SHA coverage</a>.</p>\n";
+echo "<p>SHA (Social Health Authority) is accepted for eligible schemes and covered treatments, including check-ups, cleaning, fillings, root canal treatment, extractions and X-rays, depending on your cover. We also bill more than 20 insurers directly, including Jubilee, AAR, Madison, CIC, Britam, APA, GA, Heritage, First Assurance, Minet and Equity Bank Insurance. M-Pesa and cash are accepted at every branch. See <a href=\"$SITE/dental-insurance-and-sha-coverage\">insurance and SHA coverage</a>. Insurance and SHA are accepted at Kasarani, Kamakis and Eldoret; the Kiambu Road branch is yet to start accepting insurance.</p>\n";
 
 // Latest articles: gives the blog a crawl path from the highest-authority page
 // on the site instead of only from /blog.
@@ -184,6 +184,6 @@ echo "</main>\n</body>\n</html>\n";
 function about_home_section($SITE) {
   return "<hr />\n<section>\n<h2>About Celestial Dental Centre</h2>\n"
     . "<p>Celestial Dental Centre is also known as Celestial Dental &amp; Orthodontic Centre. The Kasarani location's official Google Business Profile is named Celestial Dental Centre -Kasarani Branch.</p>\n"
-    . "<p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua), open every day (Kasarani, Kamakis and Eldoret 07:00-20:00, Kiambu Road 08:00-18:00). Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>\n"
+    . "<p>Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani (Nairobi), Kamakis (Ruiru), Eldoret, and Kiambu Road (Thindigua), open every day (Kasarani 07:00-20:00; Kamakis 07:00-20:00, Sundays 08:00-18:00; Kiambu Road 08:00-18:00; Eldoret 08:00-18:00 weekdays, 09:00-16:00 weekends). Services include dental checkups, teeth cleaning, braces and orthodontics, implants, root canal therapy, children's dentistry, and same-day emergency care. M-Pesa and major insurance schemes accepted.</p>\n"
     . "<p>Book an appointment: <a href=\"$SITE/?book=1\">$SITE/?book=1</a> &middot; Call: +254 709 000 240 / +254 707 535 000 &middot; WhatsApp: https://wa.me/254707535000</p>\n</section>\n";
 }

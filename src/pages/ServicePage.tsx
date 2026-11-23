@@ -157,7 +157,7 @@ function ServicePageInner() {
                   'A calm, unhurried consultation with a qualified dentist.',
                   'A clear explanation of your options and recommended treatment plan.',
                   'Modern equipment and strict sterilisation standards at every branch.',
-                  'Care available every day of the week, 07:00–20:00, including walk-ins.',
+                  'Care available every day of the week, including walk-ins.',
                 ].map((point) => (
                   <li key={point} className="flex items-start gap-3">
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700">
@@ -230,7 +230,7 @@ function ServicePageInner() {
               <div className="rounded-3xl bg-brand-700 p-8 lg:p-12 text-center">
                 <h2 className="text-2xl lg:text-3xl font-900 text-white">Ready to book {service.title.toLowerCase()}?</h2>
                 <p className="mt-2 text-sm text-brand-200">
-                  Open every day across Kasarani, Kamakis, Eldoret, and Kiambu Road (Kiambu Road 08:00–18:00, other branches 07:00–20:00). Walk-ins welcome — booking ahead saves you time.
+                  Open every day across Kasarani, Kamakis, Eldoret, and Kiambu Road (Kasarani 07:00–20:00; Kamakis 07:00–20:00, Sundays 08:00–18:00; Kiambu Road 08:00–18:00; Eldoret 08:00–18:00 weekdays, 09:00–16:00 weekends). Walk-ins welcome — booking ahead saves you time.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <button onClick={() => openBooking(service.title)} className="btn-primary bg-white !text-brand-800 !shadow-none hover:!shadow-none">

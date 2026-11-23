@@ -20,7 +20,7 @@ foreach (cd_posts() as $p) {
 echo <<<TXT
 # Celestial Dental Centre
 
-> Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani, Kamakis, Eldoret, and Kiambu Road. The practice offers general dentistry, dental emergencies, cosmetic dentistry, teeth whitening, crowns and bridges, dentures, dental implants, braces and orthodontics, root canal therapy, children's dentistry, fillings, gum disease treatment, extractions, and teeth cleaning. Branches are open Monday to Sunday, 07:00-20:00.
+> Celestial Dental Centre is a dental clinic group in Kenya with branches in Kasarani, Kamakis, Eldoret, and Kiambu Road. The practice offers general dentistry, dental emergencies, cosmetic dentistry, teeth whitening, crowns and bridges, dentures, dental implants, braces and orthodontics, root canal therapy, children's dentistry, fillings, gum disease treatment, extractions, and teeth cleaning. Every branch is open every day of the week; hours vary by branch (see Opening hours below).
 
 ## Canonical Site
 
@@ -61,7 +61,7 @@ echo <<<TXT
 - Address: Brick House, 2nd Floor, Thindigua, along Kiambu Road, Kiambu County
 - Phone: +254 709 000 243 / +254 711 699 281
 - WhatsApp: https://wa.me/254711699281
-- Insurance: direct billing with 20+ private insurers
+- Insurance: yet to start accepting insurance at this branch (M-Pesa and cash); for insurance or SHA, visit Kasarani or Kamakis
 
 ## Service Areas
 
@@ -94,8 +94,8 @@ echo <<<TXT
 - Email: info@celestialdental.org
 - Primary phone: +254 709 000 240 / +254 707 535 000
 - WhatsApp: https://wa.me/254707535000
-- Opening hours: Monday to Sunday; Kasarani, Kamakis and Eldoret 07:00-20:00, Kiambu Road 08:00-18:00
-- Accepted payments: M-Pesa, cash, direct insurance billing
+- Opening hours: Monday to Sunday; Kasarani 07:00-20:00; Kamakis 07:00-20:00, Sundays 08:00-18:00; Kiambu Road 08:00-18:00; Eldoret 08:00-18:00 weekdays, 09:00-16:00 weekends
+- Accepted payments: M-Pesa and cash at every branch; direct insurance billing at Kasarani, Kamakis and Eldoret (Kiambu Road is yet to start accepting insurance)
 
 ## Insurance Accepted
 

@@ -149,7 +149,7 @@ export function SiteFooter() {
             <div className="space-y-3 text-sm text-white/60">
               <div>
                 <p className="font-800 text-white text-xs uppercase tracking-wide mb-1">Opening hours</p>
-                {(hoursLines.length ? hoursLines : ['Monday – Sunday', '07:00 – 20:00']).map(line => (
+                {(hoursLines.length ? hoursLines : ['Open every day', 'Hours vary by branch']).map(line => (
                   <p key={line}>{line}</p>
                 ))}
               </div>

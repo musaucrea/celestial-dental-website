@@ -277,7 +277,7 @@ function AboutPageInner() {
           <Reveal delay={200}>
             <div className="mt-12 rounded-3xl bg-gradient-to-br from-gold-400 to-gold-600 p-8 text-center">
               <h3 className="text-2xl font-900 text-ink-900">Come and meet us in person</h3>
-              <p className="mt-2 text-sm font-600 text-ink-900/70">Open 7 days a week · 07:00 – 20:00 · Walk-ins welcome</p>
+              <p className="mt-2 text-sm font-600 text-ink-900/70">Open 7 days a week · Walk-ins welcome</p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <button onClick={() => openBooking()} className="btn-primary !bg-none !bg-ink-900 !text-white !shadow-none hover:!shadow-none">
                   <MessageCircle className="h-4 w-4" />Book Appointment
