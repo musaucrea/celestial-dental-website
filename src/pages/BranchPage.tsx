@@ -122,6 +122,40 @@ function BranchPageInner() {
           </div>
         </section>
 
+        {/* Google reviews: a link out to the branch's Google profile. Reviews are
+            not quoted on the site (patient testimony in advertising, Rule 5(1)). */}
+        {googleProfile && (
+          <section className="bg-white py-12">
+            <div className="container-page">
+              <Reveal>
+                <div className="flex flex-col gap-6 rounded-3xl border border-gold-200 bg-gold-50 p-7 shadow-card md:flex-row md:items-center md:justify-between lg:p-9">
+                  <div className="flex items-start gap-4">
+                    <div className="flex shrink-0 gap-0.5 pt-1" aria-hidden="true">
+                      {[0, 1, 2, 3, 4].map(i => <Star key={i} className="h-5 w-5 fill-gold-400 text-gold-500" />)}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-900 text-ink-900">Read our {branch.name} reviews on Google</h2>
+                      <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-600">
+                        See what patients have shared about our {branch.name} branch on its official Google Business Profile,
+                        or leave an honest review of your own visit.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-3 md:shrink-0">
+                    <a href={googleProfile.profileUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">
+                      Read Google reviews
+                      <ChevronRight className="h-4 w-4" />
+                    </a>
+                    <a href={googleProfile.reviewUrl || googleProfile.profileUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                      Leave a review
+                    </a>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+          </section>
+        )}
+
         {/* Branch info cards */}
         <section className="py-16 bg-mint">
           <div className="container-page">
@@ -193,31 +227,6 @@ function BranchPageInner() {
               </div>
             </Reveal>
 
-            {googleProfile && (
-              <Reveal delay={280}>
-                <div className="mt-6 rounded-3xl border border-gold-200 bg-gold-50 p-6 shadow-card sm:flex sm:items-center sm:justify-between sm:gap-6">
-                  <div className="flex items-start gap-4">
-                    <Star className="h-6 w-6 shrink-0 fill-gold-400 text-gold-500" />
-                    <div>
-                      <p className="font-900 text-ink-900">Visited our {branch.name} branch?</p>
-                      <p className="mt-1 text-sm leading-relaxed text-ink-600">
-                        Read the current feedback or share an honest review on our official Google Business Profile.
-                        Every genuine patient experience helps people make a better-informed choice.
-                      </p>
-                    </div>
-                  </div>
-                  <a
-                    href={googleProfile.profileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-ghost mt-5 shrink-0 text-sm sm:mt-0"
-                  >
-                    View or review on Google
-                    <ChevronRight className="h-4 w-4" />
-                  </a>
-                </div>
-              </Reveal>
-            )}
           </div>
         </section>
 
