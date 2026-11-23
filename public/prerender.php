@@ -24,6 +24,12 @@ if (preg_match('#^branches/([a-z0-9-]+)$#', trim($path ?: '/', '/'), $bm)) {
   render_branch($bm[1]);
 }
 
+// Service-area pages (/service-areas, /service-areas/{slug}) — one page per
+// neighbourhood a branch serves, from service-areas.json.
+if (preg_match('#^service-areas(?:/([a-z0-9-]+))?$#', trim($path ?: '/', '/'), $am)) {
+  render_service_area($am[1] ?? '');
+}
+
 // Static marketing routes (/services, /services/{slug}, /about, /braces,
 // /careers). The SPA sets a correct per-route <title>/canonical client-side,
 // but crawlers get the pre-JS HTML. Without this, every one of these routes
@@ -477,7 +483,7 @@ function render_static($staticPath) {
   // ── /sitemap ── human-readable list of every page
   if ($staticPath === 'sitemap') {
     $pages = ['/' => 'Home', '/about' => 'About Us', '/services' => 'All Services', '/braces' => 'Braces & Orthodontics',
-      '/blog' => 'Blog', '/careers' => 'Careers', '/privacy-policy' => 'Privacy Policy'];
+      '/blog' => 'Blog', '/careers' => 'Careers', '/service-areas' => 'Areas We Serve', '/privacy-policy' => 'Privacy Policy'];
     $li = '';
     foreach ($pages as $u => $label) $li .= "<li><a href=\"$SITE$u\">{$esc($label)}</a></li>\n";
     $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Sitemap</p>\n<h1>Sitemap</h1>\n"
@@ -497,6 +503,133 @@ function render_static($staticPath) {
   }
 
   // Not a static route — return so blog/SPA handling continues.
+}
+
+// ─────────────────────────── Service areas ───────────────────────────
+// Keep in sync with branchHours in src/data/site.ts.
+function cd_branch_hours_table() {
+  $week = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  return [
+    'kasarani'    => ['Every day · 07:00 – 20:00', [[$week, '07:00', '20:00']]],
+    'kamakis'     => ['Mon – Sat · 07:00 – 20:00 · Sun · 08:00 – 18:00', [[array_slice($week, 0, 6), '07:00', '20:00'], [['Sunday'], '08:00', '18:00']]],
+    'eldoret'     => ['Mon – Fri · 08:00 – 18:00 · Sat – Sun · 09:00 – 16:00', [[array_slice($week, 0, 5), '08:00', '18:00'], [['Saturday', 'Sunday'], '09:00', '16:00']]],
+    'kiambu-road' => ['Every day · 08:00 – 18:00', [[$week, '08:00', '18:00']]],
+  ];
+}
+
+function cd_service_area_data() {
+  static $data = null;
+  if ($data === null) {
+    $raw = @file_get_contents(__DIR__ . '/service-areas.json');
+    $data = $raw ? (json_decode($raw, true) ?: []) : [];
+  }
+  return $data;
+}
+
+function cd_areas_for_branch($branchSlug) {
+  return array_values(array_filter(cd_service_area_data()['areas'] ?? [], fn($a) => ($a['branch'] ?? '') === $branchSlug));
+}
+
+function cd_area_href($SITE, $a) {
+  return !empty($a['home']) ? "$SITE/branches/{$a['branch']}" : "$SITE/service-areas/{$a['slug']}";
+}
+
+function cd_area_links($SITE, $areas, $current = '') {
+  $li = '';
+  foreach ($areas as $a) {
+    $n = htmlspecialchars($a['name'], ENT_QUOTES, 'UTF-8');
+    $li .= ($a['slug'] === $current) ? "<li><strong>$n</strong></li>\n" : "<li><a href=\"" . cd_area_href($SITE, $a) . "\">$n</a></li>\n";
+  }
+  return "<ul>\n$li</ul>\n";
+}
+
+function cd_payment_text($slug, $name) {
+  if ($slug === 'kiambu-road') return "The $name branch accepts M-Pesa and cash. We are yet to start accepting insurance at this branch; for insurance or SHA, our Kasarani and Kamakis branches handle pre-authorisation.";
+  $sha = in_array($slug, ['kasarani', 'kamakis', 'eldoret'], true);
+  return ($sha ? 'SHA (for eligible schemes and covered treatments) and direct billing with 20+ insurers' : 'Direct billing with 20+ insurers')
+    . ", including Jubilee, AAR, Madison, CIC, Britam and APA, at the $name branch. Bring your insurance card" . ($sha ? ' or SHA details' : '')
+    . ' and the front desk will handle pre-authorisation. M-Pesa and cash are also accepted.';
+}
+
+function render_service_area($areaSlug) {
+  $SITE = CD_SITE;
+  $esc = fn($x) => htmlspecialchars((string)$x, ENT_QUOTES, 'UTF-8');
+  $data = cd_service_area_data();
+  $meta = $data['branches'] ?? [];
+  $all = $data['areas'] ?? [];
+  $order = ['kasarani', 'kamakis', 'kiambu-road', 'eldoret'];
+  $hoursTable = cd_branch_hours_table();
+
+  // ── /service-areas index ──
+  if ($areaSlug === '') {
+    $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › Service areas</p>\n<h1>Areas we serve</h1>\n"
+      . "<p>Four Celestial Dental Centre branches serve " . count($all) . " neighbourhoods. Find your area to see which branch is nearest, how to get there and its opening hours.</p>\n";
+    foreach ($order as $bs) {
+      $bName = $esc($meta[$bs]['name'] ?? $bs);
+      $main .= "<h2>Our $bName branch serves</h2>\n<p>" . $esc($meta[$bs]['place'] ?? '') . ' · ' . $esc($hoursTable[$bs][0] ?? '') . " · <a href=\"$SITE/branches/$bs\">View branch</a></p>\n"
+        . cd_area_links($SITE, cd_areas_for_branch($bs));
+    }
+    emit_page(
+      'Areas We Serve | Dentist near you in Nairobi, Ruiru, Kiambu Road & Eldoret | Celestial Dental Centre',
+      'Find the Celestial Dental branch nearest you. Our Kasarani, Kamakis, Kiambu Road and Eldoret branches serve ' . count($all) . ' neighbourhoods, including Roysambu, Mwiki, Ruiru, Kahawa Sukari, Runda, Ridgeways, Elgon View and Langas.',
+      '/service-areas', $main,
+      [cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Service areas' => "$SITE/service-areas"])]
+    );
+  }
+
+  $area = null;
+  foreach ($all as $a) if ($a['slug'] === $areaSlug) $area = $a;
+  if (!$area) spa_shell();
+  if (!empty($area['home'])) {
+    header('Location: ' . "$SITE/branches/{$area['branch']}", true, 301);
+    exit;
+  }
+
+  $bs = $area['branch'];
+  $b = cd_find_branch($bs) ?: [];
+  $bName = $b['name'] ?? ($meta[$bs]['name'] ?? $bs);
+  $place = $meta[$bs]['place'] ?? $bName;
+  $an = $area['name'];
+  $route = $area['route'] ?? '';
+  $hours = $hoursTable[$bs][0] ?? ($b['hours'] ?? '');
+  $addr = implode(', ', array_values(array_filter(array_map(fn($l) => rtrim(trim($l), ','), preg_split('/\r?\n/', (string)($b['address'] ?? ''))))));
+  $phone = $b['phone'] ?? '';
+  $payment = cd_payment_text($bs, $bName);
+  $other = !empty($area['alsoNear']) ? ($meta[$area['alsoNear']]['name'] ?? '') : '';
+
+  $faqs = [
+    ["Is there a Celestial Dental clinic near $an?", "Yes. Patients from $an visit our $bName branch in $place: $addr. From $an, $route." . ($other ? " Our $other branch is also convenient from $an." : '')],
+    ["What are the $bName branch's opening hours?", str_replace(' · ', ' ', $hours) . '. For public holidays, call the branch to confirm.'],
+    ["Do you accept insurance for patients from $an?", $payment],
+    ['Can I book for my children and family?', "Yes. The $bName branch sees adults and children, including children's dentistry. Book online, call " . trim(explode('/', $phone)[0]) . ' or WhatsApp the branch and say how many people are coming.'],
+    ["What should I do in a dental emergency in $an?", "Call or WhatsApp the $bName branch. We aim to see emergency patients the same day and will fit you in as quickly as we can."],
+  ];
+
+  $canonicalPath = "/service-areas/{$area['slug']}";
+  $main = "<p><a href=\"$SITE/\">Celestial Dental Centre</a> › <a href=\"$SITE/service-areas\">Service areas</a> › {$esc($an)}</p>\n"
+    . "<h1>Dentist near {$esc($an)}</h1>\n"
+    . "<p>{$esc($an)} residents visit our <a href=\"$SITE/branches/$bs\">{$esc($bName)} branch</a> in {$esc($place)}. From {$esc($an)}, {$esc($route)}.</p>\n"
+    . "<h2>Your nearest branch: Celestial Dental {$esc($bName)}</h2>\n"
+    . "<p>{$esc($addr)}</p>\n<p>Opening hours: {$esc($hours)}</p>\n<p>Phone: {$esc($phone)}</p>\n"
+    . ($other ? "<p>Also convenient from {$esc($an)}: our <a href=\"$SITE/branches/{$area['alsoNear']}\">{$esc($other)} branch</a>.</p>\n" : '')
+    . "<h2>Insurance and payment</h2>\n<p>{$esc($payment)}</p>\n"
+    . cd_service_links($SITE)
+    . "<h2>Our {$esc($bName)} branch serves</h2>\n" . cd_area_links($SITE, cd_areas_for_branch($bs), $area['slug'])
+    . "<p><a href=\"$SITE/service-areas\">All areas we serve</a></p>\n"
+    . "<h2>{$esc($an)} patient FAQs</h2>\n";
+  foreach ($faqs as [$q, $ans]) $main .= "<h3>{$esc($q)}</h3>\n<p>{$esc($ans)}</p>\n";
+  $main .= "<p><a href=\"$SITE/?book=1\">Book an appointment</a></p>\n";
+
+  $faqSchema = [
+    '@context' => 'https://schema.org', '@type' => 'FAQPage',
+    'mainEntity' => array_map(fn($f) => ['@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], $faqs),
+  ];
+  emit_page(
+    "Dentist near $an | $bName Branch | Celestial Dental Centre",
+    "Dental care for $an residents at Celestial Dental $bName ($place). From $an, $route. Open " . str_replace([' · ', 'Every day'], [' ', 'every day'], $hours) . '. Checkups, cleaning, braces, implants, root canal treatment and emergency care.',
+    $canonicalPath, $main,
+    [$faqSchema, cd_breadcrumb($SITE, ['Home' => "$SITE/", 'Service areas' => "$SITE/service-areas", $an => "$SITE$canonicalPath"])]
+  );
 }
 
 // ─────────────────────────── Branch pages ───────────────────────────
@@ -521,14 +654,9 @@ function render_branch($branchSlug) {
   $addrLines = array_values(array_filter(array_map('trim', preg_split('/\r?\n/', (string)($b['address'] ?? '')))));
   $addrHtml  = implode('<br />', array_map(fn($l) => htmlspecialchars($l, ENT_QUOTES, 'UTF-8'), $addrLines));
   $locality  = ['kasarani' => 'Kasarani, Nairobi', 'kamakis' => 'Kamakis, Ruiru', 'kiambu-road' => 'Thindigua, Kiambu Road'][$branchSlug] ?? ($b['name'] ?? '');
-  // Neighbourhoods near each branch; keep in sync with branchAreas in src/data/site.ts.
-  $branchAreas = [
-    'kasarani'    => ['Kasarani', 'Mwiki', 'Roysambu', 'Zimmerman', 'Clay City', 'Thika Road'],
-    'kamakis'     => ['Kamakis', 'Ruiru', 'Kahawa Sukari', 'Membley', 'Eastern Bypass'],
-    'eldoret'     => ['Eldoret town', 'Uasin Gishu'],
-    'kiambu-road' => ['Thindigua', 'Kiambu Road', 'Ridgeways', 'Runda'],
-  ];
-  $areas = $branchAreas[$branchSlug] ?? [];
+  // Neighbourhoods near each branch, from service-areas.json (same list as the SPA).
+  $areaRows = cd_areas_for_branch($branchSlug);
+  $areas = array_map(fn($a) => $a['name'], $areaRows);
 
   // SHA approval is per facility; keep in sync with shaBranchSlugs in src/data/site.ts.
   $acceptsSha = in_array($branchSlug, ['kasarani', 'kamakis', 'eldoret'], true);
@@ -536,12 +664,8 @@ function render_branch($branchSlug) {
   // Keep in sync with noInsuranceYetSlugs and branchHours in src/data/site.ts.
   $noInsuranceYet = in_array($branchSlug, ['kiambu-road'], true);
   $week = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  $branchHours = [
-    'kasarani'    => ['Every day · 07:00 – 20:00', [[$week, '07:00', '20:00']]],
-    'kamakis'     => ['Mon – Sat · 07:00 – 20:00 · Sun · 08:00 – 18:00', [[array_slice($week, 0, 6), '07:00', '20:00'], [['Sunday'], '08:00', '18:00']]],
-    'eldoret'     => ['Mon – Fri · 08:00 – 18:00 · Sat – Sun · 09:00 – 16:00', [[array_slice($week, 0, 5), '08:00', '18:00'], [['Saturday', 'Sunday'], '09:00', '16:00']]],
-    'kiambu-road' => ['Every day · 08:00 – 18:00', [[$week, '08:00', '18:00']]],
-  ];
+  $branchHours = cd_branch_hours_table();
+
   [$hoursText, $hoursSpec] = $branchHours[$branchSlug] ?? ["Every day · $bOpen – $bClose", [[$week, $bOpen, $bClose]]];
   $insuranceText = $noInsuranceYet
     ? "The $name branch accepts M-Pesa and cash. We are yet to start accepting insurance at this branch. For insurance or SHA, the Kasarani and Kamakis branches handle pre-authorisation."
@@ -604,10 +728,8 @@ function render_branch($branchSlug) {
   echo "<h2>Visit us</h2>\n<p>$addrHtml</p>\n";
   if ($landmark) echo "<p>Landmark: $landmark</p>\n";
   if ($parking) echo "<p>Parking: $parking</p>\n";
-  if ($areas) {
-    $last = array_pop($areas);
-    $areasText = htmlspecialchars($areas ? implode(', ', $areas) . " and $last" : $last, ENT_QUOTES, 'UTF-8');
-    echo "<h2>Areas we serve</h2>\n<p>The $name branch serves patients in $areasText.</p>\n";
+  if ($areaRows) {
+    echo "<h2>Our $name branch serves</h2>\n" . cd_area_links($SITE, $areaRows) . "<p><a href=\"$SITE/service-areas\">All areas we serve</a></p>\n";
   }
   $phoneLinks = implode(' / ', array_map(function ($p) {
     $p = trim($p);

@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Phone, MapPin, MessageCircle, Clock, Car, ChevronRight, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
-import { branchAreas, branchHours, googleBusinessProfiles, noInsuranceYetSlugs, services as staticServices, shaBranchSlugs, site } from '../data/site';
+import { branchHours, googleBusinessProfiles, noInsuranceYetSlugs, services as staticServices, shaBranchSlugs, site } from '../data/site';
+import { branchAreas } from '../data/serviceAreas';
 import { useBranches } from '../data/branches';
 import { useSection } from '../data/siteData';
 import { Header } from '../components/Header';
@@ -11,6 +12,7 @@ import { SchemaOrg } from '../components/SchemaOrg';
 import { SEO } from '../components/SEO';
 import { SiteFooter } from '../components/SiteFooter';
 import { PhoneLinks } from '../components/PhoneLinks';
+import { AreaChips } from '../components/AreaChips';
 
 function BranchPageInner() {
   const { slug } = useParams<{ slug: string }>();
@@ -40,7 +42,8 @@ function BranchPageInner() {
   const areas = branchAreas[branch.slug] || [];
   // Areas not already in the branch's name or address, e.g. "Ridgeways and Runda" for Kiambu Road.
   const here = `${branch.name} ${branch.address.join(' ')}`.toLowerCase();
-  const nearby = areas.filter(a => !here.includes(a.toLowerCase()));
+  // First few only: the meta description would otherwise run long.
+  const nearby = areas.filter(a => !here.includes(a.toLowerCase())).slice(0, 5);
   const nearbyText = nearby.length > 1 ? `${nearby.slice(0, -1).join(', ')} and ${nearby[nearby.length - 1]}` : nearby[0] || '';
 
   // Search phrasing includes the wider locality, not just the branch name
@@ -182,19 +185,6 @@ function BranchPageInner() {
               </Reveal>
             </div>
 
-            {areas.length > 0 && (
-              <Reveal delay={210}>
-                <div className="mt-6 rounded-3xl bg-white p-6 shadow-card flex items-start gap-4">
-                  <MapPin className="h-6 w-6 shrink-0 text-brand-500" />
-                  <div>
-                    <h2 className="text-xs font-800 text-ink-400 uppercase tracking-wider mb-1">Areas we serve</h2>
-                    <p className="text-sm text-ink-700 leading-relaxed">
-                      The {branch.name} branch serves patients in {areas.length > 1 ? `${areas.slice(0, -1).join(', ')} and ${areas[areas.length - 1]}` : areas[0]}.
-                    </p>
-                  </div>
-                </div>
-              </Reveal>
-            )}
 
             <Reveal delay={240}>
               <div className="mt-6 rounded-3xl bg-white p-6 shadow-card flex items-start gap-4">
@@ -252,6 +242,31 @@ function BranchPageInner() {
             )}
           </div>
         </section>
+
+        {/* Areas this branch serves — each chip opens that area's page */}
+        {areas.length > 0 && (
+          <section className="py-16 lg:py-20">
+            <div className="container-page">
+              <Reveal>
+                <span className="eyebrow"><span className="h-1.5 w-1.5 rounded-full bg-gold-500" />Service areas</span>
+              </Reveal>
+              <Reveal delay={80}>
+                <h2 className="mt-4 text-3xl font-900 text-ink-900 lg:text-4xl">Our {branch.name} Branch Serves:</h2>
+                <p className="mt-3 text-ink-500">Live nearby? Pick your area for directions from there.</p>
+              </Reveal>
+              <Reveal delay={120}>
+                <div className="mt-8">
+                  <AreaChips branchSlug={branch.slug} />
+                </div>
+              </Reveal>
+              <Reveal delay={160}>
+                <Link to="/service-areas" className="mt-8 inline-flex items-center gap-1 text-sm font-800 text-brand-600 hover:text-brand-800">
+                  See areas near all our branches <ChevronRight className="h-4 w-4" />
+                </Link>
+              </Reveal>
+            </div>
+          </section>
+        )}
 
         {/* Branch photo gallery (admin-managed, up to 5 photos) */}
         {branch.photos && branch.photos.length > 0 && (

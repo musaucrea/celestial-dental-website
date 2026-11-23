@@ -116,6 +116,7 @@ export function SiteFooter() {
                 { label: 'Services', href: '/#services' },
                 { label: 'Why Choose Us', href: '/#why' },
                 { label: 'Our Branches', href: '/#branches' },
+                { label: 'Areas We Serve', href: '/service-areas' },
                 { label: 'Gallery', href: '/#gallery' },
                 { label: 'Blog', href: '/blog' },
                 { label: 'Careers', href: '/careers' },

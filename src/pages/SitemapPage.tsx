@@ -7,6 +7,7 @@ import { SEO } from '../components/SEO';
 import { SiteFooter } from '../components/SiteFooter';
 import { site, services, serviceSlug } from '../data/site';
 import { useBranches } from '../data/branches';
+import { serviceAreaBranchOrder, areasForBranch } from '../data/serviceAreas';
 
 type Post = { slug: string; title: string };
 
@@ -17,6 +18,7 @@ const MAIN_PAGES = [
   { label: 'Braces & Orthodontics', to: '/braces' },
   { label: 'Blog', to: '/blog' },
   { label: 'Careers', to: '/careers' },
+  { label: 'Areas We Serve', to: '/service-areas' },
   { label: 'Privacy Policy', to: '/privacy-policy' },
 ];
 
@@ -72,6 +74,16 @@ export function SitemapPage() {
             links={services.map(s => ({ label: s.title, to: `/services/${serviceSlug(s.title)}` }))}
           />
         </div>
+        <section className="mt-12">
+          <h2 className="text-lg font-800 text-secondary-900">Areas we serve</h2>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {serviceAreaBranchOrder.flatMap(b => areasForBranch(b)).filter(a => !a.home).map(a => (
+              <li key={a.slug}>
+                <Link to={`/service-areas/${a.slug}`} className="text-brand-600 hover:underline">Dentist near {a.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
         <section className="mt-12">
           <h2 className="text-lg font-800 text-secondary-900">Blog articles</h2>
           {postsError && <p className="mt-3 text-sm text-red-600">{postsError}</p>}

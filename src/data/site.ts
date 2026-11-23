@@ -310,19 +310,6 @@ export const branchHours: Record<string, { text: string; spec: { days: string[];
   'kiambu-road': { text: 'Every day · 08:00 – 18:00', spec: [{ days: EVERY_DAY, opens: '08:00', closes: '18:00' }] },
 };
 
-/**
- * Neighbourhoods each branch is close to. Kept in code rather than in the
- * admin-managed branch description so an edit there can't drop them: Google
- * only links a branch to an area ("dentist runda") when the page names it.
- * Keep in sync with $branchAreas in public/prerender.php.
- */
-export const branchAreas: Record<string, string[]> = {
-  kasarani: ['Kasarani', 'Mwiki', 'Roysambu', 'Zimmerman', 'Clay City', 'Thika Road'],
-  kamakis: ['Kamakis', 'Ruiru', 'Kahawa Sukari', 'Membley', 'Eastern Bypass'],
-  eldoret: ['Eldoret town', 'Uasin Gishu'],
-  'kiambu-road': ['Thindigua', 'Kiambu Road', 'Ridgeways', 'Runda'],
-};
-
 export const branches = [
   {
     name: 'Kasarani',

@@ -21,6 +21,8 @@ const ServicesPage = lazy(() => import('./pages/ServicesPage').then(m => ({ defa
 const AboutPage = lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
 const BracesPage = lazy(() => import('./pages/BracesPage').then(m => ({ default: m.BracesPage })));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then(m => ({ default: m.PrivacyPolicyPage })));
+const ServiceAreaPage = lazy(() => import('./pages/ServiceAreaPage').then(m => ({ default: m.ServiceAreaPage })));
+const ServiceAreasIndexPage = lazy(() => import('./pages/ServiceAreaPage').then(m => ({ default: m.ServiceAreasIndexPage })));
 const SitemapPage = lazy(() => import('./pages/SitemapPage').then(m => ({ default: m.SitemapPage })));
 import { AccessibilityWidget } from './components/AccessibilityWidget';
 import { RetargetingConsent } from './components/RetargetingConsent';
@@ -600,6 +602,8 @@ export default function App() {
         <Route path="/services/:slug" element={<ServicePage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/branches/:slug" element={<BranchPage />} />
+        <Route path="/service-areas" element={<ServiceAreasIndexPage />} />
+        <Route path="/service-areas/:slug" element={<ServiceAreaPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/about" element={<AboutPage />} />

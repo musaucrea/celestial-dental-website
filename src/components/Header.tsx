@@ -14,7 +14,10 @@ export function Header() {
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
   const branches = useBranches();
   const services = useSection<{ title: string }>('services', staticServices);
-  const branchLinks = branches.map(b => ({ label: b.name, href: `/branches/${b.slug}` }));
+  const branchLinks = [
+    ...branches.map(b => ({ label: b.name, href: `/branches/${b.slug}` })),
+    { label: 'Areas we serve', href: '/service-areas' },
+  ];
   const serviceLinks = services.map(s => ({ label: s.title, href: `/services/${serviceSlug(s.title)}` }));
   // Resolve a nav item's dropdown ('services' | 'branches') to its links + "view all" target
   const dropdownFor = (kind?: string) =>

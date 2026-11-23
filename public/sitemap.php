@@ -41,6 +41,14 @@ $static = [
   // crawlers still find them through robots.txt, which names all three.
 ];
 
+// One entry per service-area page (public/service-areas.json). A branch's own
+// area links to the branch page, so it has no page of its own.
+$static[] = ['/service-areas', '2026-11-23', 'monthly', '0.7'];
+$areaData = json_decode((string)@file_get_contents(__DIR__ . '/service-areas.json'), true) ?: [];
+foreach ($areaData['areas'] ?? [] as $a) {
+  if (empty($a['home'])) $static[] = ['/service-areas/' . $a['slug'], '2026-11-23', 'monthly', '0.6'];
+}
+
 $posts = cd_posts();
 
 // Blog index freshness follows the newest post

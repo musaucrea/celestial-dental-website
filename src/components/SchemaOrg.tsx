@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials, branchAreas, branchHours, noInsuranceYetSlugs } from '../data/site';
+import { blogPosts, googleBusinessProfiles, serviceSlug, shaBranchSlugs, site, services, socials, branchHours, noInsuranceYetSlugs } from '../data/site';
+import { branchAreas } from '../data/serviceAreas';
 import { branchOpenClose, useBranches, type Branch } from '../data/branches';
 import { useFaqs, type Faq } from '../data/faqs';
 import { phoneParts } from './PhoneLinks';
