@@ -50,18 +50,18 @@
     { "slug": "kitisuru", "name": "Kitisuru", "branch": "kiambu-road", "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House" },
 
     { "slug": "eldoret-town", "name": "Eldoret Town", "branch": "eldoret", "home": true },
-    { "slug": "elgon-view", "name": "Elgon View", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "kapsoya", "name": "Kapsoya", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "langas", "name": "Langas", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "pioneer", "name": "Pioneer", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "huruma-eldoret", "name": "Huruma", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "kimumu", "name": "Kimumu", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "west-indies", "name": "West Indies", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "annex", "name": "Annex", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "maili-nne", "name": "Maili Nne", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "kapseret", "name": "Kapseret", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "kiplombe", "name": "Kiplombe", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "racecourse", "name": "Racecourse", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" },
-    { "slug": "munyaka", "name": "Munyaka", "branch": "eldoret", "route": "head into town to Champion Heights on Banaptai Street" }
+    { "slug": "elgon-view", "name": "Elgon View", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "kapsoya", "name": "Kapsoya", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "langas", "name": "Langas", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "pioneer", "name": "Pioneer", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "huruma-eldoret", "name": "Huruma", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "kimumu", "name": "Kimumu", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "west-indies", "name": "West Indies", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "annex", "name": "Annex", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "maili-nne", "name": "Maili Nne", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "kapseret", "name": "Kapseret", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "kiplombe", "name": "Kiplombe", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "racecourse", "name": "Racecourse", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
+    { "slug": "munyaka", "name": "Munyaka", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" }
   ]
 }

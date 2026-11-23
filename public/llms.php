@@ -51,17 +51,17 @@ echo <<<TXT
 
 ### Eldoret
 - URL: https://celestialdental.org/branches/eldoret
-- Address: Along Banaptai Street, Eldoret Town, Uasin Gishu County
-- Phone: +254 709 000 244 / +254 794 585 217
+- Address: Champions Heights Building, 1st Floor, Room 1, Banaptai Street, next to Grand Empire Hotel, Eldoret Town, Uasin Gishu County
+- Phone: +254 794 585 217
 - WhatsApp: https://wa.me/254794585217
-- Insurance: SHA (Social Health Authority) accepted for eligible schemes, plus direct billing with 20+ private insurers
+- Insurance: AAR, First Assurance, CIC Group, Equity, Britam and Minet; contact the branch to confirm your cover before your visit
 
 ### Kiambu Road
 - URL: https://celestialdental.org/branches/kiambu-road
 - Address: Brick House, 2nd Floor, Thindigua, along Kiambu Road, Kiambu County
 - Phone: +254 709 000 243 / +254 711 699 281
 - WhatsApp: https://wa.me/254711699281
-- Insurance: yet to start accepting insurance at this branch (M-Pesa and cash); for insurance or SHA, visit Kasarani or Kamakis
+- Payment: M-Pesa and cash
 
 ## Service Areas
 
@@ -95,11 +95,11 @@ echo <<<TXT
 - Primary phone: +254 709 000 240 / +254 707 535 000
 - WhatsApp: https://wa.me/254707535000
 - Opening hours: Monday to Sunday; Kasarani 07:00-20:00; Kamakis 07:00-20:00, Sundays 08:00-18:00; Kiambu Road 08:00-18:00; Eldoret 08:00-18:00 weekdays, 09:00-16:00 weekends
-- Accepted payments: M-Pesa and cash at every branch; direct insurance billing at Kasarani, Kamakis and Eldoret (Kiambu Road is yet to start accepting insurance)
+- Accepted payments: M-Pesa and cash at every branch; SHA and direct insurance billing at Kasarani and Kamakis; Eldoret accepts AAR, First Assurance, CIC Group, Equity, Britam and Minet
 
 ## Insurance Accepted
 
-SHA (Social Health Authority) is accepted at the Kasarani, Kamakis, and Eldoret branches — for eligible schemes and covered treatments such as check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays; coverage depends on the patient's scheme and pre-authorisation may be required. Celestial Dental Centre also works with major insurers and medical schemes including Jubilee Insurance, AAR Insurance, Madison, CIC Group, Britam, APA Insurance, Liaison Group, GA Insurance, Co-operative Bank, Trident Insurance, Saham Insurance, Kenya Commercial Bank, Kenya Alliance Insurance, Clarkson Insurance, Resolution Insurance, Minet Insurance, First Assurance, Karirana Estates, Heritage Insurance, and Equity Bank Insurance.
+SHA (Social Health Authority) is accepted at the Kasarani and Kamakis branches — for eligible schemes and covered treatments such as check-ups, cleaning, fillings, root canal treatment, extractions, and X-rays; coverage depends on the patient's scheme and pre-authorisation may be required. Celestial Dental Centre also works with major insurers and medical schemes including Jubilee Insurance, AAR Insurance, Madison, CIC Group, Britam, APA Insurance, Liaison Group, GA Insurance, Co-operative Bank, Trident Insurance, Saham Insurance, Kenya Commercial Bank, Kenya Alliance Insurance, Clarkson Insurance, Resolution Insurance, Minet Insurance, First Assurance, Karirana Estates, Heritage Insurance, and Equity Bank Insurance.
 
 $articles
 ## Citation Guidance

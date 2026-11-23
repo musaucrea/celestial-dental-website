@@ -55,7 +55,7 @@ const FAQS = [
   },
   {
     q: 'Can I pay with insurance or M-Pesa?',
-    a: 'Yes. Every branch accepts M-Pesa and cash. Direct insurance billing with schemes like SHA, Jubilee, AAR, CIC, Britam, and Madison is available at Kasarani, Kamakis and Eldoret; the Kiambu Road branch is yet to start accepting insurance. Your treatment plan is agreed with you clearly before treatment begins.',
+    a: 'Yes. Every branch accepts M-Pesa and cash. Kasarani and Kamakis accept SHA and bill insurers such as Jubilee, AAR, CIC, Britam and Madison directly; Eldoret accepts AAR, First Assurance, CIC Group, Equity, Britam and Minet. Braces are elective, so confirm what your cover includes before treatment. Your treatment plan is agreed with you clearly before treatment begins.',
   },
 ];
 

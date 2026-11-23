@@ -77,10 +77,10 @@
         "@type": "Dentist",
         "name": "Celestial Dental Centre - Eldoret Branch",
         "url": "https://celestialdental.org/branches/eldoret",
-        "telephone": "+254 709 000 244",
+        "telephone": "+254 794 585 217",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Champion Heights 1st floor, Along Banaptai Street, Eldoret Town -Uasin Gishu County",
+          "streetAddress": "Champions Heights Building, 1st Floor, Room 1, Banaptai Street, next to Grand Empire Hotel",
           "addressLocality": "Eldoret",
           "addressRegion": "Uasin Gishu",
           "addressCountry": "KE"

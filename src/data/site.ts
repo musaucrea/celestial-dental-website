@@ -277,18 +277,73 @@ export const gallery = [
   { src: '/facility/clinic-hallway.jpg', caption: 'Bright, private treatment corridors' },
 ];
 
-/**
- * Branches where SHA (Social Health Authority) is accepted. SHA approval is
- * per facility, so a branch is only described as accepting SHA when listed
- * here. Kiambu Road is deliberately absent.
- */
-export const shaBranchSlugs = ['kasarani', 'kamakis', 'eldoret'];
+/** Branches approved for SHA (Social Health Authority). SHA approval is per facility. */
+export const shaBranchSlugs = ['kasarani', 'kamakis'];
 
 /**
- * Branches that are yet to start accepting insurance (cash and M-Pesa only).
- * Keep in sync with $noInsuranceYet in public/prerender.php.
+ * Branches whose insurer list differs from the group list. Eldoret confirmed
+ * its panel in November 2026. Keep in sync with $branchInsurers in public/prerender.php.
+ */
+export const branchInsurers: Record<string, string[]> = {
+  eldoret: ['AAR', 'First Assurance', 'CIC Group', 'Equity', 'Britam', 'Minet'],
+};
+
+/**
+ * Branches whose pages say nothing about insurance, only M-Pesa and cash
+ * (clinic instruction, November 2026). Keep in sync with $noInsuranceTalk in public/prerender.php.
  */
 export const noInsuranceYetSlugs = ['kiambu-road'];
+
+const listJoin = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}` : xs[0] || '');
+
+/**
+ * What a branch's pages say about paying: a heading, the full paragraph and a
+ * one-line version for meta descriptions. Kiambu Road mentions M-Pesa and
+ * cash only, never insurance. Mirrored by cd_payment_text() in public/prerender.php.
+ */
+export function branchPayment(slug: string, name: string): { heading: string; text: string; short: string; schema: string } {
+  if (noInsuranceYetSlugs.includes(slug)) {
+    return { heading: 'Payment', text: `The ${name} branch accepts M-Pesa and cash.`, short: 'M-Pesa and cash accepted.', schema: 'Cash, M-Pesa' };
+  }
+  const own = branchInsurers[slug];
+  if (own) {
+    return {
+      heading: 'Insurance',
+      text: `The ${name} branch accepts a range of insurance covers, including ${listJoin(own)}. Before your visit, contact the branch to confirm your cover's eligibility and the dental services included in your benefits. M-Pesa and cash are also accepted.`,
+      short: `Insurance accepted, including ${listJoin(own)}.`,
+      schema: `Cash, M-Pesa, Insurance, ${own.join(', ')}`,
+    };
+  }
+  if (shaBranchSlugs.includes(slug)) {
+    return {
+      heading: 'Insurance & SHA',
+      text: `We accept SHA (Social Health Authority) for eligible schemes and covered treatments at our ${name} branch, plus direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance. Bring your insurance card or SHA details and our front desk will handle pre-authorisation. M-Pesa and cash also accepted.`,
+      short: 'SHA and 20+ insurance schemes accepted.',
+      schema: 'Cash, M-Pesa, Insurance, SHA (Social Health Authority), NHIF, AAR, Jubilee, Madison, CIC, Britam, APA',
+    };
+  }
+  return {
+    heading: 'Insurance',
+    text: `Direct billing with 20+ insurers including Jubilee, AAR, Madison, CIC, Britam, APA and Equity Bank Insurance. Bring your insurance card and our front desk will handle pre-authorisation. M-Pesa and cash also accepted. Confirm that your scheme is accepted at the ${name} branch before treatment.`,
+    short: '20+ insurance schemes accepted.',
+    schema: 'Cash, M-Pesa, Insurance, AAR, Jubilee, Madison, CIC, Britam, APA',
+  };
+}
+
+/**
+ * Contact details pinned in code because the admin-managed branch record still
+ * holds older text. Applied over /api/branches in src/data/branches.ts and in
+ * public/blog-feed.php.
+ */
+export const branchContactPins: Record<string, { address?: string[]; landmark?: string; phone?: string; phoneHref?: string; whatsapp?: string }> = {
+  eldoret: {
+    address: ['Champions Heights Building, 1st Floor, Room 1', 'Banaptai Street, next to Grand Empire Hotel', 'Eldoret Town, Uasin Gishu County'],
+    landmark: 'Next to Grand Empire Hotel',
+    phone: '+254 794 585 217',
+    phoneHref: 'tel:+254794585217',
+    whatsapp: 'https://wa.me/254794585217',
+  },
+};
 
 /**
  * Each branch's opening hours, confirmed November 2026 (the CRM's
@@ -352,11 +407,11 @@ export const branches = [
     tagline: 'Trusted dental care in the heart of Eldoret',
     description:
       'Celestial Dental Eldoret brings the same warm, professional care to the Rift Valley region. Located centrally along Banaptai Street, our Eldoret branch is easily accessible and offers all services — from preventive care and braces to implants and emergency treatment.',
-    address: ['Along Banaptai Street', 'Eldoret Town', 'Uasin Gishu County'],
-    landmark: 'Central Eldoret — easily accessible from all directions',
+    address: ['Champions Heights Building, 1st Floor, Room 1', 'Banaptai Street, next to Grand Empire Hotel', 'Eldoret Town, Uasin Gishu County'],
+    landmark: 'Next to Grand Empire Hotel',
     parking: 'Street parking available nearby',
-    phone: '+254 709 000 244 / +254 794 585 217',
-    phoneHref: 'tel:+254709000244',
+    phone: '+254 794 585 217',
+    phoneHref: 'tel:+254794585217',
     whatsapp: 'https://wa.me/254794585217',
     map: 'https://maps.google.com/?q=Celestial+Dental+Centre+Eldoret',
     hours: 'Mon – Fri · 08:00 – 18:00 · Sat – Sun · 09:00 – 16:00',

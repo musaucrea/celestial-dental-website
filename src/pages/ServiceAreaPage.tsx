@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, Clock, MapPin, MessageCircle, Phone, Search, ShieldCheck } from 'lucide-react';
-import { branchHours, googleBusinessProfiles, noInsuranceYetSlugs, serviceSlug, services as staticServices, shaBranchSlugs, site } from '../data/site';
+import { branchHours, branchPayment, googleBusinessProfiles, noInsuranceYetSlugs, serviceSlug, services as staticServices, site } from '../data/site';
 import {
   areasForBranch,
   findServiceArea,
@@ -27,14 +27,8 @@ const SITE_URL = 'https://celestialdental.org';
 /** One-line address; admin-entered lines sometimes already end in a comma. */
 const oneLine = (lines: string[]) => lines.map(l => l.trim().replace(/,+$/, '')).filter(Boolean).join(', ');
 
-/** Payment wording per branch; mirrors the branch page. */
-function paymentText(branch: Branch) {
-  if (noInsuranceYetSlugs.includes(branch.slug)) {
-    return `The ${branch.name} branch accepts M-Pesa and cash. We are yet to start accepting insurance at this branch; for insurance or SHA, our Kasarani and Kamakis branches handle pre-authorisation.`;
-  }
-  const sha = shaBranchSlugs.includes(branch.slug);
-  return `${sha ? 'SHA (for eligible schemes and covered treatments) and direct billing with 20+ insurers' : 'Direct billing with 20+ insurers'}, including Jubilee, AAR, Madison, CIC, Britam and APA, at the ${branch.name} branch. Bring your insurance card${sha ? ' or SHA details' : ''} and the front desk will handle pre-authorisation. M-Pesa and cash are also accepted.`;
-}
+/** Payment wording per branch; same text as the branch page. */
+const paymentText = (branch: Branch) => branchPayment(branch.slug, branch.name).text;
 
 function areaFaqs(area: ServiceArea, branch: Branch, other?: Branch) {
   const hours = branchHours[branch.slug]?.text || branch.hours;
@@ -48,10 +42,9 @@ function areaFaqs(area: ServiceArea, branch: Branch, other?: Branch) {
       q: `What are the ${branch.name} branch's opening hours?`,
       a: `${hours.replace(/ · /g, ' ')}. For public holidays, call the branch to confirm.`,
     },
-    {
-      q: `Do you accept insurance for patients from ${area.name}?`,
-      a: paymentText(branch),
-    },
+    noInsuranceYetSlugs.includes(branch.slug)
+      ? { q: `How can patients from ${area.name} pay?`, a: paymentText(branch) }
+      : { q: `Do you accept insurance for patients from ${area.name}?`, a: paymentText(branch) },
     {
       q: 'Can I book for my children and family?',
       a: `Yes. The ${branch.name} branch sees adults and children, including children's dentistry. Book online, call ${branch.phone.split('/')[0].trim()} or WhatsApp the branch and say how many people are coming.`,
@@ -199,7 +192,7 @@ function ServiceAreaInner({ area }: { area: ServiceArea }) {
               <div className="h-full rounded-3xl bg-white p-7 shadow-card">
                 <div className="flex items-center gap-3">
                   <ShieldCheck className="h-6 w-6 text-brand-500" />
-                  <h2 className="text-xl font-900 text-ink-900">Insurance &amp; payment</h2>
+                  <h2 className="text-xl font-900 text-ink-900">{noInsuranceYetSlugs.includes(branch.slug) ? 'Payment' : <>Insurance &amp; payment</>}</h2>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-ink-700">{paymentText(branch)}</p>
               </div>
