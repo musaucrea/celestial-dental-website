@@ -128,11 +128,9 @@ function BranchPageInner() {
           <section className="bg-white py-12">
             <div className="container-page">
               <Reveal>
-                <div className="flex flex-col gap-6 rounded-3xl border border-gold-200 bg-gold-50 p-7 shadow-card md:flex-row md:items-center md:justify-between lg:p-9">
-                  <div className="flex items-start gap-4">
-                    <div className="flex shrink-0 gap-0.5 pt-1" aria-hidden="true">
-                      {[0, 1, 2, 3, 4].map(i => <Star key={i} className="h-5 w-5 fill-gold-400 text-gold-500" />)}
-                    </div>
+                <div className="flex flex-col gap-6 rounded-3xl border border-gold-300/60 bg-gold-300/10 p-7 shadow-card md:flex-row md:items-center md:justify-between lg:p-9">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+                    <Star className="h-7 w-7 shrink-0 fill-gold-400 text-gold-500 sm:mt-0.5" aria-hidden="true" />
                     <div>
                       <h2 className="text-2xl font-900 text-ink-900">Read our {branch.name} reviews on Google</h2>
                       <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-600">

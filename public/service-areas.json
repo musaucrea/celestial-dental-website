@@ -1,67 +1,777 @@
 {
   "_comment": "Neighbourhoods each branch serves. Single source for the React app (src/data/serviceAreas.ts) and the crawler renderer (public/prerender.php, public/sitemap.php). 'home' marks the branch's own location: its chip links to the branch page instead of an area page. 'route' finishes the sentence 'From <name>, ...'. 'alsoNear' names a second branch that is also convenient.",
   "branches": {
-    "kasarani": { "name": "Kasarani", "place": "Kasarani, Nairobi" },
-    "kamakis": { "name": "Kamakis", "place": "Kamakis, Ruiru" },
-    "kiambu-road": { "name": "Kiambu Road", "place": "Thindigua, Kiambu Road" },
-    "eldoret": { "name": "Eldoret", "place": "Eldoret town" }
+    "kasarani": {
+      "name": "Kasarani",
+      "place": "Kasarani, Nairobi"
+    },
+    "kamakis": {
+      "name": "Kamakis",
+      "place": "Kamakis, Ruiru"
+    },
+    "kiambu-road": {
+      "name": "Kiambu Road",
+      "place": "Thindigua, Kiambu Road"
+    },
+    "eldoret": {
+      "name": "Eldoret",
+      "place": "Eldoret town"
+    }
   },
   "areas": [
-    { "slug": "kasarani", "name": "Kasarani", "branch": "kasarani", "home": true },
-    { "slug": "mwiki", "name": "Mwiki", "branch": "kasarani", "route": "head down the Kasarani–Mwiki Road towards Thika Road; the branch is at the Total petrol station (Clay City)" },
-    { "slug": "clay-city", "name": "Clay City", "branch": "kasarani", "route": "the branch is in your neighbourhood, on the 2nd floor of the Total petrol station building on the Kasarani–Mwiki Road" },
-    { "slug": "roysambu", "name": "Roysambu", "branch": "kasarani", "route": "cross Thika Road at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)" },
-    { "slug": "zimmerman", "name": "Zimmerman", "branch": "kasarani", "route": "get onto Thika Road at Roysambu, cross at Thika Road Mall and take the Kasarani–Mwiki Road" },
-    { "slug": "thome", "name": "Thome", "branch": "kasarani", "route": "get onto Thika Road at Roysambu, cross at Thika Road Mall and take the Kasarani–Mwiki Road", "alsoNear": "kiambu-road" },
-    { "slug": "marurui", "name": "Marurui", "branch": "kasarani", "route": "get onto Thika Road at Roysambu, cross at Thika Road Mall and take the Kasarani–Mwiki Road" },
-    { "slug": "mirema", "name": "Mirema", "branch": "kasarani", "route": "get onto Thika Road at Roysambu, cross at Thika Road Mall and take the Kasarani–Mwiki Road" },
-    { "slug": "githurai", "name": "Githurai", "branch": "kasarani", "route": "come through Mwiki and along the Kasarani–Mwiki Road to the Total petrol station (Clay City)", "alsoNear": "kamakis" },
-    { "slug": "kahawa-west", "name": "Kahawa West", "branch": "kasarani", "route": "take Thika Road towards town, leave at Thika Road Mall and take the Kasarani–Mwiki Road", "alsoNear": "kamakis" },
-    { "slug": "hunters", "name": "Hunters", "branch": "kasarani", "route": "the branch is a short trip along the Kasarani–Mwiki Road at the Total petrol station (Clay City)" },
-    { "slug": "sunton", "name": "Sunton", "branch": "kasarani", "route": "the branch is a short trip along the Kasarani–Mwiki Road at the Total petrol station (Clay City)" },
-    { "slug": "seasons", "name": "Seasons", "branch": "kasarani", "route": "the branch is a short trip along the Kasarani–Mwiki Road at the Total petrol station (Clay City)" },
-    { "slug": "ruaraka", "name": "Ruaraka", "branch": "kasarani", "route": "take Thika Road north to Thika Road Mall and turn onto the Kasarani–Mwiki Road" },
-    { "slug": "lucky-summer", "name": "Lucky Summer", "branch": "kasarani", "route": "head up to Thika Road, go north to Thika Road Mall and turn onto the Kasarani–Mwiki Road" },
-
-    { "slug": "kamakis", "name": "Kamakis", "branch": "kamakis", "home": true },
-    { "slug": "ruiru", "name": "Ruiru", "branch": "kamakis", "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas" },
-    { "slug": "kahawa-sukari", "name": "Kahawa Sukari", "branch": "kamakis", "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas", "alsoNear": "kasarani" },
-    { "slug": "kahawa-wendani", "name": "Kahawa Wendani", "branch": "kamakis", "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas", "alsoNear": "kasarani" },
-    { "slug": "membley", "name": "Membley", "branch": "kamakis", "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas" },
-    { "slug": "mwihoko", "name": "Mwihoko", "branch": "kamakis", "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas", "alsoNear": "kasarani" },
-    { "slug": "kimbo", "name": "Kimbo", "branch": "kamakis", "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas" },
-    { "slug": "kenyatta-road", "name": "Kenyatta Road", "branch": "kamakis", "route": "take Thika Road towards Nairobi to Ruiru, then the Eastern Bypass to Kamakis" },
-    { "slug": "juja", "name": "Juja", "branch": "kamakis", "route": "take Thika Road towards Nairobi to Ruiru, then the Eastern Bypass to Kamakis" },
-    { "slug": "tatu-city", "name": "Tatu City", "branch": "kamakis", "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas", "alsoNear": "kiambu-road" },
-
-    { "slug": "thindigua", "name": "Thindigua", "branch": "kiambu-road", "home": true },
-    { "slug": "ridgeways", "name": "Ridgeways", "branch": "kiambu-road", "route": "head north along Kiambu Road to Thindigua; the branch is in Brick House" },
-    { "slug": "runda", "name": "Runda", "branch": "kiambu-road", "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House" },
-    { "slug": "muthaiga-north", "name": "Muthaiga North", "branch": "kiambu-road", "route": "head north along Kiambu Road to Thindigua; the branch is in Brick House" },
-    { "slug": "muthaiga", "name": "Muthaiga", "branch": "kiambu-road", "route": "head north along Kiambu Road past Ridgeways to Thindigua; the branch is in Brick House" },
-    { "slug": "windsor", "name": "Windsor", "branch": "kiambu-road", "route": "head along Kiambu Road to Thindigua; the branch is in Brick House" },
-    { "slug": "garden-estate", "name": "Garden Estate", "branch": "kiambu-road", "route": "take Garden Estate Road through Ridgeways onto Kiambu Road and head to Thindigua", "alsoNear": "kasarani" },
-    { "slug": "fourways-junction", "name": "Fourways Junction", "branch": "kiambu-road", "route": "the branch is a short trip along Kiambu Road in Thindigua, in Brick House" },
-    { "slug": "kirigiti", "name": "Kirigiti", "branch": "kiambu-road", "route": "head south along Kiambu Road towards Nairobi to Thindigua; the branch is in Brick House" },
-    { "slug": "kiambu-town", "name": "Kiambu Town", "branch": "kiambu-road", "route": "head south along Kiambu Road towards Nairobi to Thindigua; the branch is in Brick House" },
-    { "slug": "ndumberi", "name": "Ndumberi", "branch": "kiambu-road", "route": "come through Kiambu Town and south along Kiambu Road to Thindigua" },
-    { "slug": "gigiri", "name": "Gigiri", "branch": "kiambu-road", "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House" },
-    { "slug": "rosslyn", "name": "Rosslyn", "branch": "kiambu-road", "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House" },
-    { "slug": "kitisuru", "name": "Kitisuru", "branch": "kiambu-road", "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House" },
-
-    { "slug": "eldoret-town", "name": "Eldoret Town", "branch": "eldoret", "home": true },
-    { "slug": "elgon-view", "name": "Elgon View", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "kapsoya", "name": "Kapsoya", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "langas", "name": "Langas", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "pioneer", "name": "Pioneer", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "huruma-eldoret", "name": "Huruma", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "kimumu", "name": "Kimumu", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "west-indies", "name": "West Indies", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "annex", "name": "Annex", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "maili-nne", "name": "Maili Nne", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "kapseret", "name": "Kapseret", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "kiplombe", "name": "Kiplombe", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "racecourse", "name": "Racecourse", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" },
-    { "slug": "munyaka", "name": "Munyaka", "branch": "eldoret", "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel" }
+    {
+      "slug": "kasarani",
+      "name": "Kasarani",
+      "branch": "kasarani",
+      "home": true
+    },
+    {
+      "slug": "mwiki",
+      "name": "Mwiki",
+      "branch": "kasarani",
+      "route": "head down the Kasarani–Mwiki Road towards Thika Road; the branch is at the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "clay-city",
+      "name": "Clay City",
+      "branch": "kasarani",
+      "route": "the branch is in your neighbourhood, on the 2nd floor of the Total petrol station building on the Kasarani–Mwiki Road"
+    },
+    {
+      "slug": "roysambu",
+      "name": "Roysambu",
+      "branch": "kasarani",
+      "route": "cross Thika Road at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "zimmerman",
+      "name": "Zimmerman",
+      "branch": "kasarani",
+      "route": "get onto Thika Road at Roysambu, cross at Thika Road Mall and take the Kasarani–Mwiki Road"
+    },
+    {
+      "slug": "thome",
+      "name": "Thome",
+      "branch": "kasarani",
+      "route": "get onto Thika Road at Roysambu, cross at Thika Road Mall and take the Kasarani–Mwiki Road",
+      "alsoNear": "kiambu-road"
+    },
+    {
+      "slug": "marurui",
+      "name": "Marurui",
+      "branch": "kasarani",
+      "route": "get onto Thika Road at Roysambu, cross at Thika Road Mall and take the Kasarani–Mwiki Road"
+    },
+    {
+      "slug": "mirema",
+      "name": "Mirema",
+      "branch": "kasarani",
+      "route": "get onto Thika Road at Roysambu, cross at Thika Road Mall and take the Kasarani–Mwiki Road"
+    },
+    {
+      "slug": "githurai",
+      "name": "Githurai",
+      "branch": "kasarani",
+      "route": "come through Mwiki and along the Kasarani–Mwiki Road to the Total petrol station (Clay City)",
+      "alsoNear": "kamakis"
+    },
+    {
+      "slug": "kahawa-west",
+      "name": "Kahawa West",
+      "branch": "kasarani",
+      "route": "take Thika Road towards town, leave at Thika Road Mall and take the Kasarani–Mwiki Road",
+      "alsoNear": "kamakis"
+    },
+    {
+      "slug": "hunters",
+      "name": "Hunters",
+      "branch": "kasarani",
+      "route": "the branch is a short trip along the Kasarani–Mwiki Road at the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "sunton",
+      "name": "Sunton",
+      "branch": "kasarani",
+      "route": "the branch is a short trip along the Kasarani–Mwiki Road at the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "seasons",
+      "name": "Seasons",
+      "branch": "kasarani",
+      "route": "the branch is a short trip along the Kasarani–Mwiki Road at the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "ruaraka",
+      "name": "Ruaraka",
+      "branch": "kasarani",
+      "route": "take Thika Road north to Thika Road Mall and turn onto the Kasarani–Mwiki Road"
+    },
+    {
+      "slug": "lucky-summer",
+      "name": "Lucky Summer",
+      "branch": "kasarani",
+      "route": "head up to Thika Road, go north to Thika Road Mall and turn onto the Kasarani–Mwiki Road"
+    },
+    {
+      "slug": "thika-road-mall",
+      "name": "Thika Road Mall (TRM)",
+      "branch": "kasarani",
+      "route": "the branch is about 5 minutes away: take the Kasarani–Mwiki Road from Thika Road Mall to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "allsops",
+      "name": "Allsops",
+      "branch": "kasarani",
+      "route": "make your way to Thika Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "baba-dogo",
+      "name": "Baba Dogo",
+      "branch": "kasarani",
+      "route": "make your way to Thika Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "korogocho",
+      "name": "Korogocho",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "kariobangi",
+      "name": "Kariobangi",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "dandora",
+      "name": "Dandora",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "huruma",
+      "name": "Huruma",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "mathare",
+      "name": "Mathare",
+      "branch": "kasarani",
+      "route": "make your way to Thika Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "kayole",
+      "name": "Kayole",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "komarock",
+      "name": "Komarock",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "umoja",
+      "name": "Umoja",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "buruburu",
+      "name": "Buruburu",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "jericho",
+      "name": "Jericho",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "makadara",
+      "name": "Makadara",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "donholm",
+      "name": "Donholm",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "mihango",
+      "name": "Mihango",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "pipeline",
+      "name": "Pipeline",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "embakasi",
+      "name": "Embakasi",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "utawala",
+      "name": "Utawala",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)",
+      "alsoNear": "kamakis"
+    },
+    {
+      "slug": "imara-daima",
+      "name": "Imara Daima",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)"
+    },
+    {
+      "slug": "industrial-area",
+      "name": "Industrial Area",
+      "branch": "kasarani",
+      "route": "head to Thika Road along Outer Ring Road, turn off at Thika Road Mall and take the Kasarani–Mwiki Road to the Total petrol station (Clay City)",
+      "alsoNear": "kiambu-road"
+    },
+    {
+      "slug": "kamakis",
+      "name": "Kamakis",
+      "branch": "kamakis",
+      "home": true
+    },
+    {
+      "slug": "ruiru",
+      "name": "Ruiru",
+      "branch": "kamakis",
+      "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas"
+    },
+    {
+      "slug": "kahawa-sukari",
+      "name": "Kahawa Sukari",
+      "branch": "kamakis",
+      "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "kahawa-wendani",
+      "name": "Kahawa Wendani",
+      "branch": "kamakis",
+      "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "membley",
+      "name": "Membley",
+      "branch": "kamakis",
+      "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas"
+    },
+    {
+      "slug": "mwihoko",
+      "name": "Mwihoko",
+      "branch": "kamakis",
+      "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "kimbo",
+      "name": "Kimbo",
+      "branch": "kamakis",
+      "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas"
+    },
+    {
+      "slug": "kenyatta-road",
+      "name": "Kenyatta Road",
+      "branch": "kamakis",
+      "route": "take Thika Road towards Nairobi to Ruiru, then the Eastern Bypass to Kamakis"
+    },
+    {
+      "slug": "juja",
+      "name": "Juja",
+      "branch": "kamakis",
+      "route": "take Thika Road towards Nairobi to Ruiru, then the Eastern Bypass to Kamakis"
+    },
+    {
+      "slug": "tatu-city",
+      "name": "Tatu City",
+      "branch": "kamakis",
+      "route": "head to Kamakis on the Eastern Bypass; the branch is above KFC, opposite Naivas",
+      "alsoNear": "kiambu-road"
+    },
+    {
+      "slug": "njiru",
+      "name": "Njiru",
+      "branch": "kamakis",
+      "route": "head to the Eastern Bypass and follow it to Kamakis; the branch is above KFC, opposite Naivas",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "ruai",
+      "name": "Ruai",
+      "branch": "kamakis",
+      "route": "head to the Eastern Bypass and follow it to Kamakis; the branch is above KFC, opposite Naivas",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "kamulu",
+      "name": "Kamulu",
+      "branch": "kamakis",
+      "route": "head to the Eastern Bypass and follow it to Kamakis; the branch is above KFC, opposite Naivas"
+    },
+    {
+      "slug": "thindigua",
+      "name": "Thindigua",
+      "branch": "kiambu-road",
+      "home": true
+    },
+    {
+      "slug": "ridgeways",
+      "name": "Ridgeways",
+      "branch": "kiambu-road",
+      "route": "head north along Kiambu Road to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "runda",
+      "name": "Runda",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "muthaiga-north",
+      "name": "Muthaiga North",
+      "branch": "kiambu-road",
+      "route": "head north along Kiambu Road to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "muthaiga",
+      "name": "Muthaiga",
+      "branch": "kiambu-road",
+      "route": "head north along Kiambu Road past Ridgeways to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "windsor",
+      "name": "Windsor",
+      "branch": "kiambu-road",
+      "route": "head along Kiambu Road to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "garden-estate",
+      "name": "Garden Estate",
+      "branch": "kiambu-road",
+      "route": "take Garden Estate Road through Ridgeways onto Kiambu Road and head to Thindigua",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "fourways-junction",
+      "name": "Fourways Junction",
+      "branch": "kiambu-road",
+      "route": "the branch is a short trip along Kiambu Road in Thindigua, in Brick House"
+    },
+    {
+      "slug": "kirigiti",
+      "name": "Kirigiti",
+      "branch": "kiambu-road",
+      "route": "head south along Kiambu Road towards Nairobi to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kiambu-town",
+      "name": "Kiambu Town",
+      "branch": "kiambu-road",
+      "route": "head south along Kiambu Road towards Nairobi to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "ndumberi",
+      "name": "Ndumberi",
+      "branch": "kiambu-road",
+      "route": "come through Kiambu Town and south along Kiambu Road to Thindigua"
+    },
+    {
+      "slug": "gigiri",
+      "name": "Gigiri",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "rosslyn",
+      "name": "Rosslyn",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kitisuru",
+      "name": "Kitisuru",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "nairobi-cbd",
+      "name": "Nairobi CBD",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "ngara",
+      "name": "Ngara",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "pangani",
+      "name": "Pangani",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kariokor",
+      "name": "Kariokor",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "starehe",
+      "name": "Starehe",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "muthurwa",
+      "name": "Muthurwa",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "pumwani",
+      "name": "Pumwani",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "eastleigh",
+      "name": "Eastleigh",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "mlango-kubwa",
+      "name": "Mlango Kubwa",
+      "branch": "kiambu-road",
+      "route": "head out of town through Muthaiga onto Kiambu Road and drive north to Thindigua; the branch is in Brick House",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "westlands",
+      "name": "Westlands",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "parklands",
+      "name": "Parklands",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "highridge",
+      "name": "Highridge",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "spring-valley",
+      "name": "Spring Valley",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "riverside",
+      "name": "Riverside",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "lavington",
+      "name": "Lavington",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kileleshwa",
+      "name": "Kileleshwa",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kilimani",
+      "name": "Kilimani",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "hurlingham",
+      "name": "Hurlingham",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "upper-hill",
+      "name": "Upper Hill",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "nyari",
+      "name": "Nyari",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kyuna",
+      "name": "Kyuna",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "loresho",
+      "name": "Loresho",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kangemi",
+      "name": "Kangemi",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "mountain-view",
+      "name": "Mountain View",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "uthiru",
+      "name": "Uthiru",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kawangware",
+      "name": "Kawangware",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "riruta",
+      "name": "Riruta",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "waithaka",
+      "name": "Waithaka",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "dagoretti",
+      "name": "Dagoretti",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kibera",
+      "name": "Kibera",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "ngong-road",
+      "name": "Ngong Road",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "karen",
+      "name": "Karen",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "langata",
+      "name": "Lang'ata",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "nairobi-west",
+      "name": "Nairobi West",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "madaraka",
+      "name": "Madaraka",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "south-b",
+      "name": "South B",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House",
+      "alsoNear": "kasarani"
+    },
+    {
+      "slug": "south-c",
+      "name": "South C",
+      "branch": "kiambu-road",
+      "route": "make your way to Kiambu Road at Muthaiga and head north to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "village-market",
+      "name": "Village Market",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "two-rivers",
+      "name": "Two Rivers",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "ruaka",
+      "name": "Ruaka",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "gachie",
+      "name": "Gachie",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kihara",
+      "name": "Kihara",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "ndenderu",
+      "name": "Ndenderu",
+      "branch": "kiambu-road",
+      "route": "take the Northern Bypass across to Kiambu Road and head to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "riabai",
+      "name": "Riabai",
+      "branch": "kiambu-road",
+      "route": "head along Kiambu Road towards Nairobi to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "tinganga",
+      "name": "Ting'ang'a",
+      "branch": "kiambu-road",
+      "route": "head along Kiambu Road towards Nairobi to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "kanunga",
+      "name": "Kanunga",
+      "branch": "kiambu-road",
+      "route": "head along Kiambu Road towards Nairobi to Thindigua; the branch is in Brick House"
+    },
+    {
+      "slug": "eldoret-town",
+      "name": "Eldoret Town",
+      "branch": "eldoret",
+      "home": true
+    },
+    {
+      "slug": "elgon-view",
+      "name": "Elgon View",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "kapsoya",
+      "name": "Kapsoya",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "langas",
+      "name": "Langas",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "pioneer",
+      "name": "Pioneer",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "huruma-eldoret",
+      "name": "Huruma",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "kimumu",
+      "name": "Kimumu",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "west-indies",
+      "name": "West Indies",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "annex",
+      "name": "Annex",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "maili-nne",
+      "name": "Maili Nne",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "kapseret",
+      "name": "Kapseret",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "kiplombe",
+      "name": "Kiplombe",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "racecourse",
+      "name": "Racecourse",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    },
+    {
+      "slug": "munyaka",
+      "name": "Munyaka",
+      "branch": "eldoret",
+      "route": "head into town to Champions Heights on Banaptai Street, next to Grand Empire Hotel"
+    }
   ]
 }
